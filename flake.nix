@@ -1,0 +1,50 @@
+# LICENSE HEADER MANAGED BY add-license-header
+#
+# Copyright (C) 2026 Ethorbit
+#
+# This file is part of nZC.
+#
+# nZC is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation, either version 3
+# of the License, or (at your option) any later version.
+#
+# nZC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the
+# GNU General Public License along with nZC.
+# If not, see <https://www.gnu.org/licenses/>.
+#
+
+# TODO:
+# Each subdir in projects/ will have its own Dockerfiles, data, and Arion configuration
+# Admins will `git clone` this flake and setup the shared variables (basically nix instead of .env)
+# Admins will run arion off the devShell: `nix develop`
+# Admins will use arion to deploy the projects they want to run on their node
+
+{
+    description = ''nZC game community's Dockerized server infrastructure'';
+
+    inputs = {
+        nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+        flake-utils.url = "github:numtide/flake-utils";
+    };
+
+    outputs = {
+        self,
+        nixpkgs,
+        flake-utils
+    }: flake-utils.lib.eachDefaultSystem (system: let
+        pkgs = import nixpkgs {
+            inherit system;
+            allowUnfree = true;
+        };
+    in with pkgs; {
+        devShells.default = mkShell {
+            buildInputs = [ arion ];
+        };
+    });
+}
