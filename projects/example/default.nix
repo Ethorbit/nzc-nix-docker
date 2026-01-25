@@ -21,14 +21,16 @@
 
 { config, lib, ... }:
 let
-    baseInstance = import ./instance-type.nix { inherit lib; };
-    baseService = import ../../lib/service/base.nix { inherit config; };
+    base = {
+        instance = import ./instance-type.nix { inherit lib; };
+        service = import ../../lib/service/base.nix { inherit config; };
+    };
 in
 {
-    options = baseInstance.options;
+    options = base.instance.options;
     config = {
         project.name = "example";
-        services.example.service = baseService // {
+        services.example.service = base.service // {
             image = "hello-world";
         };
     };
