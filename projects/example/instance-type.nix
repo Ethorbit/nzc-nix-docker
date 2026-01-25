@@ -19,8 +19,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
+{ lib }:
+let
+    base = import ../../lib/instance/type/base.nix { inherit lib; };
+in
 {
-    imports = [
-        ../lib
-    ];
+    options = base.options // {
+        # Project-specific options here
+    };
 }

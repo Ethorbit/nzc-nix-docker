@@ -19,8 +19,8 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{
-    imports = [
-        ../lib
-    ];
-}
+let
+    flake = builtins.getFlake (toString ./.);
+    nixpkgs = flake.inputs.nixpkgs;
+in
+    nixpkgs.legacyPackages.${builtins.currentSystem}

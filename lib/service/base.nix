@@ -19,8 +19,14 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
+{ instance }:
+
 {
-    imports = [
-        ../lib
-    ];
+    container_name = instance.name;
+    volumes = map (
+        volume: "${volume.host}:${volume.container}:${volume.permissions}"
+    ) instance.storage;
+    ports = map (
+        port: "${toString port.host}:${toString port.container}/${port.protocol}"
+    ) instance.network.ports;
 }

@@ -24,6 +24,7 @@
 # Admins will `git clone` this flake and setup the shared variables (basically nix instead of .env)
 # Admins will run arion off the devShell: `nix develop`
 # Admins will use arion to deploy the projects they want to run on their node
+#   > arion -f ./projects/<name> -f /path/to/custom/configuration up
 
 {
     description = ''nZC game community's Dockerized server infrastructure'';

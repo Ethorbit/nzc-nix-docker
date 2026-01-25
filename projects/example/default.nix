@@ -19,24 +19,18 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ settings ? import ../shared.nix }:
-
+{ config, lib, ... }:
+let
+    baseInstance = import ./instance-type.nix { inherit lib; };
+    instance = config;
+    baseService = import ../../lib/service/base.nix { inherit instance; };
+in
 {
-    project.name = "example";
-
-    services.hello.service = {
-        image = "hello-world";
-
-        # Optional: environment variables
-        environment = settings.environment or { };
-
-        # Optional: volumes (not needed for hello-world)
-        volumes = settings.volumes or [ ];
-
-        # Optional: ports (not needed for hello-world)
-        ports = settings.ports or [ ];
-
-        # Optional: build args (not needed, using public image)
-        build = settings.build or null;
+    options = baseInstance.options;
+    config = {
+        project.name = "example";
+        services.example.service = baseService // {
+            image = "hello-world";
+        };
     };
 }
