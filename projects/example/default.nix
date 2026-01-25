@@ -22,8 +22,7 @@
 { config, lib, ... }:
 let
     baseInstance = import ./instance-type.nix { inherit lib; };
-    instance = config;
-    baseService = import ../../lib/service/base.nix { inherit instance; };
+    baseService = import ../../lib/service/base.nix { inherit config; };
 in
 {
     options = baseInstance.options;

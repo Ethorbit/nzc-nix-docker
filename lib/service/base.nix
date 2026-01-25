@@ -19,14 +19,14 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ instance }:
+{ config }:
 
 {
-    container_name = instance.name;
+    container_name = config.name;
     volumes = map (
         volume: "${volume.host}:${volume.container}:${volume.permissions}"
-    ) instance.storage;
+    ) config.storage;
     ports = map (
         port: "${toString port.host}:${toString port.container}/${port.protocol}"
-    ) instance.network.ports;
+    ) config.network.ports;
 }
