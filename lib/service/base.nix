@@ -33,8 +33,7 @@ let
         ) instance.lxcfs.volumes
     else
         null;
-in
-builtins.deepSeq validated.lxcfs.volumes {
+in builtins.deepSeq validated.lxcfs.volumes {
     container_name = instance.name;
 
     volumes = map (
@@ -42,6 +41,9 @@ builtins.deepSeq validated.lxcfs.volumes {
     ) (instance.volumes ++ (if instance.lxcfs.enable then instance.lxcfs.volumes else []));
 
     ports = map (
-        port: "${toString port.host}:${toString port.container}/${port.protocol}"
+        port: "${builtins.toString port.host}:${builtins.toString port.container}/${port.protocol}"
     ) instance.ports;
-}
+} // (if config.instance.resources.enable then {
+    cpuset = builtins.concatStringsSep "," (builtins.map builtins.toString instance.resources.cpu.cores);
+    cpus = builtins.toString instance.resources.cpu.quota;
+} else {})

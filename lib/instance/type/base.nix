@@ -121,18 +121,39 @@ in
                     description = ''Resource limits for container'';
                     type = types.submodule {
                         options = {
-                            cpuset = mkOption {
-                                type = types.listOf types.int;
-                                description = "CPU cores allowed";
-                                default = [];
-                                example = [ 0 1 2 ];
+                            enable = mkOption {
+                                description = "Configure resource limits for the container";
+                                type = types.bool;
+                                default = true;
                             };
 
-                            cpuFraction = mkOption {
-                                type = types.float;
-                                description = "Number of CPU shares";
-                                default = 1.0;
-                                example = 0.5;
+                            cpu = mkOption {
+                                description = "CPU limits for the container";
+                                type = types.submodule {
+                                    options = {
+                                        cores = mkOption {
+                                            type = types.listOf types.int;
+                                            description = "CPU cores allowed";
+                                            default = [];
+                                            example = [ 0 1 2 ];
+                                        };
+
+                                        quota = mkOption {
+                                            type = types.addCheck types.float (
+                                                x: x >= 0.0
+                                            );
+                                            description = "Number of CPU shares";
+                                            default = 100.0;
+                                            example = 0.5;
+                                        };
+                                    };
+                                };
+                                example = {
+                                    cores = [
+                                        0 1 2 3
+                                    ];
+                                    quota = 2.5;
+                                };
                             };
 
                             ram = mkOption {
