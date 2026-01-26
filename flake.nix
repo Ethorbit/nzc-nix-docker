@@ -32,11 +32,13 @@
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
         flake-utils.url = "github:numtide/flake-utils";
+        arion.url = "github:hercules-ci/arion/3534dd9d0f32c7dbee4f87378d4c95ffcd8838c5";
     };
 
     outputs = {
         self,
         nixpkgs,
+        arion,
         flake-utils
     }: flake-utils.lib.eachDefaultSystem (system: let
         pkgs = import nixpkgs {
@@ -44,7 +46,11 @@
         };
     in with pkgs; {
         devShells.default = mkShell {
-            buildInputs = [ arion ];
+            buildInputs = [
+                (arion.packages.${system}.arion.overrideAttrs (old: {
+                    patches = [ ./patches/docker-compose-service.nix.patch ];
+                }))
+            ];
         };
     });
 }
