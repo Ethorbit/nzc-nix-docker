@@ -39,7 +39,7 @@ builtins.deepSeq validated.lxcfs.volumes {
 
     volumes = map (
         volume: "${volume.host}:${volume.container}${if volume.readonly then ":ro" else ":rw"}"
-    ) (instance.volumes ++ instance.lxcfs.volumes);
+    ) (instance.volumes ++ (if instance.lxcfs.enable then instance.lxcfs.volumes else []));
 
     ports = map (
         port: "${toString port.host}:${toString port.container}/${port.protocol}"
