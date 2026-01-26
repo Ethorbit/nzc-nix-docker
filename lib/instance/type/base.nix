@@ -23,6 +23,11 @@
 
 with lib;
 
+let
+    imported.types = {
+        volume = import ./volume.nix { inherit lib; };
+    };
+in
 {
     options.instance = mkOption {
         description = ''nZC Container instance'';
@@ -92,26 +97,7 @@ with lib;
 
                 volumes = mkOption {
                     description = ''List of storage volumes for the container'';
-                    type = types.listOf (types.submodule {
-                        options = {
-                            host = mkOption {
-                                type = types.str;
-                                example = "/srv/websites";
-                            };
-
-                            container = mkOption {
-                                type = types.path;
-                                example = "/var/www/html";
-                            };
-
-                            readonly = mkOption {
-                                description = "True to prevent container from modifying files in the mount.";
-                                type = types.bool;
-                                default = false;
-                                example = true;
-                            };
-                        };
-                    });
+                    type = types.listOf (imported.types.volume);
                     default = [];
                     example = [
                         {
@@ -169,6 +155,82 @@ with lib;
                         cpuFraction = 0.8;
                         ram = 512;
                         bandwidth = 25;
+                    };
+                };
+
+                lxcfs = mkOption {
+                    description = ''
+                        We use lxcfs so that the containerized programs can see the container's resources rather 
+                        than the host's resources, which helps with performance.
+
+                        If you don't care and don't want to use lxcfs, you can just turn this off.
+
+                        Make sure lxcfs is running:
+                        sudo systemctl enable lxcfs --now
+
+                        find /var/lib/lxcfs/ You should be seeing many files listed for things like cpu and whatnot 
+                    '';
+                    type = types.submodule {
+                        options = {
+                            enable = mkOption {
+                                description = ''Will this container use lxcfs?'';
+                                default = true;
+                                example = false;
+                            };
+
+                            volumes = mkOption {
+                                description = ''The lxcfs paths that will be passed to containers'';
+                                type = types.listOf (imported.types.volume);
+                                default = [
+                                    {
+                                        host = "/var/lib/lxcfs/sys/devices/system/cpu/online";
+                                        container = "/sys/devices/system/cpu/online";
+                                        readonly = true;
+                                    }
+                                    {
+                                        host = "/var/lib/lxcfs/proc/swaps";
+                                        container = "/proc/swaps";
+                                        readonly = true;
+                                    }
+                                    {
+                                        host = "/var/lib/lxcfs/proc/cpuinfo";
+                                        container = "/proc/cpuinfo";
+                                        readonly = true;
+                                    }
+                                    {
+                                        host = "/var/lib/lxcfs/proc/stat";
+                                        container = "/proc/stat";
+                                        readonly = true;
+                                    }
+                                    {
+                                        host = "/var/lib/lxcfs/proc/meminfo";
+                                        container = "/proc/meminfo";
+                                        readonly = true;
+                                    }
+                                    {
+                                        host = "/var/lib/lxcfs/proc/diskstats";
+                                        container = "/proc/diskstats";
+                                        readonly = true;
+                                    }
+                                    {
+                                        host = "/var/lib/lxcfs/proc/uptime";
+                                        container = "/proc/uptime";
+                                        readonly = true;
+                                    }
+                                ];
+                            };
+                        };
+                    };
+                    default = {};
+                    example = {
+                        enable = true;
+                        mounts = [
+                            {
+                                host = "/var/lib/lxcfs/proc/meminfo";
+                                container = "/proc/meminfo";
+                                readonly = true;
+                            }
+                        ];
                     };
                 };
             };

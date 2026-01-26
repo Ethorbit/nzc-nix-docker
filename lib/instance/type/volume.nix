@@ -19,19 +19,28 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, lib, ... }:
-let
-    base = {
-        instance = import ./instance-type.nix { inherit lib; };
-        service = import ../../lib/service/base.nix { inherit lib config; };
-    };
-in
-{
-    options = base.instance.options;
-    config = {
-        project.name = "example";
-        services.example.service = base.service // {
-            image = "hello-world";
+{ lib }:
+with lib;
+
+lib.types.submodule {
+    options = {
+        host = mkOption {
+            type = types.str;
+            default = null;
+            example = "/srv/websites";
+        };
+
+        container = mkOption {
+            type = types.path;
+            default = null;
+            example = "/var/www/html";
+        };
+
+        readonly = mkOption {
+            description = "True to prevent container from modifying files in the mount.";
+            type = types.bool;
+            default = false;
+            example = true;
         };
     };
 }

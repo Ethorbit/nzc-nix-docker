@@ -19,17 +19,27 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config }:
+{ lib, config }:
 
 let
     instance = config.instance;
+
+    # Validate lxcfs mounts
+    validated.lxcfs.volumes = if instance.lxcfs.enable then
+        map (m:
+            if builtins.match "^/.*lxcfs.*" m.host == null then
+                throw "${m.host} does not appear to be a valid lxcfs path"
+            else null
+        ) instance.lxcfs.volumes
+    else
+        null;
 in
-{
+builtins.deepSeq validated.lxcfs.volumes {
     container_name = instance.name;
 
     volumes = map (
-        volume: "${volume.host}:${volume.container}:${volume.permissions}"
-    ) instance.volumes;
+        volume: "${volume.host}:${volume.container}${if volume.readonly then ":ro" else ":rw"}"
+    ) (instance.volumes ++ instance.lxcfs.volumes);
 
     ports = map (
         port: "${toString port.host}:${toString port.container}/${port.protocol}"
