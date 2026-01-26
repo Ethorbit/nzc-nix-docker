@@ -21,12 +21,17 @@
 
 { config }:
 
+let
+    instance = config.instance;
+in
 {
-    container_name = config.name;
+    container_name = instance.name;
+
     volumes = map (
         volume: "${volume.host}:${volume.container}:${volume.permissions}"
-    ) config.storage;
+    ) instance.volumes;
+
     ports = map (
         port: "${toString port.host}:${toString port.container}/${port.protocol}"
-    ) config.network.ports;
+    ) instance.ports;
 }

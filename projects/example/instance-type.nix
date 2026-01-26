@@ -24,7 +24,7 @@ let
     base = import ../../lib/instance/type/base.nix { inherit lib; };
 in
 {
-    options = base.options // {
+    options.instance = base.options.instance // {
         # Project-specific options here
     };
 }
