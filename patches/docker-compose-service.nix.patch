@@ -1,8 +1,8 @@
 diff --git a/src/nix/modules/service/docker-compose-service.nix b/src/nix/modules/service/docker-compose-service.nix
-index eb48ae1..2576625 100644
+index eb48ae1..70cfabb 100644
 --- a/src/nix/modules/service/docker-compose-service.nix
 +++ b/src/nix/modules/service/docker-compose-service.nix
-@@ -246,6 +246,16 @@ in
+@@ -246,6 +246,21 @@ in
          ${serviceRef "user"}
        '';
      };
@@ -16,10 +16,15 @@ index eb48ae1..2576625 100644
 +        default = null;
 +        description = serviceRef "cpus";
 +    };
++    service.mem_limit = mkOption {
++        type = nullOr str;
++        default = null;
++        description = serviceRef "mem_limit";
++    };
      service.ports = mkOption {
        type = listOf types.unspecified;
        default = [];
-@@ -508,6 +518,10 @@ in
+@@ -508,6 +523,12 @@ in
      inherit (config.service) working_dir;
    } // lib.optionalAttrs (config.service.user != null) {
      inherit (config.service) user;
@@ -27,6 +32,8 @@ index eb48ae1..2576625 100644
 +    inherit (config.service) cpuset;
 +  } // lib.optionalAttrs (config.service.cpus != null) {
 +    inherit (config.service) cpus;
++  } // lib.optionalAttrs (config.service.mem_limit != null) {
++    inherit (config.service) mem_limit;
    } // lib.optionalAttrs (config.service.blkio_config != null) {
      blkio_config = config.service.blkio_config._out;
    };
