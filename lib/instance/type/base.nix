@@ -161,14 +161,16 @@ in
                                 type = types.submodule {
                                     options = {
                                         limit = mkOption {
+                                            description = "Memory limit in mebibytes (MiB)";
                                             type = types.int;
-                                            description = "Memory limit in megabytes (MB)";
+                                            default = 4000;
                                             example = 256;
                                         };
                                     };
                                 };
+                                default = {};
                                 example = {
-                                    limit = 512;
+                                    limit = 500;
                                 };
                             };
 
@@ -186,7 +188,7 @@ in
                             cores = [ 0 1 2 ];
                             quota = 0.8;
                         };
-                        memory.limit = 512;
+                        memory.limit = 500;
                         bandwidth = 25;
                     };
                 };
@@ -294,7 +296,7 @@ in
                     cores = [ 0 ];
                     quota = 1.0;
                 };
-                memory.limit = 1024;
+                memory.limit = 1000;
                 bandwidth = 30;
             };
         };
