@@ -20,11 +20,27 @@
 #
 
 { lib }:
+with lib;
 let
     base = import ../../lib/instance/type/base.nix { inherit lib; };
 in
 {
-    options.instance = base.options.instance // {
-        # Project-specific options here
+    imports = [ base ];
+
+    options.instance = {
+        # You can make project-specific options here
+        project = mkOption {
+            description = "Example project instance setting";
+            type = types.submodule {
+                options = {
+                    name = mkOption {
+                        description = "New setting for changing project name";
+                        type = types.str;
+                        default = "example";
+                    };
+                };
+            };
+            default = {};
+        };
     };
 }

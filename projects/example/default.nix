@@ -29,9 +29,9 @@ let
     dockerfile = pkgs.callPackage ./dockerfile {};
 in
 {
-    options = base.instance.options;
+    imports = [ base.instance ];
     config = {
-        project.name = "example";
+        project.name = config.instance.project.name;
         services.example.service = base.service // {
             build.context = "${dockerfile}";
         };
