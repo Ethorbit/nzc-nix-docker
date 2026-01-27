@@ -161,7 +161,7 @@ in
                                 type = types.submodule {
                                     options = {
                                         limit = mkOption {
-                                            description = "Memory limit in mebibytes (MiB)";
+                                            description = "Memory limit in megabytes (MB)";
                                             type = types.int;
                                             default = 4000;
                                             example = 256;
