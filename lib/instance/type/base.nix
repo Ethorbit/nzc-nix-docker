@@ -155,11 +155,21 @@ in
                                     quota = 2.5;
                                 };
                             };
-
-                            ram = mkOption {
-                                type = types.int;
-                                description = "RAM limit in MB";
-                                example = 256;
+                            
+                            memory = mkOption {
+                                description = "Memory limits for the container";
+                                type = types.submodule {
+                                    options = {
+                                        limit = mkOption {
+                                            type = types.int;
+                                            description = "Memory limit in megabytes (MB)";
+                                            example = 256;
+                                        };
+                                    };
+                                };
+                                example = {
+                                    limit = 512;
+                                };
                             };
 
                             bandwidth = mkOption {
@@ -172,9 +182,11 @@ in
                     };
                     default = {};
                     example = {
-                        cpuset = [ 0 1 2 ];
-                        cpuFraction = 0.8;
-                        ram = 512;
+                        cpu = {
+                            cores = [ 0 1 2 ];
+                            quota = 0.8;
+                        };
+                        memory.limit = 512;
                         bandwidth = 25;
                     };
                 };
@@ -278,9 +290,11 @@ in
                 }
             ];
             resources = {
-                cpuset = [ 0 ];
-                cpuFraction = 1.0;
-                ram = 1024;
+                cpu = {
+                    cores = [ 0 ];
+                    quota = 1.0;
+                };
+                memory.limit = 1024;
                 bandwidth = 30;
             };
         };

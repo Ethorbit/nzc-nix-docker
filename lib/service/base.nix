@@ -23,6 +23,7 @@
 
 let
     instance = config.instance;
+    resources = instance.resources;
 
     # Validate lxcfs mounts
     validated.lxcfs.volumes = if instance.lxcfs.enable then
@@ -43,7 +44,8 @@ in builtins.deepSeq validated.lxcfs.volumes {
     ports = map (
         port: "${builtins.toString port.host}:${builtins.toString port.container}/${port.protocol}"
     ) instance.ports;
-} // (if config.instance.resources.enable then {
-    cpuset = builtins.concatStringsSep "," (builtins.map builtins.toString instance.resources.cpu.cores);
-    cpus = builtins.toString instance.resources.cpu.quota;
+} // (if resources.enable then {
+    mem_limit = "${builtins.toString resources.memory.limit}M";
+    cpuset = builtins.concatStringsSep "," (builtins.map builtins.toString resources.cpu.cores);
+    cpus = builtins.toString resources.cpu.quota;
 } else {})
