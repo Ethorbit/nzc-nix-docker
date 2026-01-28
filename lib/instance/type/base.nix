@@ -133,7 +133,7 @@ in
                                     options = {
                                         cores = mkOption {
                                             type = types.listOf types.int;
-                                            description = "CPU cores allowed";
+                                            description = "CPU cores available to the container";
                                             default = [];
                                             example = [ 0 1 2 ];
                                         };
@@ -142,7 +142,7 @@ in
                                             type = types.addCheck types.float (
                                                 x: x >= 0.0
                                             );
-                                            description = "Number of CPU shares";
+                                            description = "Total number of cores we're allowed to utilize";
                                             default = 100.0;
                                             example = 0.5;
                                         };
