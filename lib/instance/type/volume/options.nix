@@ -21,8 +21,7 @@
 
 { lib }:
 with lib;
-
-lib.types.submodule {
+{
     options = {
         host = mkOption {
             type = types.str;

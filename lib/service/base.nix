@@ -24,17 +24,8 @@
 let
     instance = config.instance;
     resources = instance.resources;
-
-    # Validate lxcfs mounts
-    validated.lxcfs.volumes = if instance.lxcfs.enable then
-        map (m:
-            if builtins.match "^/.*lxcfs.*" m.host == null then
-                throw "${m.host} does not appear to be a valid lxcfs path"
-            else null
-        ) instance.lxcfs.volumes
-    else
-        null;
-in builtins.deepSeq validated.lxcfs.volumes {
+in
+{
     container_name = instance.name;
 
     volumes = map (

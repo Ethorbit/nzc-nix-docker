@@ -25,7 +25,8 @@ with lib;
 
 let
     imported.types = {
-        volume = import ./volume.nix { inherit lib; };
+        volume = import ./volume { inherit lib; };
+        lxcfs-volume = import ./volume/lxcfs.nix { inherit lib; };
     };
 in
 {
@@ -224,7 +225,7 @@ in
 
                             volumes = mkOption {
                                 description = ''The lxcfs paths that will be passed to containers'';
-                                type = types.listOf (imported.types.volume);
+                                type = types.listOf (imported.types.lxcfs-volume);
                                 default = [
                                     {
                                         host = "/var/lib/lxcfs/sys/devices/system/cpu/online";
