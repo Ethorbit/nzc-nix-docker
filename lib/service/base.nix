@@ -27,17 +27,35 @@ let
 in
 {
     container_name = instance.name;
-
     volumes = map (
         volume: "${volume.host}:${volume.container}${if volume.readonly then ":ro" else ":rw"}"
     ) (instance.volumes ++ (if instance.lxcfs.enable then instance.lxcfs.volumes else []));
-
     ports = map (
-        port: "${builtins.toString port.host}:${builtins.toString port.container}/${port.protocol}"
+        port: "${toString port.host}:${toString port.container}/${port.protocol}"
     ) instance.ports;
 } // (if resources.enable then {
-    mem_limit = "${builtins.toString resources.memory.limit}M";
-    cpuset = builtins.concatStringsSep "," (builtins.map builtins.toString resources.cpu.cores);
-    cpus = builtins.toString resources.cpu.quota;
-    cpu_shares = builtins.toString resources.cpu.weight;
+    cpuset = builtins.concatStringsSep "," (map toString resources.cpu.cores);
+    cpus = toString resources.cpu.quota;
+    cpu_shares = toString resources.cpu.weight;
+    mem_limit = "${toString resources.memory.limit}M";
+    blkio_config = let
+        disk = resources.disk;
+    in if disk != [] then {
+        device_read_bps = map (disk: {
+            path = disk.device;
+            rate = "${toString disk.read.speed}mb";
+        }) disk;
+        device_write_bps = map (disk: {
+            path = disk.device;
+            rate = "${toString disk.write.speed}mb";
+        }) disk;
+        device_read_iops = map (disk: {
+            path = disk.device;
+            rate = disk.read.iops;
+        }) disk;
+        device_write_iops = map (disk: {
+            path = disk.device;
+            rate = disk.write.iops;
+        }) disk;
+    } else {};
 } else {})

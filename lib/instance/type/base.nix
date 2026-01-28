@@ -27,6 +27,7 @@ let
     imported.types = {
         volume = import ./volume { inherit lib; };
         lxcfs-volume = import ./volume/lxcfs.nix { inherit lib; };
+        limit.disk = import ./limit/disk.nix { inherit lib; };
     };
 in
 {
@@ -183,6 +184,45 @@ in
                                 };
                             };
 
+                            disk = mkOption {
+                                description = "Disk limits";
+                                type = types.listOf (types.submodule {
+                                    options = {
+                                        device = mkOption {
+                                            description = "The storage device file";
+                                            type = types.str;
+                                            example = "/dev/sda";
+                                        };
+
+                                        read = mkOption {
+                                            description = "Read limits";
+                                            type = imported.types.limit.disk;
+                                            default = {};
+                                        };
+
+                                        write = mkOption {
+                                            description = "Write limits";
+                                            type = imported.types.limit.disk;
+                                            default = {};
+                                        };
+                                    };
+                                });
+                                example = [
+                                    {
+                                        device = "/dev/sda";
+                                        write = {
+                                            iops = 5000;
+                                            speed = 500;
+                                        };
+                                        read = {
+                                            iops = 50000;
+                                            speed = 2000;
+                                        };
+                                    }
+                                ];
+                                default = [];
+                            };
+
                             bandwidth = mkOption {
                                 type = types.int;
                                 description = "Network bandwidth limit in Mbps";
@@ -199,6 +239,13 @@ in
                             weight = 1024;
                         };
                         memory.limit = 500;
+                        disk.write = [
+                            {
+                                device = "/dev/sda";
+                                speed = 75;
+                                iops = 15000;
+                            }
+                        ];
                         bandwidth = 25;
                     };
                 };
@@ -308,6 +355,15 @@ in
                     weight = 1024;
                 };
                 memory.limit = 1000;
+                disk = [
+                    {
+                        device = "/dev/sda";
+                        write = {
+                            iops = 5000;
+                            speed = 500;
+                        };
+                    }
+                ];
                 bandwidth = 30;
             };
         };
