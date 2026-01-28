@@ -146,6 +146,13 @@ in
                                             default = 100.0;
                                             example = 0.5;
                                         };
+
+                                        weight = mkOption {
+                                            type = types.int;
+                                            description = "During contention, how much CPU time relative to other containers should this get";
+                                            default = 1024;
+                                            example = 512;
+                                        };
                                     };
                                 };
                                 example = {
@@ -187,6 +194,7 @@ in
                         cpu = {
                             cores = [ 0 1 2 ];
                             quota = 0.8;
+                            weight = 1024;
                         };
                         memory.limit = 500;
                         bandwidth = 25;
@@ -295,6 +303,7 @@ in
                 cpu = {
                     cores = [ 0 ];
                     quota = 1.0;
+                    weight = 1024;
                 };
                 memory.limit = 1000;
                 bandwidth = 30;

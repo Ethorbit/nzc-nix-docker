@@ -48,4 +48,5 @@ in builtins.deepSeq validated.lxcfs.volumes {
     mem_limit = "${builtins.toString resources.memory.limit}M";
     cpuset = builtins.concatStringsSep "," (builtins.map builtins.toString resources.cpu.cores);
     cpus = builtins.toString resources.cpu.quota;
+    cpu_shares = builtins.toString resources.cpu.weight;
 } else {})
