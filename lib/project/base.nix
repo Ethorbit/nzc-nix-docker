@@ -19,22 +19,8 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, pkgs, lib, ... }:
-let
-    base = {
-        instance = import ./instance-type.nix { inherit lib; };
-        project = import ../../lib/project/base.nix { inherit lib; };
-        service = import ../../lib/service/base.nix { inherit lib config; };
-    };
+{ lib }:
 
-    dockerfile = pkgs.callPackage ./dockerfile {};
-in
 {
-    imports = [ base.instance ];
-    config = {
-        project = base.project;
-        services.example.service = base.service // {
-            build.context = "${dockerfile}";
-        };
-    };
+    name = lib.mkDefault "nzc";   
 }

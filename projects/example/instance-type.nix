@@ -29,18 +29,5 @@ in
 
     options.instance = {
         # You can make project-specific options here
-        project = mkOption {
-            description = "Example project instance setting";
-            type = types.submodule {
-                options = {
-                    name = mkOption {
-                        description = "New setting for changing project name";
-                        type = types.str;
-                        default = "example";
-                    };
-                };
-            };
-            default = {};
-        };
     };
 }
