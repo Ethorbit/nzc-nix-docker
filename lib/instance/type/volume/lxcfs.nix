@@ -30,7 +30,7 @@ in
             host = mkOption {
                 type = types.addCheck types.str (host:
                     if builtins.match "^/.*lxcfs.*" host == null
-                    then throw "lxcfs-volume host path must contain 'lxcfs', got: ${host}"
+                    then throw "lxcfs volume host path must contain 'lxcfs', got: ${host}"
                     else true
                 );
                 example = "/var/lib/lxcfs";
