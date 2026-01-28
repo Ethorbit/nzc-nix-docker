@@ -1,5 +1,5 @@
 diff --git a/src/nix/modules/service/docker-compose-service.nix b/src/nix/modules/service/docker-compose-service.nix
-index eb48ae1..0fe7493 100644
+index eb48ae1..d09dd60 100644
 --- a/src/nix/modules/service/docker-compose-service.nix
 +++ b/src/nix/modules/service/docker-compose-service.nix
 @@ -246,6 +246,26 @@ in
@@ -36,9 +36,9 @@ index eb48ae1..0fe7493 100644
 +  } // lib.optionalAttrs (config.service.cpuset != null) {
 +    inherit (config.service) cpuset;
 +  } // lib.optionalAttrs (config.service.cpus != null) {
-+    inherit (config.service) cpu_shares;
-+  } // lib.optionalAttrs (config.service.cpu_shares != null) {
 +    inherit (config.service) cpus;
++  } // lib.optionalAttrs (config.service.cpu_shares != null) {
++    inherit (config.service) cpu_shares;
 +  } // lib.optionalAttrs (config.service.mem_limit != null) {
 +    inherit (config.service) mem_limit;
    } // lib.optionalAttrs (config.service.blkio_config != null) {
