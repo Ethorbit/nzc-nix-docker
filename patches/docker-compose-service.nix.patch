@@ -1,8 +1,8 @@
 diff --git a/src/nix/modules/service/docker-compose-service.nix b/src/nix/modules/service/docker-compose-service.nix
-index eb48ae1..70cfabb 100644
+index eb48ae1..0fe7493 100644
 --- a/src/nix/modules/service/docker-compose-service.nix
 +++ b/src/nix/modules/service/docker-compose-service.nix
-@@ -246,6 +246,21 @@ in
+@@ -246,6 +246,26 @@ in
          ${serviceRef "user"}
        '';
      };
@@ -16,6 +16,11 @@ index eb48ae1..70cfabb 100644
 +        default = null;
 +        description = serviceRef "cpus";
 +    };
++    service.cpu_shares = mkOption {
++        type = nullOr str;
++        default = null;
++        description = serviceRef "cpu_shares";
++    };
 +    service.mem_limit = mkOption {
 +        type = nullOr str;
 +        default = null;
@@ -24,13 +29,15 @@ index eb48ae1..70cfabb 100644
      service.ports = mkOption {
        type = listOf types.unspecified;
        default = [];
-@@ -508,6 +523,12 @@ in
+@@ -508,6 +528,14 @@ in
      inherit (config.service) working_dir;
    } // lib.optionalAttrs (config.service.user != null) {
      inherit (config.service) user;
 +  } // lib.optionalAttrs (config.service.cpuset != null) {
 +    inherit (config.service) cpuset;
 +  } // lib.optionalAttrs (config.service.cpus != null) {
++    inherit (config.service) cpu_shares;
++  } // lib.optionalAttrs (config.service.cpu_shares != null) {
 +    inherit (config.service) cpus;
 +  } // lib.optionalAttrs (config.service.mem_limit != null) {
 +    inherit (config.service) mem_limit;
