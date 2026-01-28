@@ -19,19 +19,9 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, pkgs, lib, ... }:
-let
-    base = (import ../../lib/base { inherit lib config; }) // {
-        instance = import ./instance-type.nix { inherit lib; };
-    };
-    dockerfile = pkgs.callPackage ./dockerfile {};
-in
+{ lib, config }:
+
 {
-    imports = [ base.instance ];
-    config = {
-        project = base.project;
-        services.example.service = base.service // {
-            build.context = "${dockerfile}";
-        };
-    };
+    project = import ./project { inherit lib; };
+    service = import ./service { inherit lib config; };
 }
