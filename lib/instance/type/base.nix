@@ -38,7 +38,6 @@ in
             options = {
                 name = mkOption {
                     type = types.str;
-                    default = null;
                     description = "Unique instance name";
                     example = "my-cool-container";
                 };
@@ -117,6 +116,15 @@ in
                             readonly = true;
                         }
                     ];
+                };
+
+                labels = mkOption {
+                    description = ''Labels assigned to the container'';
+                    type = types.attrsOf types.str;
+                    default = {};
+                    example = {
+                        "label" = "value";
+                    };
                 };
 
                 resources = mkOption {
@@ -348,6 +356,9 @@ in
                     readonly = true;
                 }
             ];
+            labels = {
+                "label" = "value";
+            };
             resources = {
                 cpu = {
                     cores = [ 0 ];

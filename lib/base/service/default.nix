@@ -33,6 +33,10 @@ in
     ports = map (
         port: "${toString port.host}:${toString port.container}/${port.protocol}"
     ) instance.ports;
+    labels = instance.labels // (if resources.enable then {
+        "com.docker-tc.enabled" = "1";
+        "com.docker-tc.limit" = "${toString resources.bandwidth}mbps";
+    } else {});
 } // (if resources.enable then {
     cpuset = builtins.concatStringsSep "," (map toString resources.cpu.cores);
     cpus = toString resources.cpu.quota;
