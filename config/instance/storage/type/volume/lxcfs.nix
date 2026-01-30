@@ -28,11 +28,7 @@ in
     types.submodule {
         options = imported.options.options // {
             host = mkOption {
-                type = types.addCheck types.str (host:
-                    if builtins.match "^/.*lxcfs.*" host == null
-                    then throw "lxcfs volume host path must contain 'lxcfs', got: ${host}"
-                    else true
-                );
+                type = types.strMatching "^/.*lxcfs.*";
                 example = "/var/lib/lxcfs";
             };
         };
