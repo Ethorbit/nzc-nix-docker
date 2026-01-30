@@ -20,9 +20,8 @@
 #
 
 { lib }:
-with lib;
 let
-    base = import ../../lib/instance/type/base { inherit lib; };
+    base = import ../../lib/base/instance { inherit lib; };
 in
 {
     imports = [ base ];

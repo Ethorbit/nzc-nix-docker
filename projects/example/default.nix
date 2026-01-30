@@ -21,7 +21,7 @@
 
 { config, pkgs, lib, ... }:
 let
-    base = (import ../../lib/base { inherit lib config; }) // {
+    base = (import ../../lib/base/arion { inherit lib config; }) // {
         instance = import ./instance-type.nix { inherit lib; };
     };
     dockerfile = pkgs.callPackage ./dockerfile {};
