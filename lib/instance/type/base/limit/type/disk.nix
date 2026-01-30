@@ -19,9 +19,8 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib }:
+{ lib, ... }:
 with lib;
-
 types.submodule {
     options = {
         speed = mkOption {

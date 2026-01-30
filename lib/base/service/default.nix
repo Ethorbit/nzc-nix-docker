@@ -23,27 +23,36 @@
 
 let
     instance = config.instance;
-    resources = instance.resources;
 in
 {
     container_name = instance.name;
-    volumes = map (
+
+    volumes = let
+        storage = instance.storage;
+        lxcfs = storage.lxcfs;
+    in map (
         volume: "${volume.host}:${volume.container}${if volume.readonly then ":ro" else ":rw"}"
-    ) (instance.volumes ++ (if instance.lxcfs.enable then instance.lxcfs.volumes else []));
+    ) (storage.volumes ++ (if lxcfs.enable then lxcfs.volumes else []));
+
     ports = map (
         port: "${toString port.host}:${toString port.container}/${port.protocol}"
-    ) instance.ports;
-    labels = instance.labels // (if resources.enable then {
+    ) instance.network.ports;
+
+    labels = instance.labels // (if instance.limit.enable then {
         "com.docker-tc.enabled" = "1";
-        "com.docker-tc.limit" = "${toString resources.bandwidth}mbps";
+        "com.docker-tc.limit" = "${toString instance.limit.bandwidth}mbps";
     } else {});
-} // (if resources.enable then {
-    cpuset = builtins.concatStringsSep "," (map toString resources.cpu.cores);
-    cpus = toString resources.cpu.quota;
-    cpu_shares = toString resources.cpu.weight;
-    mem_limit = "${toString resources.memory.limit}M";
+} // (if instance.limit.enable then 
+let
+    limit = instance.limit;
+in {
+    cpuset = builtins.concatStringsSep "," (map toString limit.cpu.cores);
+    cpus = toString limit.cpu.quota;
+    cpu_shares = toString limit.cpu.weight;
+    mem_limit = "${toString limit.memory.limit}M";
+
     blkio_config = let
-        disk = resources.disk;
+        disk = limit.disk;
     in if disk != [] then {
         device_read_bps = map (disk: {
             path = disk.device;

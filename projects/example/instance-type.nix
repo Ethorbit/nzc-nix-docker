@@ -22,7 +22,7 @@
 { lib }:
 with lib;
 let
-    base = import ../../lib/instance/type/base.nix { inherit lib; };
+    base = import ../../lib/instance/type/base { inherit lib; };
 in
 {
     imports = [ base ];
