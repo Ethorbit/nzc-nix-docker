@@ -23,7 +23,7 @@
 with lib;
 
 let
-    imported.types.disk = import ./type/disk.nix;
+    imported.types.disk = import ./type/disk.nix { inherit lib; };
 in
 {
     options.nzc.instance.limit = mkOption {
@@ -86,7 +86,7 @@ in
                         options = {
                             device = mkOption {
                                 description = "The storage device file";
-                                type = types.str;
+                                type = types.strMatching "^/dev/.*";
                                 example = "/dev/sda";
                             };
 
