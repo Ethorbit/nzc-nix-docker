@@ -30,9 +30,9 @@ Designed to overcome all issues encountered from 3 years of operation.
  
 - Instead of modifying environment files, you will edit everything in [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set). You will create project-specific settings using templates
  
-- Each component will be fully **isolated** and **deployed independently** to maximize scalability, maintainability, and fault tolerance.  
+- Each container will be fully **isolated** and **deployed independently** to maximize scalability, maintainability, and fault tolerance.  
 
-This is basically **a collection of container projects that nZC uses** rather than a single Dockerized project.
+This is basically **a collection of container projects that nZC uses** rather than **a single Dockerized project**.
 
 ### What Was Wrong with the Previous Infrastructure
 
