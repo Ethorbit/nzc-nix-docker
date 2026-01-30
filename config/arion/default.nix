@@ -19,11 +19,17 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ ... }:
-
+{ lib, ... }:
+with lib;
 {
     imports = [
         ./project
         ./service
     ];
+
+    options.nzc.arion.defaults = mkOption {
+        description = ''
+            nZC's arion service defaults, intended to simplify configuration for admins
+        '';
+    };
 }

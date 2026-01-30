@@ -19,9 +19,9 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 let
-    nzc = config.nzc;
+    defaults = config.nzc.arion.defaults;
     dockerfile = pkgs.callPackage ./dockerfile {};
 in
 {
@@ -31,7 +31,8 @@ in
     ];
 
     config = {
-        services.example.service = nzc.arion.service.defaults // {
+        project = defaults.project;
+        services.example.service = defaults.service // {
             build.context = "${dockerfile}";
         };
     };

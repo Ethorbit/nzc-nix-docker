@@ -19,8 +19,10 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ ... }:
 
 {
-    project.name = lib.mkDefault "nzc";   
+    nzc.arion.defaults.project = {
+        name = "nzc";
+    };
 }

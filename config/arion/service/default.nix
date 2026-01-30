@@ -19,13 +19,12 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, lib, ... }:
-with lib;
+{ config, ... }:
 let
     instance = config.nzc.instance;
 in
 {
-    config.nzc.arion.service.defaults = {
+    nzc.arion.defaults.service = {
         container_name = instance.name;
 
         volumes = let
@@ -75,10 +74,4 @@ in
             } else {};
         } else {}
     );
-
-    options.nzc.arion = mkOption {
-        description = ''
-            nZC's arion service defaults, intended to simplify configuration for admins
-        '';
-    };
 }
