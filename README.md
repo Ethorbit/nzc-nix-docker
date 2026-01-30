@@ -26,35 +26,32 @@ Designed to overcome all issues encountered from 3 years of operation.
 ## **DO NOT RUN THIS, IT IS NOT FINISHED!!!!**
 
 ### Here's what to expect:
-* We will **still be Dockerizing everything**, but deployment will be done through [Nix](https://nixos.org/) | [Arion](https://github.com/hercules-ci/arion) rather than Docker Compose YAML.
+- We will **still be Dockerizing everything**, but deployment will be done through [Nix](https://nixos.org/) | [Arion](https://github.com/hercules-ci/arion) rather than Docker Compose YAML.
  
-* Instead of modifying environment files, you will edit everything in [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set).
+- Instead of modifying environment files, you will edit everything in [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set). You will create project-specific settings using templates
  
-* Project Roles will be **totally isolated** and **deployed separately** for maximum scalability
-  * Game
-    * Garry's Mod Project
-    * Sven Co-op Project
-    * etc.
-  * Webserver
-    * Nginx Project
-    * PHP Project
-  * MySQL Database Project
-  * Website
-    * Portainer Project
-    * PHPMyAdmin Project
+- Each component will be fully **isolated** and **deployed independently** to maximize scalability, maintainability, and fault tolerance.  
 
-You choose which roles your node needs. This is **basically a glorified collection of container projects that nZC uses**.
+This is basically **a collection of container projects that nZC uses** rather than a single Dockerized project.
 
-### What was wrong with the previous infrastructure:
-* The deployment was **Centralized**, where a single command brought up the entire infrastructure
+### What Was Wrong with the Previous Infrastructure
 
-This on paper appeared to be a brilliant idea for a game community such as **nZC**, however it
+The previous infrastructure suffered from several fundamental design issues that made it fragile, hard to scale, and misaligned with Docker best practices:
 
-1: actually made it hard to scale. The more services we had, the more nightmarish it was to add more. Eventually, I was demotivated from expanding the cluster altogether due to the horrid configuration.
+- **Violation of Docker Philosophy**  
+  The project relied on a brittle, centralized configuration model, which goes against Docker’s core principles of modularity, isolation, and composability.
 
-2: caused problems with resource usage as we were expected to run everything on a single machine.
+- **Unintuitive Deployment Process**  
+  Container deployment was managed via a Makefile script that was difficult to understand and potentially incompatible across different systems.
 
-* Docker compose configuration is **not programming**, it's just your standard YAML. Due to lack of features, it was not possible to follow the **DRY** (Don't Repeat Yourself) rule and my configs inevitably became bloated and hard to maintain as a consequence.
+- **Single Point of Failure**  
+  If a user accidentally broke the configuration, *none* of the containers could be deployed, making the entire system fragile.
+
+- **Poor Scalability**  
+  Adding additional containers significantly increased complexity, rather than being a straightforward, incremental change.
+
+- **Configuration Is Not Programming**  
+  Docker Compose configuration is **not programming**, it’s just standard YAML. Due to the lack of abstraction and reuse features, it was not possible to follow the **DRY** (Don’t Repeat Yourself) principle, causing configurations to become bloated and increasingly hard to maintain.
 
 ### Why not Pterodactyl?
 
