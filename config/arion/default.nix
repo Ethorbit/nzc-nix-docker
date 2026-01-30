@@ -28,8 +28,6 @@ with lib;
     ];
 
     options.nzc.arion.defaults = mkOption {
-        description = ''
-            nZC's arion service defaults, intended to simplify configuration for admins
-        '';
+        description = ''nZC Arion defaults to simplify project development'';
     };
 }

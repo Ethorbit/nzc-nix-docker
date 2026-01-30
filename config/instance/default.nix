@@ -31,7 +31,7 @@ with lib;
     ];
 
     options.nzc.instance = mkOption {
-        description = ''nZC Container instance'';
+        description = ''nZC container instance for admins to deploy projects'';
         type = types.submodule {
             options = {
                 name = mkOption {
