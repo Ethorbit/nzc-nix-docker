@@ -45,7 +45,7 @@
             quota = 1.0;
             weight = 1024;
         };
-        memory.limit = 1000;
+        memory = 1000;
         disk = [
             {
                 device = "/dev/sda";

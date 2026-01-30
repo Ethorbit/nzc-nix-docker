@@ -74,21 +74,10 @@ in
                 };
                 
                 memory = mkOption {
-                    description = "Memory limits for the container";
-                    type = types.submodule {
-                        options = {
-                            limit = mkOption {
-                                description = "Memory limit in megabytes (MB)";
-                                type = types.int;
-                                default = 4000;
-                                example = 256;
-                            };
-                        };
-                    };
-                    default = {};
-                    example = {
-                        limit = 500;
-                    };
+                    description = "Memory limit for the container (in megabytes [MB])";
+                    type = types.int;
+                    default = 4000;
+                    example = 256;
                 };
 
                 disk = mkOption {
@@ -145,7 +134,7 @@ in
                 quota = 0.8;
                 weight = 1024;
             };
-            memory.limit = 500;
+            memory = 500;
             disk.write = [
                 {
                     device = "/dev/sda";

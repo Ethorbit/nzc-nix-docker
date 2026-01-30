@@ -50,7 +50,7 @@ in
             cpuset = builtins.concatStringsSep "," (map toString limit.cpu.cores);
             cpus = toString limit.cpu.quota;
             cpu_shares = toString limit.cpu.weight;
-            mem_limit = "${toString limit.memory.limit}M";
+            mem_limit = "${toString limit.memory}M";
 
             blkio_config = let
                 disk = limit.disk;
