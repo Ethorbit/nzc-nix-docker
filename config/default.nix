@@ -19,14 +19,11 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib }:
-let
-    base = import ../../lib/base/instance { inherit lib; };
-in
-{
-    imports = [ base ];
+{ ... }:
 
-    options.instance = {
-        # You can make project-specific options here
-    };
+{
+    imports = [
+        ./arion
+        ./instance
+    ];
 }

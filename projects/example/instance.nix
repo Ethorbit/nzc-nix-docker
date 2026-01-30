@@ -19,8 +19,9 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib }:
-
+{ ... }:
 {
-    name = lib.mkDefault "nzc";   
+    # You can make project-specific options here
+    options.nzc.instance = {
+    };
 }

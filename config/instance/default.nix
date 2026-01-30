@@ -19,7 +19,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib }:
+{ lib, ... }:
 
 with lib;
 
@@ -30,7 +30,7 @@ with lib;
         ./limit
     ];
 
-    options.instance = mkOption {
+    options.nzc.instance = mkOption {
         description = ''nZC Container instance'';
         type = types.submodule {
             options = {

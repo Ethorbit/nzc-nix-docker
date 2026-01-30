@@ -22,7 +22,7 @@
 { lib, ... }:
 with lib;
 {
-    options.instance.network = mkOption {
+    options.nzc.instance.network = mkOption {
         description = ''Network settings for instance'';
         type = types.submodule {
             options = {

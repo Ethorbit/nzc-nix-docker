@@ -19,9 +19,8 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, config }:
+{ lib, ... }:
 
 {
-    project = import ./project { inherit lib; };
-    service = import ./service { inherit lib config; };
+    project.name = lib.mkDefault "nzc";   
 }

@@ -19,20 +19,11 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, pkgs, lib, ... }:
-let
-    nzc = config.nzc;
-    dockerfile = pkgs.callPackage ./dockerfile {};
-in
+{ ... }:
+
 {
     imports = [
-        ../../config
-        ./instance.nix
+        ./project
+        ./service
     ];
-
-    config = {
-        services.example.service = nzc.arion.service.defaults // {
-            build.context = "${dockerfile}";
-        };
-    };
 }

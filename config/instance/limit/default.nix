@@ -26,7 +26,7 @@ let
     imported.types.disk = import ./type/disk.nix;
 in
 {
-    options.instance.limit = mkOption {
+    options.nzc.instance.limit = mkOption {
         description = ''Resource limits for instance'';
         type = types.submodule {
             options = {

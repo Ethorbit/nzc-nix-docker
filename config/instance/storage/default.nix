@@ -28,7 +28,7 @@ let
     };
 in
 {
-    options.instance.storage = mkOption {
+    options.nzc.instance.storage = mkOption {
         description = ''Storage settings for instance'';
         type = types.submodule {
             options = {
