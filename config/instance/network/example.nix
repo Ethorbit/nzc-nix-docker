@@ -19,12 +19,31 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ ... }:
-
 {
-    imports = [
-        ./arion
-        ./project
-        ./instance
+    ports = [
+        {
+            host = 27016;
+            container = 27015;
+            protocol = "tcp";
+        }
+    ];
+
+    endpoints = [
+        {
+            id = "webserver-http";
+            host = {
+                type = "container";
+                value = "nginx";
+            };
+            port = 80;
+        }
+        {
+            id = "webserver-https";
+            host = {
+                type = "container";
+                value = "nginx";
+            };
+            port = 443;
+        }
     ];
 }

@@ -19,12 +19,22 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ ... }:
+{ lib, ... }:
+
+with lib;
 
 {
     imports = [
-        ./arion
-        ./project
-        ./instance
+        ./network
     ];
+
+    options.nzc.project = mkOption {
+        description = ''An nZC project's settings'';
+        type = types.submodule {
+            options = {
+
+            };
+        };
+        default = {};
+    };
 }

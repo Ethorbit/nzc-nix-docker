@@ -22,6 +22,10 @@
 { lib, ... }:
 with lib;
 {
+    imports = [
+        ./endpoints
+    ];
+
     options.nzc.instance.network = mkOption {
         description = ''Network settings for instance'';
         type = types.submodule {
@@ -62,14 +66,6 @@ with lib;
             };
         };
         default = {};
-        example = {
-            ports = [
-                {
-                    host = 27016;
-                    container = 27015;
-                    protocol = "tcp";
-                }
-            ];
-        };
+        example = import ./example.nix;
     };
 }
