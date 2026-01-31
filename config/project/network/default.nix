@@ -23,6 +23,11 @@
 
 with lib;
 
+let
+    project-endpoints  = config.nzc.project.network.endpoints;
+    instance-endpoints = map (e: e.id) config.nzc.instance.network.endpoints;
+    missing-endpoints  = builtins.filter (id: !(builtins.elem id instance-endpoints)) project-endpoints;
+in
 {
     options.nzc.project.network = mkOption {
         description = ''Network settings for project'';
@@ -32,41 +37,27 @@ with lib;
                     description = ''The logical endpoints required by this project'';
                     type = types.listOf types.str;
                     default = [];
-                    example = [
-                        "website"
-                        "game"
-                    ];
+                    example = [ "website" "game" ];
                 };
             };
         };
         default = {};
     };
 
-    config.assertions = let
-        project-endpoints = config.nzc.project.network.endpoints;
-        instance-endpoints = map (e: e.id) config.nzc.instance.network.endpoints;
-        missing-endpoints = builtins.filter (id: !(builtins.elem id project-endpoints)) instance-endpoints;
-    in [
-        {
-            assertion = builtins.length instance-endpoints == builtins.length project-endpoints;
-            message = ''
-                Instance endpoints does not match project endpoints
+    config.warnings = lib.filter (x: x != null && x != "") [
+        (
+            if builtins.length missing-endpoints > 0 
+            || builtins.length project-endpoints != builtins.length instance-endpoints 
+            then ''
+                WARNING: This project expects certain network endpoints to be available in this instance.
+                Missing endpoints: ${toString missing-endpoints}
+                Project requires: ${toString project-endpoints}
+                Instance provides: ${toString instance-endpoints}
 
-                Project endpoints:
-                ${toString project-endpoints}
-
-                Instance endpoints:
-                ${toString instance-endpoints}
-            '';
-        }
-        {
-            assertion = builtins.length missing-endpoints == 0;
-            message = ''
-            Instance is missing an endpoint.
-
-            Endpoints needed by project:
-            ${toString missing-endpoints}
-            '';
-        }
+                The project will still run, but some features may not work until these endpoints are configured.
+            ''
+            else
+                null
+        )
     ];
 }
