@@ -22,10 +22,10 @@
 { config, ... }:
 
 let
-    instance = config.nzc.instance;
+    project = config.nzc.project;
 in
 {
     nzc.arion.defaults.project = {
-        name = instance.name;
+        inherit (project) name;
     };
 }

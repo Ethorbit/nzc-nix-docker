@@ -19,22 +19,31 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ config, lib, ... }:
 
 with lib;
 
+let
+    instance = config.nzc.instance;
+in
 {
     imports = [
         ./network
     ];
 
     options.nzc.project = mkOption {
-        description = ''An nZC project's settings'';
+        description = "An nZC project's settings specified by its developer(s)";
         type = types.submodule {
             options = {
-
+                name = mkOption {
+                    type = types.str;
+                };
             };
         };
         default = {};
+    };
+
+    config.nzc.project = {
+        name = "nzc-${instance.name}";
     };
 }
