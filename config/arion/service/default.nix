@@ -25,8 +25,6 @@ let
 in
 {
     nzc.arion.defaults.service = {
-        container_name = instance.name;
-
         volumes = let
             storage = instance.storage;
             lxcfs = storage.lxcfs;

@@ -32,7 +32,7 @@ in
 
     config = {
         project = defaults.project;
-        services.example.service = defaults.service // {
+        services.hello.service = defaults.service // {
             build.context = "${dockerfile}";
         };
     };

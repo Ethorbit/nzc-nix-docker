@@ -19,10 +19,13 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ ... }:
+{ config, ... }:
 
+let
+    instance = config.nzc.instance;
+in
 {
     nzc.arion.defaults.project = {
-        name = "nzc";
+        name = instance.name;
     };
 }
