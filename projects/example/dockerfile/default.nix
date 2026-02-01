@@ -19,9 +19,15 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ runCommand }:
+{ writeText, runCommand }:
+
+let
+    Dockerfile = (writeText "Dockerfile" ''
+        FROM hello-world:latest
+    '');
+in
 
 runCommand "docker-context" {} ''
     mkdir -p $out
-    cp ${./Dockerfile} $out/Dockerfile
+    cp ${Dockerfile} $out/Dockerfile
 ''
