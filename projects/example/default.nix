@@ -27,10 +27,14 @@ in
 {
     imports = [
         ../../config
-        ./instance.nix
     ];
 
     config = {
+        # nzc = {
+        #     project = {};
+        #     instance = {};
+        # };
+
         project = defaults.project;
         services.hello.service = defaults.service // {
             build.context = "${dockerfile}";
