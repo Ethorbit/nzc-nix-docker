@@ -28,6 +28,7 @@ with lib;
         ./network
         ./storage
         ./limit
+        ./secrets
     ];
 
     options.nzc.instance = mkOption {

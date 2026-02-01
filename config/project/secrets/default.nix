@@ -1,0 +1,57 @@
+# LICENSE HEADER MANAGED BY add-license-header
+#
+# Copyright (C) 2026 Ethorbit
+#
+# This file is part of nZC.
+#
+# nZC is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation, either version 3
+# of the License, or (at your option) any later version.
+#
+# nZC is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the
+# GNU General Public License along with nZC.
+# If not, see <https://www.gnu.org/licenses/>.
+#
+
+{ config, lib, ... }:
+
+with lib;
+
+let
+    project-secrets  = config.nzc.project.secrets;
+    instance-secrets = builtins.attrNames config.nzc.instance.secrets;
+    missing-secrets  = builtins.filter (id: !(builtins.elem id instance-secrets)) project-secrets;
+in
+
+{
+    options.nzc.project.secrets = mkOption {
+        description = ''Secrets required for project'';
+        type = types.listOf types.str;
+        default = [];
+    };
+
+    config = {
+        warnings = if builtins.length instance-secrets > builtins.length project-secrets
+            then [
+                ''WARNING: You have specified more secrets than this project instance needs!''
+            ] else [];
+
+        assertions = [
+            {
+                assertion = builtins.length missing-secrets == 0;
+                message = ''
+                    ERROR: This project expects certain secrets to be available in this instance.
+                    Missing secrets: ${toString missing-secrets}
+                    Project requires: ${toString project-secrets}
+                    Instance provides: ${toString instance-secrets}
+                '';
+            }
+        ];
+    };
+}
