@@ -23,12 +23,6 @@
 
 with lib;
 
-let
-    project-secrets  = config.nzc.project.secrets;
-    instance-secrets = builtins.attrNames config.nzc.instance.secrets;
-    missing-secrets  = builtins.filter (id: !(builtins.elem id instance-secrets)) project-secrets;
-in
-
 {
     options.nzc.project.secrets = mkOption {
         description = ''Secrets required for project'';
@@ -36,7 +30,11 @@ in
         default = [];
     };
 
-    config = {
+    config = let
+        project-secrets  = config.nzc.project.secrets;
+        instance-secrets = builtins.attrNames config.nzc.instance.secrets;
+        missing-secrets  = builtins.filter (id: !(builtins.elem id instance-secrets)) project-secrets;
+    in {
         warnings = if builtins.length instance-secrets > builtins.length project-secrets
             then [
                 ''WARNING: You have specified more secrets than this project instance needs!''
