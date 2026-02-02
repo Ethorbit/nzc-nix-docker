@@ -41,15 +41,20 @@ let
         inherit UNAME ALLOW_PASSWORD_LOGIN;
     };
 
+    entrypoint = callPackage ./entrypoint.nix {
+        inherit UNAME;
+    };
+
     Dockerfile = (writeText "Dockerfile" ''
     FROM alpine:3.23.3
+    ENV PASSWORD=${PASSWORD}
+    COPY entrypoint.sh /
     COPY sshd_config /etc/ssh/sshd_config
     RUN apk add --no-cache openssh rsync shadow &&\
         groupadd -g ${PGID} ${UNAME} &&\
         useradd -m -u ${PUID} -g ${PGID} ${UNAME} &&\
-        echo "${UNAME}:${PASSWORD}" | chpasswd &&\
-        passwd -u ${UNAME} &&\
         mkdir -p /home/${UNAME}/.ssh &&\
+        chmod 700 /entrypoint.sh &&\
         chown ${UNAME}:${GNAME} -R /home/${UNAME}/ &&\
         chmod 700 /home/${UNAME}/.ssh/ &&\
         ssh-keygen -A
@@ -58,11 +63,13 @@ let
         authorized_keys /home/${UNAME}/.ssh/authorized_keys
     RUN chmod 600 /home/${UNAME}/.ssh/authorized_keys
     USER root
+    ENTRYPOINT ["/entrypoint.sh"]
     CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config"]
     '');
 in
 runCommand "docker-context" {} ''
     mkdir -p $out
+    cp ${entrypoint} $out/entrypoint.sh
     cp ${authorized_keys} $out/authorized_keys
     cp ${sshd_config} $out/sshd_config
     cp ${Dockerfile} $out/Dockerfile
