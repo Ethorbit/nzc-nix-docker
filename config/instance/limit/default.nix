@@ -33,7 +33,7 @@ in
                 enable = mkOption {
                     description = "Configure resource limits for the container";
                     type = types.bool;
-                    default = true;
+                    default = false;
                 };
 
                 cpu = mkOption {

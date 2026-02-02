@@ -22,8 +22,20 @@
 { config, ... }:
 let
     instance = config.nzc.instance;
+    limit = instance.limit;
 in
 {
+    warnings = if limit.enable != true then [ ''
+    WARNING: Resource limits are disabled for this instance!
+
+    nZC highly recommends limiting resources when running multiple
+    projects to prevent resource hogging and achieve maximum performance!
+
+    Set limit.enable to True.
+    Then configure these:
+    ${builtins.concatStringsSep "\n" (builtins.attrNames limit)}
+    '' ] else [];
+
     nzc.arion.defaults.service = {
         volumes = let
             storage = instance.storage;
@@ -41,10 +53,7 @@ in
             "com.docker-tc.limit" = "${toString instance.limit.bandwidth}mbps";
         } else {});
     } // (
-        if instance.limit.enable then 
-        let
-            limit = instance.limit;
-        in {
+        if instance.limit.enable then {
             cpuset = builtins.concatStringsSep "," (map toString limit.cpu.cores);
             cpus = toString limit.cpu.quota;
             cpu_shares = toString limit.cpu.weight;
