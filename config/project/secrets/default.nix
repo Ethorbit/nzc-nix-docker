@@ -26,27 +26,49 @@ with lib;
 {
     options.nzc.project.secrets = mkOption {
         description = ''Secrets required for project'';
-        type = types.listOf types.str;
+        type = types.listOf (types.submodule {
+            options = {
+                id = mkOption {
+                    description = ''Identifier of this secret'';
+                    type = types.str;
+                };
+
+                required = mkOption {
+                    description = ''
+                    Whether or not this secret is required for the project to function
+                    '';
+                    type = types.bool;
+                    default = false;
+                };
+            };
+        });
         default = [];
     };
 
     config = let
         project-secrets  = config.nzc.project.secrets;
         instance-secrets = builtins.attrNames config.nzc.instance.secrets;
-        missing-secrets  = builtins.filter (id: !(builtins.elem id instance-secrets)) project-secrets;
+        required-secrets = builtins.filter (s: s.required) project-secrets;
+        optional-secrets = builtins.filter (s: !s.required) project-secrets;
+        missing-secrets-required = builtins.filter (s: !(builtins.elem s.id instance-secrets)) required-secrets;
+        missing-secrets-optional = builtins.filter (s: !(builtins.elem s.id instance-secrets)) optional-secrets;
     in {
-        warnings = if builtins.length instance-secrets > builtins.length project-secrets
+        warnings = if builtins.length missing-secrets-optional > 0
             then [
-                ''WARNING: You have specified more secrets than this project instance needs!''
-            ] else [];
+                ''
+                    WARNING: Optional secrets are missing from this instance.
+                    Missing optional secrets: ${toString (map (s: s.id) missing-secrets-optional)}
 
+                    The project will still run, but features that rely on these secrets may not work.
+                ''
+            ] else [];
         assertions = [
             {
-                assertion = builtins.length missing-secrets == 0;
+                assertion = builtins.length missing-secrets-required == 0;
                 message = ''
                     ERROR: This project expects certain secrets to be available in this instance.
-                    Missing secrets: ${toString missing-secrets}
-                    Project requires: ${toString project-secrets}
+                    Missing required secrets: ${toString (map (s: s.id) missing-secrets-required)}
+                    Project secrets: ${toString (map (s: s.id) project-secrets)}
                     Instance provides: ${toString instance-secrets}
                 '';
             }
