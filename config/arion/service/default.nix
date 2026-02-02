@@ -48,12 +48,12 @@ in
             port: "${toString port.host}:${toString port.container}/${port.protocol}"
         ) instance.network.ports;
 
-        labels = instance.labels // (if instance.limit.enable then {
+        labels = instance.labels // (if limit.enable then {
             "com.docker-tc.enabled" = "1";
-            "com.docker-tc.limit" = "${toString instance.limit.bandwidth}mbps";
+            "com.docker-tc.limit" = "${toString limit.bandwidth}mbps";
         } else {});
     } // (
-        if instance.limit.enable then {
+        if limit.enable then {
             cpuset = builtins.concatStringsSep "," (map toString limit.cpu.cores);
             cpus = toString limit.cpu.quota;
             cpu_shares = toString limit.cpu.weight;
