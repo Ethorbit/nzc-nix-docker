@@ -32,36 +32,11 @@ with lib;
             options = {
                 ports = mkOption {
                     description = ''Network ports for container'';
-                    default = [];
-                    example = [
-                        {
-                            host = 27016;
-                            container = 27015;
-                            protocol = "tcp";
-                        }
-                    ];
-                    type = types.listOf (types.submodule {
-                        options = {
-                            host = mkOption {
-                                description = ''Host port to bind'';
-                                type = types.int;
-                                example = 27016;
-                            };
-
-                            container = mkOption {
-                                description = ''Container port to expose'';
-                                type = types.int;
-                                example = 27015;
-                            };
-
-                            protocol = mkOption {
-                                description = ''Protocol for this port mapping'';
-                                type = types.enum [ "tcp" "udp" ];
-                                default = "tcp";
-                                example = "udp";
-                            };
-                        };
-                    });
+                    type = types.attrsOf types.int;
+                    default = {};
+                    example = {
+                        gmod = 27016;
+                    };
                 };
             };
         };

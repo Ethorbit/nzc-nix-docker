@@ -20,13 +20,7 @@
 #
 
 {
-    ports = [
-        {
-            host = 27016;
-            container = 27015;
-            protocol = "tcp";
-        }
-    ];
+    ports = { gmod = 27016; };
 
     endpoints = [
         {

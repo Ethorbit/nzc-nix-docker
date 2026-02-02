@@ -44,9 +44,9 @@ in
             volume: "${volume.host}:${volume.container}${if volume.readonly then ":ro" else ":rw"}"
         ) (storage.volumes ++ (if lxcfs.enable then lxcfs.volumes else []));
 
-        ports = map (
-            port: "${toString port.host}:${toString port.container}/${port.protocol}"
-        ) instance.network.ports;
+        #ports = map (
+        #    port: "${toString port.host}:${toString port.container}/${port.protocol}"
+        #) instance.network.ports;
 
         labels = instance.labels // (if limit.enable then {
             "com.docker-tc.enabled" = "1";
