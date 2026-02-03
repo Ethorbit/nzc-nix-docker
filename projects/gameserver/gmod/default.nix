@@ -85,7 +85,7 @@ in
     docker-compose = defaults.docker-compose;
 
     services = {
-        gmod-permissions.service = config.nzc.arion.presets.service.permissions // {
+        gmod-permissions.service = nzc.arion.presets.service.permissions // {
             volumes = [
                 "${instance.storage.volumes.gmod}:/mnt/gmod"
                 "${instance.storage.volumes.shared}:/mnt/shared"
