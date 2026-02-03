@@ -22,6 +22,7 @@
 { config, pkgs, ... }:
 
 let
+    defaults = config.nzc.arion.defaults;
     instance = config.nzc.instance;
     dockerfile = pkgs.callPackage ../../../../dockerfile/permissions {
         PUID = toString instance.user.uid;
@@ -29,7 +30,7 @@ let
     };
 in
 {
-    nzc.arion.presets.service.permissions = {
+    nzc.arion.presets.service.permissions = defaults.service // {
         build.context = "${dockerfile}";
         network_mode = "none";
         restart = "on-failure";
