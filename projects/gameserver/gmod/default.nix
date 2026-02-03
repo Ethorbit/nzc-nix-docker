@@ -32,7 +32,6 @@ let
     };
 
     dockerfiles = with pkgs; {
-        gmod-permissions = callPackage ../../../dockerfile/permissions {};
         gmod = callPackage ./dockerfile {
             PUID = toString instance.user.uid;
             PGID = toString instance.user.gid;
