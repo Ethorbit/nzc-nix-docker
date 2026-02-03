@@ -28,6 +28,8 @@ let
 in
 {
     imports = [
+        ./checks
+        ./storage
         ./network
         ./secrets
     ];

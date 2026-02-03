@@ -23,13 +23,6 @@
 
 with lib;
 
-let
-    project-ports  = config.nzc.project.network.ports;
-    instance-ports = builtins.attrNames config.nzc.instance.network.ports;
-    missing-required = builtins.map (p: p.id) (builtins.filter (p: p.required && !(builtins.elem p.id instance-ports)) project-ports);
-    missing-optional = builtins.map (p: p.id) (builtins.filter (p: !p.required && !(builtins.elem p.id instance-ports)) project-ports);
-    all-missing = missing-required ++ missing-optional;   
-in
 {
     options.nzc.project.network.ports = mkOption {
         description = ''The container ports required by this project'';
@@ -59,24 +52,11 @@ in
         ];
     };
 
-    config = {
-        assertions = [
-            {
-                assertion = builtins.length missing-required == 0;
-                message = ''
-                    ERROR: This project requires certain network ports to be available for proper function.
-                    Missing required ports: ${toString missing-required}
-                    Instance provides: ${toString instance-ports}
-                '';
-            }
-        ];
-
-        warnings = if builtins.length all-missing > 0 then [ ''
-            WARNING: This project expects certain network ports to be available in this instance.
-            Missing ports: ${toString all-missing}
-            Instance provides: ${toString instance-ports}
-
-            The project will still run, but some features may not work until these ports are configured.
-        '' ] else [];
-    };
+    config.nzc.project.checks = [
+        {
+            name = "network.ports";
+            official = config.nzc.project.network.ports;
+            user = config.nzc.instance.network.ports;
+        }
+    ];
 }

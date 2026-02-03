@@ -38,15 +38,10 @@ in
 
     nzc.arion.defaults.service = {
         volumes = let
-            storage = instance.storage;
-            lxcfs = storage.lxcfs;
+            lxcfs = instance.storage.lxcfs;
         in map (
             volume: "${volume.host}:${volume.container}${if volume.readonly then ":ro" else ":rw"}"
-        ) (storage.volumes ++ (if lxcfs.enable then lxcfs.volumes else []));
-
-        #ports = map (
-        #    port: "${toString port.host}:${toString port.container}/${port.protocol}"
-        #) instance.network.ports;
+        ) (if lxcfs.enable then lxcfs.volumes else []);
 
         labels = instance.labels // (if limit.enable then {
             "com.docker-tc.enabled" = "1";

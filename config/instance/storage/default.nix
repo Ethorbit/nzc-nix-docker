@@ -33,25 +33,12 @@ in
         type = types.submodule {
             options = {
                 volumes = mkOption {
-                    description = ''List of storage volumes for the container'';
-                    type = types.listOf (imported.types.volume);
-                    default = [];
-                    example = [
-                        {
-                            host = "/var/lib/app-cache";
-                            container = "/cache";
-                        }
-                        {
-                            host = "/var/lib/app-state";
-                            container = "/state";
-                            readonly = false;
-                        }
-                        {
-                            host = "/var/lib/app-ca";
-                            container = "/etc/ssl/custom-ca";
-                            readonly = true;
-                        }
-                    ];
+                    description = ''Storage mountpoints to access files on the host'';
+                    type = types.attrsOf types.str;
+                    default = {};
+                    example = {
+                        gmod = "/home/admin/my-gmod-server";
+                    };
                 };
 
                 lxcfs = mkOption {

@@ -45,33 +45,11 @@ with lib;
         default = [];
     };
 
-    config = let
-        project-secrets  = config.nzc.project.secrets;
-        instance-secrets = builtins.attrNames config.nzc.instance.secrets;
-        required-secrets = builtins.filter (s: s.required) project-secrets;
-        optional-secrets = builtins.filter (s: !s.required) project-secrets;
-        missing-secrets-required = builtins.filter (s: !(builtins.elem s.id instance-secrets)) required-secrets;
-        missing-secrets-optional = builtins.filter (s: !(builtins.elem s.id instance-secrets)) optional-secrets;
-    in {
-        warnings = if builtins.length missing-secrets-optional > 0
-            then [
-                ''
-                    WARNING: Optional secrets are missing from this instance.
-                    Missing optional secrets: ${toString (map (s: s.id) missing-secrets-optional)}
-
-                    The project will still run, but features that rely on these secrets may not work.
-                ''
-            ] else [];
-        assertions = [
-            {
-                assertion = builtins.length missing-secrets-required == 0;
-                message = ''
-                    ERROR: This project expects certain secrets to be available in this instance.
-                    Missing required secrets: ${toString (map (s: s.id) missing-secrets-required)}
-                    Project secrets: ${toString (map (s: s.id) project-secrets)}
-                    Instance provides: ${toString instance-secrets}
-                '';
-            }
-        ];
-    };
+    config.nzc.project.checks = [
+        {
+            name = "secrets";
+            official = config.nzc.project.secrets;
+            user = config.nzc.instance.secrets;
+        }
+    ];
 }

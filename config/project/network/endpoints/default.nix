@@ -23,11 +23,6 @@
 
 with lib;
 
-let
-    project-endpoints  = config.nzc.project.network.endpoints;
-    instance-endpoints = map (e: e.id) config.nzc.instance.network.endpoints;
-    missing-endpoints  = builtins.filter (id: !(builtins.elem id instance-endpoints)) project-endpoints;
-in
 {
     options.nzc.project.network.endpoints = mkOption {
         description = ''The logical endpoints required by this project'';
@@ -36,20 +31,11 @@ in
         example = [ "website" "game" ];
     };
 
-    config.warnings = lib.filter (x: x != null && x != "") [
-        (
-            if builtins.length missing-endpoints > 0 
-            || builtins.length project-endpoints != builtins.length instance-endpoints 
-            then ''
-                WARNING: This project expects certain network endpoints to be available in this instance.
-                Missing endpoints: ${toString missing-endpoints}
-                Project requires: ${toString project-endpoints}
-                Instance provides: ${toString instance-endpoints}
-
-                The project will still run, but some features may not work until these endpoints are configured.
-            ''
-            else
-                null
-        )
+    config.nzc.project.checks = [
+        {
+            name = "network.endpoints";
+            official = config.nzc.project.network.endpoints;
+            user = config.nzc.instance.network.endpoints;
+        }
     ];
 }
