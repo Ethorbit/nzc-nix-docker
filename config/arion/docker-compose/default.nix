@@ -19,16 +19,16 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
-with lib;
-{
-    imports = [
-        ./project
-        ./service
-        ./docker-compose
-    ];
+{ config, lib, ... }:
 
-    options.nzc.arion.defaults = mkOption {
-        description = ''nZC Arion defaults to simplify project development'';
+let
+    instance = config.nzc.instance;
+    isPath = v: lib.strings.hasInfix "/" v || lib.strings.hasInfix "\\" v;
+    namedVolumes = lib.filterAttrs (_: v: !(isPath v)) instance.storage.volumes;
+in
+{
+    nzc.arion.defaults.docker-compose = {
+        # Convert all values (mounts) into top-level volumes
+        volumes = lib.listToAttrs (map (v: { name = v; value = {}; }) (lib.attrValues namedVolumes));
     };
 }
