@@ -88,7 +88,7 @@ in
         ];
 
         project = defaults.project;
-        docker-compose.volumes = defaults.docker-compose.volumes;
+        docker-compose = defaults.docker-compose;
         services.sftp.service = defaults.service // {
             build.context = "${dockerfile}";
             volumes = lib.mapAttrsToList 
