@@ -96,6 +96,7 @@ in
             ports = [
                 "${toString instance.network.ports.sftp}:22/tcp"
             ];
+            restart = "unless-stopped";
         };
     };
 }
