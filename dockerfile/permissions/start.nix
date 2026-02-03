@@ -19,22 +19,13 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
-with lib;
-{
-    imports = [
-        ./project
-        ./service
-        ./docker-compose
-    ];
+{ writeText, PUID, PGID }:
 
-    options = {
-        nzc.arion.defaults = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-
-        nzc.arion.presets = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-    };
-}
+writeText "start.sh" ''
+#!/bin/sh
+for d in /mnt/*; do
+  chown ${PUID}:${PGID} "$d"
+  chmod 2770 "$d"
+  setfacl -d -m u::rwx,g::rwx,o::- "$d"
+done
+''

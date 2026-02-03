@@ -19,22 +19,28 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
-with lib;
 {
-    imports = [
-        ./project
-        ./service
-        ./docker-compose
-    ];
-
-    options = {
-        nzc.arion.defaults = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-
-        nzc.arion.presets = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
+    writeText,
+    runCommand,
+    callPackage,
+    PUID,
+    PGID
+}:
+let
+    start = callPackage ./start.nix {
+        inherit PUID PGID;
     };
-}
+
+    Dockerfile = (writeText "Dockerfile" ''
+    FROM alpine:3.17.2
+    COPY ./start.sh /start.sh
+    RUN chmod +x /start.sh &&\
+        apk add --no-cache acl
+    CMD ["/start.sh"]
+    '');
+in
+runCommand "docker-context" {} ''
+    mkdir -p $out
+    cp ${start} $out/start.sh
+    cp ${Dockerfile} $out/Dockerfile
+''

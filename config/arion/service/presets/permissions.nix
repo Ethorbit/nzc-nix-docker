@@ -19,22 +19,19 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
-with lib;
+{ config, pkgs, ... }:
+
+let
+    instance = config.nzc.instance;
+    dockerfile = pkgs.callPackage ../../../../dockerfile/permissions {
+        PUID = toString instance.user.uid;
+        PGID = toString instance.user.gid;
+    };
+in
 {
-    imports = [
-        ./project
-        ./service
-        ./docker-compose
-    ];
-
-    options = {
-        nzc.arion.defaults = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-
-        nzc.arion.presets = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
+    nzc.arion.presets.service.permissions = {
+        build.context = "${dockerfile}";
+        network_mode = "none";
+        restart = "on-failure";
     };
 }

@@ -25,6 +25,10 @@ let
     limit = instance.limit;
 in
 {
+    imports = [
+        ./presets/permissions.nix
+    ];
+
     warnings = if limit.enable != true then [ ''
     WARNING: Resource limits are disabled for this instance!
 
