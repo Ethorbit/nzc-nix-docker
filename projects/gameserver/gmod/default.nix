@@ -83,23 +83,23 @@ in
     project = defaults.project;
     docker-compose = defaults.docker-compose;
 
-    services = {
+    services = with instance.storage; with instance.network; {
         gmod-permissions.service = nzc.arion.presets.service.permissions // {
             volumes = [
-                "${instance.storage.volumes.gmod}:/mnt/gmod"
-                "${instance.storage.volumes.shared}:/mnt/shared"
+                "${volumes.gmod.volume}:/mnt/gmod"
+                "${volumes.shared.volume}:/mnt/shared"
             ];
         };
 
         gmod.service = defaults.service // {
             build.context = "${dockerfiles.gmod}";
             volumes = [
-                "${instance.storage.volumes.gmod}:/home/steam/Steam/steamapps/common"
-                "${instance.storage.volumes.shared}:/shared"
+                "${volumes.gmod.volume}:/home/steam/Steam/steamapps/common"
+                "${volumes.shared.volume}:/shared"
             ];
             ports = [
-                "${toString instance.network.ports.gmod}:27015/tcp"
-                "${toString instance.network.ports.gmod}:27015/udp"
+                "${toString ports.gmod}:27015/tcp"
+                "${toString ports.gmod}:27015/udp"
             ];
             restart = "unless-stopped";
         };

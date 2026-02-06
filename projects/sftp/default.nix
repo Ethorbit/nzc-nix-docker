@@ -92,7 +92,7 @@ in
         services.sftp.service = defaults.service // {
             build.context = "${dockerfile}";
             volumes = lib.mapAttrsToList 
-                (_: value: "${toString value}:/home/ssh/${value}") volumes;
+                (id: value: "${toString value.volume}:/home/ssh/${id}") volumes;
             ports = [
                 "${toString instance.network.ports.sftp}:22/tcp"
             ];

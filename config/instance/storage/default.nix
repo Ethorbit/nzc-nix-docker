@@ -34,10 +34,26 @@ in
             options = {
                 volumes = mkOption {
                     description = ''Storage mountpoints to access files on the host'';
-                    type = types.attrsOf types.str;
+                    type = types.attrsOf (types.submodule {
+                        options = {
+                            volume = mkOption {
+                                description = ''Name or host directory path of this volume'';
+                                type = types.str;
+                            };
+
+                            external = mkOption {
+                                description = ''
+                                Whether or not this is a named volume created 
+                                outside the project (i.e. another project)
+                                '';
+                                type = types.bool;
+                                default = false;
+                            };
+                        };
+                    });
                     default = {};
                     example = {
-                        gmod = "/home/admin/my-gmod-server";
+                        gmod.volume = "/home/admin/my-gmod-server";
                     };
                 };
 

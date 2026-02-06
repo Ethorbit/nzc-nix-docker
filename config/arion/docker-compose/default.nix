@@ -24,11 +24,11 @@
 let
     instance = config.nzc.instance;
     isPath = v: lib.strings.hasInfix "/" v || lib.strings.hasInfix "\\" v;
-    namedVolumes = lib.filterAttrs (_: v: !(isPath v)) instance.storage.volumes;
+    namedVolumes = lib.filterAttrs (_: v: !(isPath v.volume)) instance.storage.volumes;
 in
 {
     nzc.arion.defaults.docker-compose = {
         # Convert all values (mounts) into top-level volumes
-        volumes = lib.listToAttrs (map (v: { name = v; value = {}; }) (lib.attrValues namedVolumes));
+        volumes = lib.listToAttrs (map (v: { name = v.volume; value = {}; }) (lib.attrValues namedVolumes));
     };
 }
