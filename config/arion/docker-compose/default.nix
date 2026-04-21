@@ -29,6 +29,17 @@ in
 {
     nzc.arion.defaults.docker-compose = {
         # Convert all values (mounts) into top-level volumes
-        volumes = lib.listToAttrs (map (v: { name = v.volume; value = {}; }) (lib.attrValues namedVolumes));
+        volumes = lib.listToAttrs 
+        (map (v: {
+            name = v.volume;
+            value = 
+                if v.external or false then {
+                    external = true; name = v.volume;
+                }
+                else if v.scope == "global" then {
+                    name = v.volume;
+                }
+                else { };}) 
+        (lib.attrValues namedVolumes));
     };
 }
