@@ -52,11 +52,10 @@ in
 
                             scope = mkOption {
                                 description = ''
-                                Whether this is a local (instance-based) 
-                                volume or one that is intended to be 
-                                accessed globally by several instances
+                                Defines whether the volume is isolated or shared across projects.
                                 '';
                                 type = types.enum [ "project" "global" ];
+                                example = "global";
                                 default = "project";
                             };
                         };
