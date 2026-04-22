@@ -94,6 +94,8 @@ in
         gmod.service = let
             port = toString instance.network.ports.gmod;
         in defaults.service // {
+            tty = true;
+            stdin_open = true;
             build.context = "${dockerfiles.gmod}";
             volumes = [
                 "${volumes.gmod.volume}:/home/steam/Steam/steamapps/common"
