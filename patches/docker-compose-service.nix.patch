@@ -1,8 +1,22 @@
 diff --git a/src/nix/modules/service/docker-compose-service.nix b/src/nix/modules/service/docker-compose-service.nix
-index eb48ae1..d09dd60 100644
+index eb48ae1..53e0961 100644
 --- a/src/nix/modules/service/docker-compose-service.nix
 +++ b/src/nix/modules/service/docker-compose-service.nix
-@@ -246,6 +246,26 @@ in
+@@ -89,6 +89,13 @@ in
+         ${serviceRef "hostname"}
+       '';
+     };
++    service.stdin_open = mkOption {
++      type = nullOr bool;
++      default = null;
++      description = ''
++        ${serviceRef "stdin_open"}
++      '';
++    };
+     service.tty = mkOption {
+       type = nullOr bool;
+       default = null;
+@@ -246,6 +253,26 @@ in
          ${serviceRef "user"}
        '';
      };
@@ -29,7 +43,15 @@ index eb48ae1..d09dd60 100644
      service.ports = mkOption {
        type = listOf types.unspecified;
        default = [];
-@@ -508,6 +528,14 @@ in
+@@ -502,12 +529,22 @@ in
+     inherit (config.service) stop_grace_period;
+   } // lib.optionalAttrs (config.service.tmpfs != []) {
+     inherit (config.service) tmpfs;
++  } // lib.optionalAttrs (config.service.stdin_open != null) {
++    inherit (config.service) stdin_open;
+   } // lib.optionalAttrs (config.service.tty != null) {
+     inherit (config.service) tty;
+   } // lib.optionalAttrs (config.service.working_dir != null) {
      inherit (config.service) working_dir;
    } // lib.optionalAttrs (config.service.user != null) {
      inherit (config.service) user;
