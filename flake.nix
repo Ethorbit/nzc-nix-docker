@@ -56,5 +56,13 @@
                 patchedArion
             ];
         };
+
+        projects =
+            builtins.listToAttrs (
+                map (name: {
+                    name = name;
+                    value = ./projects/${name};
+            }) (builtins.attrNames (builtins.readDir ./projects))
+          );
     });
 }
