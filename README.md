@@ -20,20 +20,34 @@ If not, see <https://www.gnu.org/licenses/>.
 -->
 
 # nZC Nix Docker
-A collection of containerized projects, built and configured entirely through Nix.
+A collection of containerized projects, built and configured entirely through [Nix](https://nixos.org/).
 
 Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com) with Docker.
 
 | | **nZC Nix Docker** | [nZC Docker](https://github.com/Ethorbit/nzc-docker) | [Pterodactyl](https://pterodactyl.io/) |
 |--|-----|---------|-------------|
-| **Deployment** | [Nix](https://nixos.org/) + [Arion](https://github.com/hercules-ci/arion) | Docker Compose YAML | Web UI |
-| **Configuration** | [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set) | Environment files | JSON eggs |
-| **Structure** | Independent, isolated [projects](projects/) | [Single large project](https://github.com/Ethorbit/nzc-docker) | Per-server panels |
+| **Deployment** | [Nix](https://nixos.org/) + [Arion](https://docs.hercules-ci.com/arion/) | [Docker Compose](https://docs.docker.com/compose/) YAML | Web UI |
+| **Configuration** | [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set) | Environment files | [JSON eggs](https://pterodactyl.io/community/config/eggs/creating_a_custom_egg.html) |
+| **Structure** | Independent, isolated [projects](projects/) | [Single large project](https://github.com/Ethorbit/nzc-docker) | Server panels |
 | **Scalability** | Each project scales independently | Adding containers increases complexity | Limited to supported game servers |
 | **Fault Tolerance** | Projects fail in isolation | One broken config breaks everything | Managed by panel |
-| **Reusability** | [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) (templates and shared modules) | Repeated YAML, no abstraction | No abstraction, eggs are static |
-| **Deployment Script** | Reproducible Nix expressions | Fragile Makefile | Panel-managed |
+| **Reusability** | [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) (templates and shared modules) | Repeated YAML | None, eggs are static |
+| **Deployment Script** | Reproducible [Nix](https://nixos.org/) expressions | Fragile Makefile | Managed by panel |
 | **Scope** | Anything | Hardcoded Dependencies | Primarily games |
+
+## Requirements
+
+- [Nix](https://nixos.org/) with [flakes](https://wiki.nixos.org/wiki/Flakes) enabled
+- [Docker](https://www.docker.com/)
+
+## Notes
+
+Arion is [patched](patches/docker-compose-service.nix.patch) to expose additional Compose options not yet upstream ([#256](https://github.com/hercules-ci/arion/issues/256)):
+- `stdin_open`
+- `cpuset`
+- `cpus`
+- `cpu_shares`
+- `mem_limit`
 
 ## Usage
 
