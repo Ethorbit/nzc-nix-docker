@@ -28,11 +28,10 @@ builtins.listToAttrs (
         serverNumber = i + 1;
         portNumber = initialPort + i;
     in {
-        name = "gmod${toString serverNumber}";
+        name = "gmod_${toString serverNumber}";
         value = {
             project = "gameserver/gmod";
             instance = {
-                name = "gmod_${toString serverNumber}";
                 user = {
                     uid = 2000;
                     gid = 2000;

@@ -71,7 +71,7 @@
                                 composed = nzc-nix-docker.arion.${system}.eval {
                                     modules = [
                                         (project + "/default.nix")
-                                        { nzc.instance = inst.instance; }
+                                        { nzc.instance = inst.instance // { inherit name; }; }
                                     ];
                                     inherit pkgs;
                                 };
