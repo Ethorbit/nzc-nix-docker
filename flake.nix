@@ -27,7 +27,7 @@
 #   > arion -f ./projects/<name> -f /path/to/custom/configuration up
 
 {
-    description = ''nZC game community's Dockerized server infrastructure'';
+    description = ''Library for nZC game community's Dockerized server infrastructure'';
 
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
@@ -44,12 +44,16 @@
         pkgs = import nixpkgs {
             inherit system;
         };
+
+        patchedArion = (arion.packages.${system}.arion.overrideAttrs (old: {
+            patches = [ ./patches/docker-compose-service.nix.patch ];
+        }));
     in with pkgs; {
+        packages.arion = patchedArion;
+
         devShells.default = mkShell {
             buildInputs = [
-                (arion.packages.${system}.arion.overrideAttrs (old: {
-                    patches = [ ./patches/docker-compose-service.nix.patch ];
-                }))
+                patchedArion
             ];
         };
     });
