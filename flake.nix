@@ -49,11 +49,19 @@
             inherit system;
         };
 
+        patchedArionSrc = pkgs.applyPatches {
+            src = arion.packages.${system}.arion.src;
+            patches = [ ./patches/docker-compose-service.nix.patch ];
+        };
+
         patchedArion = (arion.packages.${system}.arion.overrideAttrs (old: {
             patches = [ ./patches/docker-compose-service.nix.patch ];
         }));
     in with pkgs; {
-        packages.arion = patchedArion;
+        arion = {
+            package = patchedArion;
+            eval = import "${patchedArionSrc}/src/nix/eval-composition.nix";
+        };
 
         devShells.default = mkShell {
             buildInputs = [
