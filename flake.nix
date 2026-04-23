@@ -40,7 +40,17 @@
         nixpkgs,
         arion,
         flake-utils
-    }: flake-utils.lib.eachDefaultSystem (system: let
+    }: let
+        projects =
+            builtins.listToAttrs (
+            map (name: {
+                inherit name;
+                value = ./projects/${name};
+            }) (builtins.attrNames (builtins.readDir ./projects))
+        );
+    in {
+        inherit projects;
+    } // flake-utils.lib.eachDefaultSystem (system: let
         pkgs = import nixpkgs {
             inherit system;
         };
@@ -56,13 +66,5 @@
                 patchedArion
             ];
         };
-
-        projects =
-            builtins.listToAttrs (
-                map (name: {
-                    name = name;
-                    value = ./projects/${name};
-            }) (builtins.attrNames (builtins.readDir ./projects))
-          );
     });
 }
