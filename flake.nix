@@ -41,13 +41,7 @@
         arion,
         flake-utils
     }: let
-        projects =
-            builtins.listToAttrs (
-            map (name: {
-                inherit name;
-                value = ./projects/${name};
-            }) (builtins.attrNames (builtins.readDir ./projects))
-        );
+        projects = ./projects;
     in {
         inherit projects;
     } // flake-utils.lib.eachDefaultSystem (system: let
