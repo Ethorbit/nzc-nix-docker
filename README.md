@@ -20,46 +20,63 @@ If not, see <https://www.gnu.org/licenses/>.
 -->
 
 # nZC Nix Docker
-## WIP upgrade of [nzc-docker](https://github.com/Ethorbit/nzc-docker)
-Designed to overcome all issues encountered from 3 years of operation.
+A collection of containerized projects, built and configured entirely through Nix.
 
-## **DO NOT RUN THIS, IT IS NOT FINISHED!!!!**
+Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com) with Docker.
 
-### Here's what to expect:
-- We will **still be Dockerizing everything**, but deployment will be done through [Nix](https://nixos.org/) | [Arion](https://github.com/hercules-ci/arion) rather than Docker Compose YAML.
- 
-- Instead of modifying environment files, you will **edit everything in** [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set). You will **create project-specific settings using templates**
- 
-- Each [project](projects/) will be **fully isolated** and **deployed independently** to maximize scalability, maintainability, and fault tolerance.  
+| | **nZC Nix Docker** | [nZC Docker](https://github.com/Ethorbit/nzc-docker) | [Pterodactyl](https://pterodactyl.io/) |
+|--|-----|---------|-------------|
+| **Deployment** | [Nix](https://nixos.org/) + [Arion](https://github.com/hercules-ci/arion) | Docker Compose YAML | Web UI |
+| **Configuration** | [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set) | Environment files | JSON eggs |
+| **Structure** | Independent, isolated [projects](projects/) | [Single large project](https://github.com/Ethorbit/nzc-docker) | Per-server panels |
+| **Scalability** | Each project scales independently | Adding containers increases complexity | Limited to supported game servers |
+| **Fault Tolerance** | Projects fail in isolation | One broken config breaks everything | Managed by panel |
+| **Reusability** | [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) (templates and shared modules) | Repeated YAML, no abstraction | No abstraction, eggs are static |
+| **Deployment Script** | Reproducible Nix expressions | Fragile Makefile | Panel-managed |
+| **Scope** | Anything | Hardcoded Dependencies | Primarily games |
 
-This is a **collection** of Dockerized projects that **collectively form nZC**, rather than a [single large Dockerized project](https://github.com/Ethorbit/nzc-docker).
+## Usage
 
-### What Was Wrong with the Previous Infrastructure
+Each project in [projects/](projects/) is a self-contained [Arion](https://docs.hercules-ci.com/arion/) composition. Projects are deployed independently using Arion from the devShell:
 
-The previous infrastructure suffered from several fundamental design issues that made it fragile, hard to scale, and misaligned with Docker best practices:
+```bash
+nix develop
+```
 
-- **Violation of Docker Philosophy**  
-  The project relied on a brittle, centralized configuration model, which goes against Docker’s core principles of modularity, isolation, and composability.
+Then deploy any project by passing it a project path and your own configuration:
 
-- **Unintuitive Deployment Process**  
-  Container deployment was managed via a Makefile script that was difficult to understand and potentially incompatible across different systems.
+```bash
+arion -f ./projects/name -f /path/to/your/configuration up
+```
 
-- **Single Point of Failure**  
-  If a user accidentally broke the configuration, *none* of the containers could be deployed, making the entire system fragile.
+Your configuration file should be a Nix module that sets `nzc.instance`:
 
-- **Poor Scalability**  
-  Adding additional containers significantly increased complexity, rather than being a straightforward, incremental change.
+```nix
+{ ... }: {
+    nzc.instance = {
+        name = "my-project";
+        user = {
+            uid = 1000;
+            gid = 1000;
+        };
+        storage.volumes = {
+            data.volume = "my_project_data";
+        };
+        network.ports.http = 8080;
+        secrets = {
+            "password.admin" = "my-admin-password";
+        };
+    };
+}
+```
 
-- **Configuration Is Not Programming**  
-  Docker Compose configuration is **not programming**, it’s just standard YAML. Due to the lack of abstraction and reuse features, it was not possible to follow the **DRY** (Don’t Repeat Yourself) principle, causing configurations to become bloated and increasingly hard to maintain.
+## Official Deployment
 
-### Why not Pterodactyl?
+[deployments/nzc](deployments/nzc) is used by the official nZC game community which doubles as a real-world example of how you can use this library at scale.
 
-Many server admins run Pterodactyl Server, but let me explain why it's not the right solution for nZC
+### Available Projects
 
-* Pterodactyl is primarily optimized for games, but nZC runs more than just that
-* Pterodactyl uses JSON eggs for server definitions, which are declarative but not programmable, carrying the same issues as Docker Compose's YAML.
-* Nix + Arion gives **complete control**, allowing infinite possibilites.
-* Personal Preference
-  * All my systems already run with Nix and they are **rock solid**!
-  * I prefer **the CLI** for building and maintaining containers.
+| Project | Path |
+|---------|------|
+| [Garry's Mod](projects/gameserver/gmod/default.nix) | `projects/gameserver/gmod` |
+| [SFTP](projects/sftp/default.nix) | `projects/sftp` |
