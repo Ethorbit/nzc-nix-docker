@@ -21,14 +21,15 @@
 
 let
     count = 6;
-    initialPort = 27015;
+    initialPort = 27019;
 in
 builtins.listToAttrs (
     builtins.genList (i: let
         serverNumber = i + 1;
         portNumber = initialPort + i;
-    in {
         name = "gmod_${toString serverNumber}";
+    in {
+        inherit name;
         value = {
             project = "gameserver/gmod";
             instance = {
@@ -37,7 +38,7 @@ builtins.listToAttrs (
                     gid = 2000;
                 };
                 storage.volumes = {
-                    gmod.volume = "gmod_${toString serverNumber}";
+                    gmod.volume = name;
                     shared = {
                         volume = "gmod_shared";
                         scope = "global";

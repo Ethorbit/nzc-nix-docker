@@ -45,8 +45,8 @@ nix run .#arion -- ps
 
 Run arion commands on a specific instance:
 ```bash
-nix run .#arion -- -i gmod1 up -d
-nix run .#arion -- -i gmod1 down
+nix run .#arion -- -i gmod_1 up -d
+nix run .#arion -- -i gmod_1 down
 ```
 
 List all configured instances:
