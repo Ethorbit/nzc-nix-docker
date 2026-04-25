@@ -36,20 +36,20 @@ To add or modify instances, edit the relevant file in `config/` (e.g. `config/gm
 
 ## Usage
 
+List available instances:
+```bash
+nix flake show
+```
+
 Run arion commands across all instances:
 ```bash
-nix run .#arion -- up -d
-nix run .#arion -- down
-nix run .#arion -- ps
+nix run .#all -- up -d
+nix run .#all -- down
+nix run .#all -- ps
 ```
 
 Run arion commands on a specific instance:
 ```bash
-nix run .#arion -- -i gmod_1 up -d
-nix run .#arion -- -i gmod_1 down
-```
-
-List all configured instances:
-```bash
-nix run .#list
+nix run .#gmod_1 -- up -d
+nix run .#gmod_1 -- down
 ```

@@ -42,61 +42,46 @@
         instances = cfg.config.instances;
         arion = nzc-nix-docker.arion.${system};
 
-        programs = with pkgs; {
-            list = writeShellApplication {
-                name = "list";
-                text = ''
-                    set -e
-                    echo "${builtins.concatStringsSep "\n" (
-                        builtins.attrNames instances
-                    )}"
-                '';
-            };
+        instanceApps = builtins.mapAttrs (name: inst:
+            let
+                project = nzc-nix-docker.projects + "/${inst.project}";
+                composed = nzc-nix-docker.arion.${system}.eval {
+                    modules = [
+                        (project + "/default.nix")
+                        { nzc.instance = inst.instance // { inherit name; }; }
+                    ];
+                    inherit pkgs;
+                };
+                script = pkgs.writeShellApplication {
+                    name = name;
+                    runtimeInputs = [ arion.package ];
+                    text = ''
+                        arion --prebuilt-file "${composed.config.out.dockerComposeYaml}" "$@"
+                    '';
+                    meta.description = "Instance";
+                };
+            in {
+                type = "app";
+                program = "${script}/bin/${name}";
+            }
+        ) instances;
 
-            arion-program = writeShellApplication {
-                name = "arion";
-                runtimeInputs = [ arion.package ];
-                text = ''
-                    instance=""
-                    if [ "''${1:-}" = "-i" ]; then
-                        instance="''${2}"
-                        shift 2
-                    fi
-
-                    ${builtins.concatStringsSep "\n" (
-                        map (name:
-                            let
-                                inst = instances.${name};
-                                project = nzc-nix-docker.projects + "/${inst.project}";
-                                composed = nzc-nix-docker.arion.${system}.eval {
-                                    modules = [
-                                        (project + "/default.nix")
-                                        { nzc.instance = inst.instance // { inherit name; }; }
-                                    ];
-                                    inherit pkgs;
-                                };
-                            in ''
-                                if [ -z "$instance" ] || [ "$instance" = "${name}" ]; then
-                                    echo "${name}"
-                                    arion --prebuilt-file "${composed.config.out.dockerComposeYaml}" "$@"
-                                fi
-                            ''
-                        ) (builtins.attrNames instances)
-                    )}
-                '';
+        allInstanceApps = let
+            script = pkgs.writeShellApplication {
+                name = "all";
+                text = builtins.concatStringsSep "\n" (
+                    map (name: ''
+                        ${instanceApps.${name}.program} "$@"
+                    '') (builtins.attrNames instances)
+                );
             };
+        in {
+            type = "app";
+            program = "${script}/bin/all";
         };
+
+        apps = instanceApps // { all = allInstanceApps; };
     in {
-        apps = with programs; {
-            list = {
-                type = "app";
-                program = "${list}/bin/list";
-            };
-
-            arion = {
-                type = "app";
-                program = "${arion-program}/bin/arion";
-            };
-        };
+        inherit apps;
     });
 }
