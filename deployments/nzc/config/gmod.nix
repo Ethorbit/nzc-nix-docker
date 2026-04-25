@@ -22,33 +22,64 @@
 let
     count = 6;
     initialPort = 27019;
-in
-builtins.listToAttrs (
-    builtins.genList (i: let
-        serverNumber = i + 1;
-        portNumber = initialPort + i;
-        name = "gmod_${toString serverNumber}";
-    in {
-        inherit name;
-        value = {
-            project = "gameserver/gmod";
-            instance = {
-                user = {
-                    uid = 2000;
-                    gid = 2000;
-                };
-                storage.volumes = {
-                    gmod.volume = name;
-                    shared = {
-                        volume = "gmod_shared";
-                        scope = "global";
+    ftpPort = 40000;
+    user = {
+        uid = 2000;
+        gid = 2000;
+    };
+
+    gmods = (
+        builtins.listToAttrs (
+            builtins.genList (i: let
+                serverNumber = i + 1;
+                portNumber = initialPort + i;
+                name = "gmod_${toString serverNumber}";
+            in {
+                inherit name;
+                value = {
+                    project = "gameserver/gmod";
+                    instance = {
+                        inherit user;
+                        storage.volumes = {
+                            gmod.volume = name;
+                            shared = {
+                                volume = "gmod_shared";
+                                scope = "global";
+                            };
+                        };
+                        network.ports.gmod = portNumber;
+                        secrets = {
+                            "password.rcon" = "testme";
+                        };
                     };
                 };
-                network.ports.gmod = portNumber;
-                secrets = {
-                    "password.rcon" = "testme";
-                };
+            }) count
+        )
+    );
+in
+    # Gmod cluster
+    gmods 
+    // # Remotely manage its files
+    {
+        gmod_sftp = {
+            project = "sftp";
+            instance = {
+                inherit user;
+                network.ports.sftp = ftpPort;
+                storage.volumes = builtins.listToAttrs (
+                    builtins.concatLists (
+                        builtins.map (v:
+                            builtins.map (vol: {
+                                name = vol.volume;
+                                value = {
+                                    volume = vol.volume;
+                                    scope = "global";
+                                };
+                            }) (builtins.attrValues v.instance.storage.volumes)
+                        ) (builtins.attrValues gmods)
+                    )
+                );
+                secrets."password" = "123secure";
             };
         };
-    }) count
-)
+    }
