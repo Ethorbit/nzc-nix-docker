@@ -41,15 +41,15 @@ List available instances:
 nix flake show
 ```
 
-Run arion commands across all instances:
-```bash
-nix run .#all -- up -d
-nix run .#all -- down
-nix run .#all -- ps
-```
-
 Run arion commands on a specific instance:
 ```bash
 nix run .#gmod_1 -- up -d
 nix run .#gmod_1 -- down
+```
+
+Run arion commands across all instances of the `gameserver/gmod` project:
+```bash
+nix run .#"gameserver/gmod" -- up -d
+nix run .#"gameserver/gmod" -- down
+nix run .#"gameserver/gmod" -- ps
 ```

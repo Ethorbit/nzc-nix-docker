@@ -66,21 +66,30 @@
             }
         ) instances;
 
-        allInstanceApps = let
-            script = pkgs.writeShellApplication {
-                name = "all";
-                text = builtins.concatStringsSep "\n" (
-                    map (name: ''
-                        ${instanceApps.${name}.program} "$@"
-                    '') (builtins.attrNames instances)
-                );
-            };
-        in {
-            type = "app";
-            program = "${script}/bin/all";
-        };
+        projectGroups = builtins.foldl' (acc: name:
+            let project = instances.${name}.project;
+            in acc // {
+                ${project} = (acc.${project} or []) ++ [ name ];
+            }
+        ) {} (builtins.attrNames instances);
 
-        apps = instanceApps // { all = allInstanceApps; };
+        projectApps = builtins.mapAttrs (project: names:
+            let
+                script = pkgs.writeShellApplication {
+                    name = project;
+                    text = builtins.concatStringsSep "\n" (
+                        map (name: ''
+                            ${instanceApps.${name}.program} "$@"
+                        '') names
+                    );
+                };
+            in {
+                type = "app";
+                program = "${script}/bin/${project}";
+            }
+        ) projectGroups;
+
+        apps = instanceApps // projectApps;
     in {
         inherit apps;
     });
