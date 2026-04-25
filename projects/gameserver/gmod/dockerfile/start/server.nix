@@ -28,13 +28,13 @@ writeText "server-start.sh" ''
 #START_ARGS="-tickrate 33 -disableluarefresh +maxplayers 15 +gamemode nzombies +map nz_kino_der_toten"
 
 # Only add +rcon_password if RCON_PASSWORD is set and not empty
-if [ -n "$RCON_PASSWORD" ]; then
-    RCON_ARG="+rcon_password $RCON_PASSWORD"
+if [ -s /run/secrets/rcon-password ]; then
+    RCON_ARG="+rcon_password $(cat /run/secrets/rcon-password)"
 fi
 
 # Only add +sv_setsteamaccount if STEAM_LOGIN_TOKEN is set and not empty
-if [ -n "$STEAM_LOGIN_TOKEN" ]; then
-    STEAM_ARG="+sv_setsteamaccount $STEAM_LOGIN_TOKEN"
+if [ -s /run/secrets/steam-login-token ]; then
+    STEAM_ARG="+sv_setsteamaccount $(cat /run/secrets/steam-login-token)"
 fi
 
 # Add -autoupdate if you care, but just know that it will take forever fetching updates on each startup, causing server startup to be delayed for no reason..

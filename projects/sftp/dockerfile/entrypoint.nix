@@ -21,15 +21,33 @@
 
 {
     writeText,
-    UNAME
+    UNAME,
+    GNAME
 }:
 
 writeText "entrypoint.sh" ''
     #!/bin/sh
     set -e
 
-    echo "${UNAME}:$PASSWORD" | chpasswd
+    # Setup password
+    echo "${UNAME}:$(cat /run/secrets/password)" | chpasswd
     passwd -u ${UNAME}
 
+    # Setup auth key
+    AUTH_KEYS="/home/${UNAME}/.ssh/authorized_keys"
+    touch "$AUTH_KEYS"
+
+    if [ -f /run/secrets/sftp-public-key ]; then
+        echo "command=\"internal-sftp\",no-pty,no-port-forwarding $(cat /run/secrets/sftp-public-key)" >> "$AUTH_KEYS"
+    fi
+
+    if [ -f /run/secrets/ssh-public-key ]; then
+        cat /run/secrets/ssh-public-key >> "$AUTH_KEYS"
+    fi
+
+    chmod 600 "$AUTH_KEYS"
+    chown "${UNAME}:${GNAME}" "$AUTH_KEYS"
+
+    # Run
     exec "$@"
 ''

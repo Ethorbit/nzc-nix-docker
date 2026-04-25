@@ -35,10 +35,7 @@ let
     dockerfile = pkgs.callPackage ./dockerfile {
         PUID = toString instance.user.uid;
         PGID = toString instance.user.gid;
-        PASSWORD = secrets."password";
         ALLOW_PASSWORD_LOGIN = (!exists."sftp.public.key" && !exists."ssh.public.key");
-        SFTP_PUBLIC_KEY = if exists."sftp.public.key" then secrets."sftp.public.key" else "";
-        SSH_PUBLIC_KEY = if exists."ssh.public.key" then secrets."ssh.public.key" else "";
     };
 in
 {
@@ -91,7 +88,14 @@ in
         docker-compose = defaults.docker-compose;
         services.sftp.service = defaults.service // {
             build.context = "${dockerfile}";
-            volumes = lib.mapAttrsToList 
+            volumes = [
+                "${instance.secrets.password}:/run/secrets/password"
+            ] 
+            ++ lib.optional exists."sftp.public.key"
+                "${instance.secrets."sftp.public.key"}:/run/secrets/sftp-public-key"
+            ++ lib.optional exists."ssh.public.key"
+                "${instance.secrets."ssh.public.key"}:/run/secrets/ssh-public-key"
+            ++ lib.mapAttrsToList 
                 (id: value: "${toString value.volume}:/home/ssh/${id}") volumes;
             ports = [
                 "${toString instance.network.ports.sftp}:22/tcp"

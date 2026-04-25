@@ -19,7 +19,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
     nzc = config.nzc;
@@ -35,12 +35,6 @@ let
         gmod = callPackage ./dockerfile {
             PUID = toString instance.user.uid;
             PGID = toString instance.user.gid;
-            RCON_PASSWORD = if exists."password.rcon" 
-                            then instance.secrets."password.rcon"
-                            else "";
-            STEAM_LOGIN_TOKEN = if exists."token.steam"
-                            then instance.secrets."token.steam"
-                            else "";
         };
     };
 in
@@ -100,7 +94,10 @@ in
             volumes = [
                 "${volumes.gmod.volume}:/home/steam/Steam/steamapps/common"
                 "${volumes.shared.volume}:/shared"
-            ];
+            ] ++ lib.optional exists."password.rcon"
+                "${instance.secrets."password.rcon"}:/run/secrets/rcon-password"
+              ++ lib.optional exists."token.steam"
+                "${instance.secrets."token.steam"}:/run/secrets/steam-login-token";
             ports = [
                 "${port}:${port}/udp"
                 "127.0.0.1:${port}:${port}/tcp"

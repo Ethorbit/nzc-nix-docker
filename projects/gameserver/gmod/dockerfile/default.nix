@@ -25,9 +25,7 @@
     callPackage,
     PUID ? "1000",
     PGID ? "1000",
-    UMASK ? "007",
-    STEAM_LOGIN_TOKEN ? "",
-    RCON_PASSWORD ? ""
+    UMASK ? "007"
 }:
 let
     start = {
@@ -40,8 +38,6 @@ let
     ENV UMASK=${UMASK}
     ENV PORT=27015
     ENV STEAMCMD_UPDATE_SCRIPT_NOVALIDATE="steam_update_no_validate.txt"
-    ENV STEAM_LOGIN_TOKEN=${STEAM_LOGIN_TOKEN}
-    ENV RCON_PASSWORD=${RCON_PASSWORD}
     ENV START_ARGS="-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     COPY ./container-start.sh /start_two.sh
     COPY ./server-start.sh "''${IMAGE_DIR}/''${START_SCRIPT}"

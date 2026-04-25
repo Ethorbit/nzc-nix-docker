@@ -27,27 +27,19 @@
     GNAME ? "ssh",
     PUID ? "1000",
     PGID ? "1000",
-    ALLOW_PASSWORD_LOGIN,
-    PASSWORD,
-    SFTP_PUBLIC_KEY,
-    SSH_PUBLIC_KEY
+    ALLOW_PASSWORD_LOGIN
 }:
 let
-    authorized_keys = callPackage ./authorized_keys.nix {
-        inherit SFTP_PUBLIC_KEY SSH_PUBLIC_KEY;
-    };
-
     sshd_config = callPackage ./sshd_config.nix {
         inherit UNAME ALLOW_PASSWORD_LOGIN;
     };
 
     entrypoint = callPackage ./entrypoint.nix {
-        inherit UNAME;
+        inherit UNAME GNAME;
     };
 
     Dockerfile = (writeText "Dockerfile" ''
     FROM alpine:3.23.3
-    ENV PASSWORD=${PASSWORD}
     COPY entrypoint.sh /
     COPY sshd_config /etc/ssh/sshd_config
     RUN apk add --no-cache openssh rsync shadow &&\
@@ -59,9 +51,6 @@ let
         chmod 700 /home/${UNAME}/.ssh/ &&\
         ssh-keygen -A
     USER ${UNAME}
-    COPY --chown=${UNAME}:${GNAME} \
-        authorized_keys /home/${UNAME}/.ssh/authorized_keys
-    RUN chmod 600 /home/${UNAME}/.ssh/authorized_keys
     USER root
     ENTRYPOINT ["/entrypoint.sh"]
     CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config"]
@@ -70,7 +59,6 @@ in
 runCommand "docker-context" {} ''
     mkdir -p $out
     cp ${entrypoint} $out/entrypoint.sh
-    cp ${authorized_keys} $out/authorized_keys
     cp ${sshd_config} $out/sshd_config
     cp ${Dockerfile} $out/Dockerfile
     cat $out/Dockerfile

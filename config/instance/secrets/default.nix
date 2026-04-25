@@ -23,10 +23,10 @@
 with lib;
 {
     options.nzc.instance.secrets = mkOption {
-        type = types.attrsOf types.str;
+        type = types.attrsOf types.path;
         default = {};
         example = {
-            password = "123superSafePassword"; 
+            "api.key" = /run/secrets/api-key;
         };
     };
 }

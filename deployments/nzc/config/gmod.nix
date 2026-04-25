@@ -49,7 +49,7 @@ let
                         };
                         network.ports.gmod = portNumber;
                         secrets = {
-                            "password.rcon" = "testme";
+                            "password.rcon" = builtins.toFile "helloworld" "testme";
                         };
                     };
                 };
@@ -79,7 +79,7 @@ in
                         ) (builtins.attrValues gmods)
                     )
                 );
-                secrets."password" = "123secure";
+                secrets."password" = builtins.toFile "helloworld" "123secure";
             };
         };
     }
