@@ -58,7 +58,6 @@
                     text = ''
                         arion --prebuilt-file "${composed.config.out.dockerComposeYaml}" "$@"
                     '';
-                    meta.description = "Instance";
                 };
             in {
                 type = "app";
