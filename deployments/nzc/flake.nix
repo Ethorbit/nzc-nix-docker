@@ -89,7 +89,21 @@
             }
         ) projectGroups;
 
-        apps = instanceApps // projectApps;
+        allApps = let
+            script = pkgs.writeShellApplication {
+                name = "all";
+                text = builtins.concatStringsSep "\n" (
+                    map (name: ''
+                        ${instanceApps.${name}.program} "$@"
+                    '') (builtins.attrNames instances)
+                );
+            };
+        in {
+            type = "app";
+            program = "${script}/bin/all";
+        };
+
+        apps = instanceApps // projectApps // { all = allApps; };
     in {
         inherit apps;
     });

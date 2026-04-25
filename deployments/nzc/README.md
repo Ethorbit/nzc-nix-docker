@@ -53,3 +53,10 @@ nix run .#"gameserver/gmod" -- up -d
 nix run .#"gameserver/gmod" -- down
 nix run .#"gameserver/gmod" -- ps
 ```
+
+Run arion commands across all instances:
+```bash
+nix run .#all -- up -d
+nix run .#all -- down
+nix run .#all -- ps
+```
