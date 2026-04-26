@@ -19,13 +19,6 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-# TODO:
-# Each subdir in projects/ will have its own Dockerfiles, data, and Arion configuration
-# Admins will `git clone` this flake and setup the shared variables (basically nix instead of .env)
-# Admins will run arion off the devShell: `nix develop`
-# Admins will use arion to deploy the projects they want to run on their node
-#   > arion -f ./projects/<name> -f /path/to/custom/configuration up
-
 {
     description = ''Library for nZC game community's Dockerized server infrastructure'';
 
