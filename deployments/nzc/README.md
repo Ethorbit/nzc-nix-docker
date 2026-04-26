@@ -23,40 +23,8 @@ If not, see <https://www.gnu.org/licenses/>.
 
 Manages nZC game server infrastructure using [nzc-nix-docker](https://github.com/Ethorbit/nzc-nix-docker).
 
-## Requirements
-
-- Nix with flakes enabled
-- Docker
-
 ## Configuration
 
-Instances are defined in `config/`. Each instance specifies a project type and its settings.
+Instances are defined in `config/`
 
 To add or modify instances, edit the relevant file in `config/` (e.g. `config/gmod.nix`).
-
-## Usage
-
-List available instances:
-```bash
-nix flake show
-```
-
-Run arion commands on a specific instance:
-```bash
-nix run .#gmod_1 -- up -d
-nix run .#gmod_1 -- down
-```
-
-Run arion commands across all instances of the `gameserver/gmod` project:
-```bash
-nix run .#"gameserver/gmod" -- up -d
-nix run .#"gameserver/gmod" -- down
-nix run .#"gameserver/gmod" -- ps
-```
-
-Run arion commands across all instances:
-```bash
-nix run .#all -- up -d
-nix run .#all -- down
-nix run .#all -- ps
-```
