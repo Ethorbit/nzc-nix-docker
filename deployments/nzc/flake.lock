@@ -150,18 +150,14 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1776922376,
-        "narHash": "sha256-zwfLVgkrWjPGbWb5P6rH5KXgX3IJtR2kZg9IRX3VLIU=",
-        "owner": "Ethorbit",
-        "repo": "nzc-nix-docker",
-        "rev": "15c40d5071692e8a6ff9179da464e681d9449e41",
-        "type": "github"
+        "path": "../..",
+        "type": "path"
       },
       "original": {
-        "owner": "Ethorbit",
-        "repo": "nzc-nix-docker",
-        "type": "github"
-      }
+        "path": "../..",
+        "type": "path"
+      },
+      "parent": []
     },
     "root": {
       "inputs": {

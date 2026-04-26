@@ -19,37 +19,9 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ ... }:
 
 {
-    options = with lib; {
-        instances = mkOption {
-            description = ''
-                A list of instance attrs
-            '';
-            type = types.attrsOf (types.submodule ({ }: {
-                options = {
-                    project = mkOption {
-                        type = types.str;
-                        default = "";
-                        description = ''
-                        What project is this an instance of?
-                        '';
-                    };
-
-                    instance = mkOption {
-                        type = types.attrs;
-                        default = {};
-                        description = ''
-                        The instance settings
-                        '';
-                    };
-                };
-            }));
-            default = {};
-        };
-    };
-
     config = {
         instances = import ./gmod.nix;
     };

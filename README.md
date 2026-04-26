@@ -84,9 +84,34 @@ Your configuration file should be a Nix module that sets `nzc.instance`:
 }
 ```
 
-## Official Deployment
+## Deployments
 
-[deployments/nzc](deployments/nzc) is used by the official nZC game community which doubles as a real-world example of how you can use this library at scale.
+A deployment is a flake that consumes this library to manage a set of instances. Use `lib.mkDeployment` to generate apps for deploying, managing and monitoring your instances.
+
+[deployments/nzc](deployments/nzc) is the official nZC game community deployment and serves as a real-world example at scale.
+
+#### Instance Structure
+
+```nix
+instances = {
+    my-project = {
+        project = "example";
+        instance = {
+            user = { uid = 1000; gid = 1000; };
+            network.ports.http = 8080;
+            storage.volumes.data.volume = "my_data";
+            secrets.password = /run/secrets/my-password;
+        };
+    };
+};
+```
+
+#### Generated Apps
+
+- `nix run .#my-instance -- up -d` — manage a specific instance
+- `nix run .#example -- up -d` — manage all instances of the `example` project
+- `nix run .#all -- up -d` — manage all instances
+
 
 ### Available Projects
 

@@ -23,7 +23,8 @@
     description = ''nZC game community's Dockerized server infrastructure'';
 
     inputs = {
-        nzc-nix-docker.url = "github:Ethorbit/nzc-nix-docker";
+        
+        nzc-nix-docker.url = "path:../..";
         nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
         flake-utils.url = "github:numtide/flake-utils";
     };
@@ -40,70 +41,10 @@
 
         cfg = import ./config/default.nix { inherit (pkgs) lib; };
         instances = cfg.config.instances;
-        arion = nzc-nix-docker.arion.${system};
-
-        instanceApps = builtins.mapAttrs (name: inst:
-            let
-                project = nzc-nix-docker.projects + "/${inst.project}";
-                composed = nzc-nix-docker.arion.${system}.eval {
-                    modules = [
-                        (project + "/default.nix")
-                        { nzc.instance = inst.instance // { inherit name; }; }
-                    ];
-                    inherit pkgs;
-                };
-                script = pkgs.writeShellApplication {
-                    name = name;
-                    runtimeInputs = [ arion.package ];
-                    text = ''
-                        arion --prebuilt-file "${composed.config.out.dockerComposeYaml}" "$@"
-                    '';
-                };
-            in {
-                type = "app";
-                program = "${script}/bin/${name}";
-            }
-        ) instances;
-
-        projectGroups = builtins.foldl' (acc: name:
-            let project = instances.${name}.project;
-            in acc // {
-                ${project} = (acc.${project} or []) ++ [ name ];
-            }
-        ) {} (builtins.attrNames instances);
-
-        projectApps = builtins.mapAttrs (project: names:
-            let
-                script = pkgs.writeShellApplication {
-                    name = project;
-                    text = builtins.concatStringsSep "\n" (
-                        map (name: ''
-                            ${instanceApps.${name}.program} "$@"
-                        '') names
-                    );
-                };
-            in {
-                type = "app";
-                program = "${script}/bin/${project}";
-            }
-        ) projectGroups;
-
-        allApps = let
-            script = pkgs.writeShellApplication {
-                name = "all";
-                text = builtins.concatStringsSep "\n" (
-                    map (name: ''
-                        ${instanceApps.${name}.program} "$@"
-                    '') (builtins.attrNames instances)
-                );
-            };
-        in {
-            type = "app";
-            program = "${script}/bin/all";
+        deployment = nzc-nix-docker.lib.mkDeployment {
+            inherit instances pkgs system;
         };
-
-        apps = instanceApps // projectApps // { all = allApps; };
     in {
-        inherit apps;
+        inherit (deployment) apps;
     });
 }
