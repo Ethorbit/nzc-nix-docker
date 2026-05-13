@@ -31,4 +31,4 @@ To add or modify instances, edit the relevant file in `config/` (e.g. `config/gm
 
 ## --impure needed
 
-Secrets are read from system /run/ paths, which requires the --impure flag.
+Secrets are read from system `/run/` paths, which requires the `--impure` flag.
