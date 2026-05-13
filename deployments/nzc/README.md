@@ -34,4 +34,4 @@ To add or modify instances, edit the relevant file in `config/` (e.g. `config/gm
 Secrets are read from `/run/` paths and that requires the `--impure` flag.
 
 Example:
-> nix run .#gmod-1 **--impure** -- up -d
+> nix run .#gmod\_1 **--impure** -- up -d
