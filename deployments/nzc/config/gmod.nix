@@ -20,8 +20,8 @@
 #
 
 let
-    count = 6;
-    initialPort = 27019;
+    count = 1;
+    initialPort = 27020;
     ftpPort = 40000;
     user = {
         uid = 2000;
@@ -49,7 +49,7 @@ let
                         };
                         network.ports.gmod = portNumber;
                         secrets = {
-                            "password.rcon" = builtins.toFile "helloworld" "testme";
+                            "password.rcon" = /run/nzc-nix-docker/gmod/password.rcon;
                         };
                     };
                 };
@@ -79,7 +79,7 @@ in
                         ) (builtins.attrValues gmods)
                     )
                 );
-                secrets."password" = builtins.toFile "helloworld" "123secure";
+                secrets."password" = /run/nzc-nix-docker/gmod_sftp/password;
             };
         };
     }

@@ -23,7 +23,6 @@
     description = ''nZC game community's Dockerized server infrastructure'';
 
     inputs = {
-        
         nzc-nix-docker.url = "path:../..";
         nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
         flake-utils.url = "github:numtide/flake-utils";
