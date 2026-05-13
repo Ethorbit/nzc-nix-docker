@@ -28,3 +28,7 @@ Manages nZC game server infrastructure using [nzc-nix-docker](https://github.com
 Instances are defined in `config/`
 
 To add or modify instances, edit the relevant file in `config/` (e.g. `config/gmod.nix`).
+
+## --impure needed
+
+Secrets are read from system /run/ paths, which requires the --impure flag.
