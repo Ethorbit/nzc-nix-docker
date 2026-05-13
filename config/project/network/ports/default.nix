@@ -24,39 +24,63 @@
 with lib;
 
 {
-    options.nzc.project.network.ports = mkOption {
-        description = ''The container ports required by this project'';
-        type = types.listOf (types.submodule {
-            options = {
-                id = mkOption {
-                    description = ''Identifier of this port'';
-                    type = types.str;
-                    example = "website";
-                };
+    options.nzc.project.network = {
+        bindPort = mkOption {
+            type = types.functionTo (types.functionTo types.str);
+            readOnly = true;
+        };
 
-                required = mkOption {
-                    description = ''
-                        Whether or not this port is required for a project to function
-                    '';
-                    type = types.bool;
-                    default = false;
+        bindPortTo = mkOption {
+            type = types.functionTo (types.functionTo (types.functionTo types.str));
+            readOnly = true;
+        };
+
+        ports = mkOption {
+            description = ''The container ports required by this project'';
+            type = types.listOf (types.submodule {
+                options = {
+                    id = mkOption {
+                        description = ''Identifier of this port'';
+                        type = types.str;
+                        example = "website";
+                    };
+
+                    required = mkOption {
+                        description = ''
+                            Whether or not this port is required for a project to function
+                        '';
+                        type = types.bool;
+                        default = false;
+                    };
                 };
-            };
-        });
-        default = [];
-        example = [
+            });
+            default = [];
+            example = [
+                {
+                    id = "website";
+                    required = false;
+                }
+            ];
+        };
+    };
+
+    config.nzc.project = {
+        network.bindPortTo = id: proto: containerPort:
+        let
+            cfg = config.nzc.instance.network.ports.${id};
+            ip = cfg.ip.${proto};
+            p = "${toString cfg.number}:${toString containerPort}/${proto}";
+        in
+            if ip != null then "${ip}:${p}" else p;
+        network.bindPort = id: proto:
+            config.nzc.project.network.bindPortTo id proto config.nzc.instance.network.ports.${id}.number;
+
+        checks = [
             {
-                id = "website";
-                required = false;
+                name = "network.ports";
+                official = config.nzc.project.network.ports;
+                user = config.nzc.instance.network.ports;
             }
         ];
     };
-
-    config.nzc.project.checks = [
-        {
-            name = "network.ports";
-            official = config.nzc.project.network.ports;
-            user = config.nzc.instance.network.ports;
-        }
-    ];
 }

@@ -47,7 +47,11 @@ let
                                 scope = "global";
                             };
                         };
-                        network.ports.gmod = portNumber;
+                        network.ports.gmod = {
+                            number = portNumber;
+                            # Don't expose RCON
+                            ip.tcp = "127.0.0.1";
+                        };
                         secrets = {
                             "password.rcon" = /run/nzc-nix-docker/gmod/password.rcon;
                         };
@@ -65,7 +69,10 @@ in
             project = "sftp";
             instance = {
                 inherit user;
-                network.ports.sftp = ftpPort;
+                network.ports.sftp = {
+                    number = ftpPort;
+                    ip.tcp = "192.168.254.225";
+                };
                 storage.volumes = builtins.listToAttrs (
                     builtins.concatLists (
                         builtins.map (v:

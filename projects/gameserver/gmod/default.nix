@@ -86,7 +86,7 @@ in
         };
 
         gmod.service = let
-            port = toString instance.network.ports.gmod;
+            port = toString instance.network.ports.gmod.number;
         in defaults.service // {
             tty = true;
             stdin_open = true;
@@ -98,9 +98,11 @@ in
                 "${instance.secrets."password.rcon"}:/run/secrets/rcon-password"
               ++ lib.optional exists."token.steam"
                 "${instance.secrets."token.steam"}:/run/secrets/steam-login-token";
-            ports = [
-                "${port}:${port}/udp"
-                "127.0.0.1:${port}:${port}/tcp"
+            ports = let
+                bind = config.nzc.project.network.bindPort;
+            in [
+                (bind "gmod" "udp")
+                (bind "gmod" "tcp")
             ];
             environment = {
                 PORT = port;

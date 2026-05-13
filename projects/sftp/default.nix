@@ -97,8 +97,10 @@ in
                 "${instance.secrets."ssh.public.key"}:/run/secrets/ssh-public-key"
             ++ lib.mapAttrsToList 
                 (id: value: "${toString value.volume}:/home/ssh/${id}") volumes;
-            ports = [
-                "${toString instance.network.ports.sftp}:22/tcp"
+            ports = let
+                bindTo = config.nzc.project.network.bindPortTo;
+            in [
+                (bindTo "sftp" "tcp" 22)
             ];
             restart = "unless-stopped";
         };

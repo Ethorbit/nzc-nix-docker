@@ -32,10 +32,39 @@ with lib;
             options = {
                 ports = mkOption {
                     description = ''Network ports for container'';
-                    type = types.attrsOf types.int;
+                    type = types.attrsOf (types.submodule {
+                        options = {
+                            number = mkOption {
+                                description = "The number this port represents.";
+                                example = 22;
+                                type = types.port;
+                            };
+
+                            ip = mkOption {
+                                description = "Optionally set an IP for this port.";
+                                type = types.submodule {
+                                    options = {
+                                        tcp = mkOption {
+                                            type = types.nullOr types.str;
+                                            description = "IP this TCP port is exposed to.";
+                                            example = "127.0.0.1";
+                                            default = null;
+                                        };
+                                        udp = mkOption {
+                                            type = types.nullOr types.str;
+                                            description = "IP this UDP port is exposed to.";
+                                            example = "192.168.254.18";
+                                            default = null;
+                                        };
+                                    };
+                                };
+                                default = {};
+                            };
+                        };
+                    });
                     default = {};
                     example = {
-                        gmod = 27016;
+                        gmod = { ip.udp = "0.0.0.0"; port = 27016; };
                     };
                 };
             };
