@@ -88,7 +88,7 @@ Your configuration file should be a Nix module that sets `nzc.instance`:
 
 A deployment is a flake that consumes this library to manage a set of instances. Use `lib.mkDeployment` to generate apps for deploying, managing and monitoring your instances.
 
-[deployments/nzc](deployments/nzc) is the official nZC game community deployment and serves as a real-world example at scale.
+The [official nZC NixOS system config](https://github.com/Ethorbit/nixos-configs/tree/master/nzc/profiles) contains game community deployments and serves as a real-world example at scale.
 
 #### Instance Structure
 
