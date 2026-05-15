@@ -40,7 +40,7 @@
  
         lib = {
             mkDeployment = import ./lib/deployment.nix { inherit self; };
-            allocation.coreOf = import ./lib/allocation/coreOf.nix;
+            allocation.threadOf = import ./lib/allocation/threadOf.nix;
         };
     } // flake-utils.lib.eachDefaultSystem (system: let
         pkgs = import nixpkgs {

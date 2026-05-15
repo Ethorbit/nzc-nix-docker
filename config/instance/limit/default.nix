@@ -40,9 +40,9 @@ in
                     description = "CPU limits for the container";
                     type = types.submodule {
                         options = {
-                            cores = mkOption {
+                            threads = mkOption {
                                 type = types.listOf types.int;
-                                description = "CPU cores available to the container";
+                                description = "Logical CPUs available to the container";
                                 default = [];
                                 example = [ 0 1 2 ];
                             };
@@ -51,7 +51,7 @@ in
                                 type = types.addCheck types.float (
                                     x: x >= 0.0
                                 );
-                                description = "Total number of cores we're allowed to utilize";
+                                description = "Total number of logical CPUs we're allowed to utilize";
                                 default = 100.0;
                                 example = 0.5;
                             };
@@ -65,7 +65,7 @@ in
                         };
                     };
                     example = {
-                        cores = [
+                        threads = [
                             0 1 2 3
                         ];
                         quota = 2.5;
@@ -130,7 +130,7 @@ in
         default = {};
         example = {
             cpu = {
-                cores = [ 0 1 2 ];
+                threads = [ 0 1 2 ];
                 quota = 0.8;
                 weight = 1024;
             };

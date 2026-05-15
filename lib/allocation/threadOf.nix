@@ -19,9 +19,9 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-cores: i:
+threads: i:
 let
-    len = builtins.length cores;
+    len = builtins.length threads;
     idx = (i - 1) - len * ((i - 1) / len);
 in
-    builtins.elemAt cores idx
+    builtins.elemAt threads idx

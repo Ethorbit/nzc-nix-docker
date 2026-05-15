@@ -41,7 +41,7 @@
     ];
     limit = {
         cpu = {
-            cores = [ 0 ];
+            threads = [ 0 ];
             quota = 1.0;
             weight = 1024;
         };
