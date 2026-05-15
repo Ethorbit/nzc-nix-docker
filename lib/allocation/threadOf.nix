@@ -22,6 +22,6 @@
 threads: i:
 let
     len = builtins.length threads;
-    idx = (i - 1) - len * ((i - 1) / len);
+    idx = i - len * (i / len);
 in
     builtins.elemAt threads idx
