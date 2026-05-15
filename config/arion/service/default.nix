@@ -53,7 +53,7 @@ in
         } else {});
     } // (
         if limit.enable then {
-            cpuset = builtins.concatStringsSep "," (map toString limit.cpu.cores);
+            cpuset = builtins.concatStringsSep "," (map toString limit.cpu.threads);
             cpu_shares = toString limit.cpu.weight;
             mem_limit = "${toString limit.memory}M";
 
