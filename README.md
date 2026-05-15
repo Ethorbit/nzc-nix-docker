@@ -42,12 +42,13 @@ Designed to overcome all issues encountered from 3 years of operating the [nZC g
 
 ## Notes
 
-Arion is [patched](patches/docker-compose-service.nix.patch) to expose additional Compose options not yet upstream ([#256](https://github.com/hercules-ci/arion/issues/256)):
-- `stdin_open`
-- `cpuset`
-- `cpus`
-- `cpu_shares`
-- `mem_limit`
+* Arion is [patched](patches/docker-compose-service.nix.patch) to expose additional Compose options not yet upstream ([#256](https://github.com/hercules-ci/arion/issues/256)):
+  - `stdin_open`
+  - `cpuset`
+  - `cpus`
+  - `cpu_shares`
+  - `mem_limit`
+* `limit.bandwidth` requires [Docker Traffic Control](https://github.com/lukaszlach/docker-tc). It applies the `com.docker-tc.limit` label.
 
 ## Usage
 
