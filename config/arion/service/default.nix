@@ -19,7 +19,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, ... }:
+{ config, lib, ... }:
 let
     instance = config.nzc.instance;
     limit = instance.limit;
@@ -53,8 +53,7 @@ in
         } else {});
     } // (
         if limit.enable then {
-            cpuset = builtins.concatStringsSep "," (map toString limit.cpu.threads);
-            cpus = toString limit.cpu.quota;
+            cpuset = builtins.concatStringsSep "," (map toString limit.cpu.cores);
             cpu_shares = toString limit.cpu.weight;
             mem_limit = "${toString limit.memory}M";
 
@@ -78,6 +77,8 @@ in
                     rate = disk.write.iops;
                 }) disk;
             } else {};
-        } else {}
+        } // (lib.optionalAttrs (limit.cpu.quota != null) {
+            cpus = toString limit.cpu.quota;
+        })  else {}
     );
 }

@@ -48,11 +48,11 @@ in
                             };
 
                             quota = mkOption {
-                                type = types.addCheck types.float (
+                                type = types.nullOr (types.addCheck types.float (
                                     x: x >= 0.0
-                                );
+                                ));
                                 description = "Total number of logical CPUs we're allowed to utilize";
-                                default = 100.0;
+                                default = null;
                                 example = 0.5;
                             };
 
