@@ -26,6 +26,8 @@ A [Nix](https://nixos.org/) library for managing Docker infrastructure as isolat
 
 Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com) with Docker.
 
+![meme](images/meme.jpg)
+
 | | **nZC Nix Docker** | [nZC Docker](https://github.com/Ethorbit/nzc-docker) | [Pterodactyl](https://pterodactyl.io/) |
 |--|-----|---------|-------------|
 | **Deployment** | [Nix](https://nixos.org/) + [Arion](https://docs.hercules-ci.com/arion/) | [Docker Compose](https://docs.docker.com/compose/) YAML | Web UI |
