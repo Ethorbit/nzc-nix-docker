@@ -20,7 +20,9 @@ If not, see <https://www.gnu.org/licenses/>.
 -->
 
 # nZC Nix Docker
-A collection of containerized projects, built and configured entirely through [Nix](https://nixos.org/).
+A [Nix](https://nixos.org/) library for managing Docker infrastructure as isolated projects.
+
+![demonstration](images/usage.gif)
 
 Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com) with Docker.
 
@@ -120,3 +122,6 @@ instances = {
 |---------|------|
 | [Garry's Mod](projects/gameserver/gmod/default.nix) | `projects/gameserver/gmod` |
 | [SFTP](projects/sftp/default.nix) | `projects/sftp` |
+
+
+![message](images/discordmessage.png)
