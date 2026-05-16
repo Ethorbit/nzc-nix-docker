@@ -24,7 +24,7 @@ A [Nix](https://nixos.org/) library for managing Docker infrastructure as isolat
 
 ![demonstration](images/usage.gif)
 
-Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com) with Docker.
+Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com).
 
 ![meme](images/meme.jpg)
 
