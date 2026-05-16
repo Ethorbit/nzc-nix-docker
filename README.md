@@ -38,7 +38,7 @@ Designed to overcome all issues encountered from 3 years of operating the [nZC g
 | **Reusability** | [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) (templates and shared modules) | Repeated YAML | None, eggs are static |
 | **Deployment Script** | Reproducible [Nix](https://nixos.org/) expressions | Fragile Makefile | Managed by panel |
 | **Scope** | Anything | Hardcoded Dependencies | Primarily games |
-
+-----------
 ## Requirements
 
 - [Nix](https://nixos.org/) with [flakes](https://wiki.nixos.org/wiki/Flakes) enabled
