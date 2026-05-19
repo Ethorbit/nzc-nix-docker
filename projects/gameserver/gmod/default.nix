@@ -57,7 +57,11 @@ in
 
         network.ports = [
             {
-                id = "gmod";
+                id = "query";
+                required = true;
+            }
+            {
+                id = "client";
                 required = true;
             }
         ];
@@ -85,9 +89,7 @@ in
             ];
         };
 
-        gmod.service = let
-            port = toString instance.network.ports.gmod.number;
-        in defaults.service // {
+        gmod.service = defaults.service // {
             tty = true;
             stdin_open = true;
             build.context = "${dockerfiles.gmod}";
@@ -101,11 +103,13 @@ in
             ports = let
                 bind = config.nzc.project.network.bindPort;
             in [
-                (bind "gmod" "udp")
-                (bind "gmod" "tcp")
+                (bind "query" "udp")
+                (bind "query" "tcp")
+                (bind "client" "udp")
             ];
             environment = {
-                PORT = port;
+                QUERY_PORT = toString instance.network.ports.query.number;
+                CLIENT_PORT = toString instance.network.ports.client.number;
             };
             restart = "unless-stopped";
         };

@@ -36,7 +36,8 @@ let
     Dockerfile = (writeText "Dockerfile" ''
     FROM ethorbit/gmod-server:0733510
     ENV UMASK=${UMASK}
-    ENV PORT=27015
+    ENV QUERY_PORT=27015
+    ENV CLIENT_PORT=27005
     ENV STEAMCMD_UPDATE_SCRIPT_NOVALIDATE="steam_update_no_validate.txt"
     ENV START_ARGS="-tickrate 33 -disableluarefresh -port 27015 +maxplayers 15 +gamemode sandbox +map gm_flatgrass"
     COPY ./container-start.sh /start_two.sh

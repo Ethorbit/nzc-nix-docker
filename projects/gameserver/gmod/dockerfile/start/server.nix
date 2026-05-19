@@ -39,7 +39,8 @@ fi
 
 # Add -autoupdate if you care, but just know that it will take forever fetching updates on each startup, causing server startup to be delayed for no reason..
 "''${SERVER_DIR}/srcds_run" \
-    -port "''${PORT}" \
+    +clientport "''${CLIENT_PORT}" \
+    -port "''${QUERY_PORT}" \
     -steam_dir "''${STEAMCMD_DIR}" \
     -steamcmd_script "''${SERVERS_DIR}/''${STEAMCMD_UPDATE_SCRIPT}" "''${START_ARGS}" \
     $STEAM_ARG \
