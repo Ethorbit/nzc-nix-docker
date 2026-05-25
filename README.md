@@ -73,7 +73,7 @@ Your configuration file should be a Nix module that sets `nzc.instance`:
 ```nix
 { ... }: {
     nzc.instance = {
-        name = "my-project";
+        name = "my-project-instance";
         user = {
             uid = 1000;
             gid = 1000;
@@ -99,7 +99,7 @@ The [official nZC NixOS system config](https://github.com/Ethorbit/nixos-configs
 
 ```nix
 instances = {
-    my-project = {
+    my-project-instance = {
         project = "example";
         instance = {
             user = { uid = 1000; gid = 1000; };
