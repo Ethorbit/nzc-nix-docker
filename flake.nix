@@ -20,7 +20,7 @@
 #
 
 {
-    description = ''Library for nZC game community's Dockerized server infrastructure'';
+    description = ''Nix flake for managing Docker infrastructure as isolated projects'';
 
     inputs = {
         nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
