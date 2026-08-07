@@ -113,9 +113,9 @@ instances = {
 
 #### Generated Apps
 
-- `nix run .#my-instance -- up -d` — manage a specific instance
-- `nix run .#example -- up -d` — manage all instances of the `example` project
-- `nix run .#all -- up -d` — manage all instances
+- `nix run .#my-instance -- up -d` - manage a specific instance
+- `nix run .#example -- up -d` - manage all instances of the `example` project
+- `nix run .#all -- up -d` - manage all instances
 
 
 ### Available Projects
