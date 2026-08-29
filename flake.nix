@@ -55,19 +55,13 @@
         patchedArion = (arion.packages.${system}.arion.overrideAttrs (old: {
             patches = [ ./patches/docker-compose-service.nix.patch ];
         }));
+
+        testInstances = import ./lib/testInstances.nix { inherit (pkgs) lib; inherit projects; };
     in with pkgs; {
         apps = let 
             testDeployment = self.lib.mkDeployment {
                 inherit pkgs system;
-                instances."example" = {
-                    project = "example";
-                    instance = {
-                        user = {
-                            uid = 1000;
-                            gid = 1000;
-                        };
-                    };
-                };
+                instances = testInstances;
             };
         in testDeployment.apps;
 
