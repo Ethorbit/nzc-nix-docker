@@ -23,5 +23,3 @@
     project = "example";
     instance = {};
 }
-
-
