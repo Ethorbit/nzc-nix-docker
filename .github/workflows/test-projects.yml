@@ -24,7 +24,7 @@ name: Test changed projects
 on:
   pull_request:
   push:
-    branches: [workflow]
+    branches: [master]
 
 jobs:
   test:
