@@ -44,6 +44,8 @@ Designed to overcome all issues encountered from 3 years of operating the [nZC g
 - [Nix](https://nixos.org/) with [flakes](https://wiki.nixos.org/wiki/Flakes) enabled
 - [Docker](https://www.docker.com/)
 - `limit.bandwidth` requires [Docker Traffic Control](https://github.com/lukaszlach/docker-tc). If you don't use it, you don't need it.
+- `storage.lxcfs` requires [lxcfs](https://github.com/lxc/lxcfs) running on the host. If you don't use it, you don't need it.
+  * Lets containers see their own resources, resulting in better performance.
 
 ## Notes
 

@@ -23,13 +23,14 @@
 let
     instance = config.nzc.instance;
     limit = instance.limit;
+    storage = instance.storage;
 in
 {
     imports = [
         ./presets/permissions.nix
     ];
 
-    warnings = if limit.enable != true then [ ''
+    warnings = (if limit.enable != true then [ ''
     WARNING: Resource limits are disabled for this instance!
 
     nZC highly recommends limiting resources when running multiple
@@ -38,7 +39,19 @@ in
     Set limit.enable to True.
     Then configure these:
     ${builtins.concatStringsSep "\n" (builtins.attrNames limit)}
-    '' ] else [];
+    '' ] else []) ++ (if storage.lxcfs.enable != true then [ ''
+    WARNING: lxcfs is disabled for this instance!
+
+    Containerized programs will see the host's resources (CPU, memory)
+    rather than the container's own limits, which can cause incorrect
+    self-tuning behavior.
+
+    nZC highly recommends enabling this to achieve maximum performance!
+    
+    Set storage.lxcfs.enable to True.
+    Then make sure lxcfs is running on the host:
+      sudo systemctl enable lxcfs --now
+    '' ] else []);
 
     nzc.arion.defaults.service = {
         volumes = let

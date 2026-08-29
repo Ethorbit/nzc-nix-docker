@@ -82,8 +82,8 @@ in
                         options = {
                             enable = mkOption {
                                 description = ''Will this container use lxcfs?'';
-                                default = true;
-                                example = false;
+                                default = false;
+                                example = true;
                             };
 
                             volumes = mkOption {
