@@ -58,38 +58,57 @@ let
             };
 
     mkResult = check:
-        let
-            official = normalizeOfficial check.official;
-            user = extractIds check.user;
-            missing-required =
-                builtins.filter (id: !(builtins.elem id user)) official.required;
-            missing-optional =
-                builtins.filter (id: !(builtins.elem id user)) official.optional;
-        in
-        {
-            assertions =
-                [
+        if check.mode == "subsetOf" then
+            let
+                official = extractIds check.official;
+                user = extractIds check.user;
+                unknown = builtins.filter (id: !(builtins.elem id official)) user;
+            in
+            {
+                assertions = [
                     {
-                        assertion = builtins.length missing-required == 0;
+                        assertion = builtins.length unknown == 0;
                         message = ''
-                            ERROR: Required items are missing in '${check.name}'.
-                            Missing required: ${toString missing-required}
-                            User provides:    ${toString user}
+                            ERROR: Unknown items selected in '${check.name}'.
+                            Unknown:   ${toString unknown}
+                            Available: ${toString official}
                         '';
                     }
                 ];
-            warnings =
-                if builtins.length missing-optional > 0
-                then [
-                    ''
-                        WARNING: Optional items are missing in '${check.name}'.
-                        Missing optional: ${toString missing-optional}
-                        User provides:    ${toString user}
-                    ''
-                ]
-                else [];
-        };
-
+                warnings = [];
+            }
+        else
+            let
+                official = normalizeOfficial check.official;
+                user = extractIds check.user;
+                missing-required =
+                    builtins.filter (id: !(builtins.elem id user)) official.required;
+                missing-optional =
+                    builtins.filter (id: !(builtins.elem id user)) official.optional;
+            in
+            {
+                assertions =
+                    [
+                        {
+                            assertion = builtins.length missing-required == 0;
+                            message = ''
+                                ERROR: Required items are missing in '${check.name}'.
+                                Missing required: ${toString missing-required}
+                                User provides:    ${toString user}
+                            '';
+                        }
+                    ];
+                warnings =
+                    if builtins.length missing-optional > 0
+                    then [
+                        ''
+                            WARNING: Optional items are missing in '${check.name}'.
+                            Missing optional: ${toString missing-optional}
+                            User provides:    ${toString user}
+                        ''
+                    ]
+                    else [];
+            };
     results = map mkResult checks;
 in
 {
@@ -108,6 +127,15 @@ in
                 user = mkOption {
                     type = types.anything;
                 };
+
+                mode = mkOption {
+                    type = types.enum [ "requires" "subsetOf" ];
+                    default = "requires";
+                    description = ''
+                        requires: every id in 'official' must be present in 'user'.
+                        subsetOf: every id in 'user' must be present in 'official'.
+                    '';
+                };   
             };
         });
         default = [];
