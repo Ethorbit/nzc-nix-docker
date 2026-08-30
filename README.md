@@ -28,7 +28,8 @@ Designed to overcome all issues encountered from 3 years of operating the [nZC g
 
 ![meme](images/meme.jpg)
 
-| | **nZC Nix Docker** | [nZC Docker](https://github.com/Ethorbit/nzc-docker) | [Pterodactyl](https://pterodactyl.io/) |
+## Comparison
+| | **nZC Nix Docker** (This) | [nZC Docker](https://github.com/Ethorbit/nzc-docker) | [Pterodactyl](https://pterodactyl.io/) |
 |--|-----|---------|-------------|
 | **Deployment** | [Nix](https://nixos.org/) + [Arion](https://docs.hercules-ci.com/arion/) | [Docker Compose](https://docs.docker.com/compose/) YAML | Web UI |
 | **Configuration** | [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set) | Environment files | [JSON eggs](https://pterodactyl.io/community/config/eggs/creating_a_custom_egg.html) |
