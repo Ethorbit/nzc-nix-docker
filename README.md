@@ -25,7 +25,7 @@ If not, see <https://www.gnu.org/licenses/>.
 
 A [Nix](https://nixos.org/) library for managing Docker infrastructure as isolated projects.
 
-Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com).
+Designed to overcome all issues encountered from 5 years of operating the [nZC game community](https://nzcservers.com).
 
 ![demonstration](images/usage.gif)
 
