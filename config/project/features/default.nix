@@ -25,7 +25,7 @@ with lib;
 
 {
     options.nzc.project.features = mkOption {
-        description = "Features this project exposes as selectable";
+        description = "Features available for this project";
         type = types.listOf types.str;
         default = [];
         example = [ "php" "redis" "gpu" ];
