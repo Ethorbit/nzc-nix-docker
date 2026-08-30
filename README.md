@@ -33,7 +33,7 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 
 | Project | Path | Example |
 |---------|------|----------------|
-| [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | |
+| [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | [test.nix](projects/gameserver/gmod/test.nix)
 | [SFTP](projects/sftp) | `projects/sftp` | [test.nix](projects/sftp/test.nix)
 
 ## Requirements
