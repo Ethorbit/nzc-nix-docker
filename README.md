@@ -20,26 +20,22 @@ If not, see <https://www.gnu.org/licenses/>.
 -->
 
 # nZC Nix Docker
-A [Nix](https://nixos.org/) library for managing Docker infrastructure as isolated projects.
+[![License](https://img.shields.io/github/license/Ethorbit/nzc-nix-docker)](LICENSE)
+[![Changed Projects](https://img.shields.io/github/actions/workflow/status/Ethorbit/nzc-nix-docker/test-projects.yml?label=Changed%20projects)](https://github.com/Ethorbit/nzc-nix-docker/actions/workflows/test-projects.yml)
 
-![demonstration](images/usage.gif)
+A [Nix](https://nixos.org/) library for managing Docker infrastructure as isolated projects.
 
 Designed to overcome all issues encountered from 3 years of operating the [nZC game community](https://nzcservers.com).
 
-![meme](images/meme.jpg)
+![demonstration](images/usage.gif)
 
-## Comparison
-| | **nZC Nix Docker** (This) | [nZC Docker](https://github.com/Ethorbit/nzc-docker) | [Pterodactyl](https://pterodactyl.io/) |
-|--|-----|---------|-------------|
-| **Deployment** | [Nix](https://nixos.org/) + [Arion](https://docs.hercules-ci.com/arion/) | [Docker Compose](https://docs.docker.com/compose/) YAML | Web UI |
-| **Configuration** | [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set) | Environment files | [JSON eggs](https://pterodactyl.io/community/config/eggs/creating_a_custom_egg.html) |
-| **Structure** | Independent, isolated [projects](projects/) | [Single large project](https://github.com/Ethorbit/nzc-docker) | Server panels |
-| **Scalability** | Each project scales independently | Adding containers increases complexity | Limited to supported game servers |
-| **Fault Tolerance** | Projects fail in isolation | One broken config breaks everything | Managed by panel |
-| **Reusability** | [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) (templates and shared modules) | Repeated YAML | None, eggs are static |
-| **Deployment Script** | Reproducible [Nix](https://nixos.org/) expressions | Fragile Makefile | Managed by panel |
-| **Scope** | Anything | Hardcoded Dependencies | Primarily games |
------------
+## Available Projects
+
+| Project | Path | Example |
+|---------|------|----------------|
+| [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | |
+| [SFTP](projects/sftp) | `projects/sftp` | [test.nix](projects/sftp/test.nix)
+
 ## Requirements
 
 - [Nix](https://nixos.org/) with [flakes](https://wiki.nixos.org/wiki/Flakes) enabled
@@ -48,16 +44,9 @@ Designed to overcome all issues encountered from 3 years of operating the [nZC g
 - `storage.lxcfs` requires [lxcfs](https://github.com/lxc/lxcfs) running on the host. If you don't use it, you don't need it.
   * Lets containers see their own resources, resulting in better performance.
 
-## Notes
-
-Arion is [patched](patches/docker-compose-service.nix.patch) to expose additional Compose options not yet upstream ([#256](https://github.com/hercules-ci/arion/issues/256)):
-  - `stdin_open`
-  - `cpuset`
-  - `cpus`
-  - `cpu_shares`
-  - `mem_limit`
-
 ## Usage
+
+### 1: CLI using arion
 
 Each project in [projects/](projects/) is a self-contained [Arion](https://docs.hercules-ci.com/arion/) composition. Projects are deployed independently using Arion from the devShell:
 
@@ -92,11 +81,11 @@ Your configuration file should be a Nix module that sets `nzc.instance`:
 }
 ```
 
-## Deployments
+### 2: Nix Flake using Deployments
 
-A deployment is a flake that consumes this library to manage a set of instances. Use `lib.mkDeployment` to generate apps for deploying, managing and monitoring your instances.
+A **deployment** is a flake that consumes this library to manage a set of instances. Use `lib.mkDeployment` to generate apps for deploying, managing and monitoring your instances.
 
-The [official nZC NixOS system config](https://github.com/Ethorbit/nixos-configs/tree/master/nzc/profiles) contains game community deployments and serves as a real-world example at scale.
+The [official nZC NixOS system config](https://github.com/Ethorbit/nixos-configs/tree/master/nzc/profiles/selfhosted/nix-docker-deployment) contains deployments for a game community and serves as a **real-world example at scale**.
 
 #### Instance Structure
 
@@ -120,13 +109,30 @@ instances = {
 - `nix run .#example -- up -d` - manage all instances of the `example` project
 - `nix run .#all -- up -d` - manage all instances
 
-
-### Available Projects
-
-| Project | Path |
-|---------|------|
-| [Garry's Mod](projects/gameserver/gmod/default.nix) | `projects/gameserver/gmod` |
-| [SFTP](projects/sftp/default.nix) | `projects/sftp` |
-
+<br>
 
 ![message](images/discordmessage.png)
+
+## Comparison
+| | **nZC Nix Docker** (This) | [nZC Docker](https://github.com/Ethorbit/nzc-docker) | [Pterodactyl](https://pterodactyl.io/) |
+|--|-----|---------|-------------|
+| **Deployment** | [Nix](https://nixos.org/) + [Arion](https://docs.hercules-ci.com/arion/) | [Docker Compose](https://docs.docker.com/compose/) YAML | Web UI |
+| **Configuration** | [Nix attribute sets](https://nix.dev/manual/nix/2.18/language/values.html?highlight=attribute%20set#attribute-set) | Environment files | [JSON eggs](https://pterodactyl.io/community/config/eggs/creating_a_custom_egg.html) |
+| **Structure** | Independent, isolated [projects](projects/) | [Single large project](https://github.com/Ethorbit/nzc-docker) | Server panels |
+| **Scalability** | Each project scales independently | Adding containers increases complexity | Limited to supported game servers |
+| **Fault Tolerance** | Projects fail in isolation | One broken config breaks everything | Managed by panel |
+| **Reusability** | [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself) (templates and shared modules) | Repeated YAML | None, eggs are static |
+| **Deployment Script** | Reproducible [Nix](https://nixos.org/) expressions | Fragile Makefile | Managed by panel |
+| **Scope** | Anything | Hardcoded Dependencies | Primarily games |
+-----------
+
+![meme](images/meme.jpg)
+
+## Notes
+
+Arion is [patched](patches/docker-compose-service.nix.patch) to expose additional Compose options not yet upstream ([#256](https://github.com/hercules-ci/arion/issues/256)):
+  - `stdin_open`
+  - `cpuset`
+  - `cpus`
+  - `cpu_shares`
+  - `mem_limit`
