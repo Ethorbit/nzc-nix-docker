@@ -56,7 +56,7 @@
             patches = [ ./patches/docker-compose-service.nix.patch ];
         }));
 
-        testInstances = import ./lib/testInstances.nix { inherit (pkgs) lib; inherit projects; };
+        testInstances = import ./lib/testInstances.nix { inherit (pkgs) lib; inherit pkgs; inherit projects; };
     in with pkgs; {
         apps = let 
             testDeployment = self.lib.mkDeployment {

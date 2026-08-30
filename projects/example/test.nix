@@ -19,6 +19,8 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
+{ ... }:
+
 {
     project = "example";
     instance = {};
