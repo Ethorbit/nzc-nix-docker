@@ -43,21 +43,46 @@ jobs:
         id: changed
         run: |
           BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
-          CHANGED=$(git diff --name-only "$BASE" HEAD -- projects/ \
-            | cut -d/ -f2 | sort -u)
+          if [ -n "$BASE" ] && git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+              : # BASE is valid, use it as-is
+          elif git rev-parse --verify -q HEAD~1 >/dev/null; then
+              BASE=$(git rev-parse HEAD~1)
+          else
+              BASE=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          CHANGED_FILES=$(git diff --name-only "$BASE" HEAD -- projects/)
+
+          declare -A seen
+          projects=()
+
+          while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              rel="${file#projects/}"
+              dir=$(dirname "$rel")
+              while [ "$dir" != "." ] && [ -n "$dir" ]; do
+                  if [ -f "projects/$dir/test.nix" ]; then
+                      if [ -z "${seen[$dir]:-}" ]; then
+                          seen[$dir]=1
+                          projects+=("$dir")
+                      fi
+                      break
+                  fi
+                  dir=$(dirname "$dir")
+              done
+          done <<< "$CHANGED_FILES"
           echo "projects<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$CHANGED" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "${projects[@]}" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Run tests for changed projects
         run: |
           while IFS= read -r proj; do
             [ -z "$proj" ] && continue
-            if [ -f "projects/$proj/test.nix" ]; then
-              echo "::group::Testing $proj"
-              nix run ".#$proj" -- up -d
-              sleep 5
-              nix run ".#$proj" -- down
-              echo "::endgroup::"
-            fi
+            app_name="${proj//\//-}"
+            echo "::group::Testing $proj"
+            nix run ".#$app_name" -- up -d
+            sleep 5
+            nix run ".#$app_name" -- down
+            echo "::endgroup::"
           done <<< "${{ steps.changed.outputs.projects }}"
