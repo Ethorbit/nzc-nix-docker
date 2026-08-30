@@ -20,11 +20,23 @@
 #
 
 { lib, pkgs, projects }:
+
 let
-    projectNames = lib.filterAttrs (n: v: v == "directory") (builtins.readDir projects);
-    hasTest = name: builtins.pathExists "${projects}/${name}/test.nix";
+    findTests = prefix: dir:
+        let
+            entries = builtins.readDir dir;
+            dirNames = builtins.attrNames (lib.filterAttrs (n: v: v == "directory") entries);
+        in
+        lib.concatMap (name:
+            let
+                subdir = "${dir}/${name}";
+                fullName = if prefix == "" then name else "${prefix}-${name}";
+                selfEntry = lib.optional (builtins.pathExists "${subdir}/test.nix") {
+                    name = fullName;
+                    value = import "${subdir}/test.nix" { inherit pkgs lib; };
+                };
+            in
+            selfEntry ++ findTests fullName subdir
+        ) dirNames;
 in
-builtins.listToAttrs (map (name: {
-    inherit name;
-    value = import "${projects}/${name}/test.nix" { inherit pkgs; inherit lib; };
-}) (builtins.filter hasTest (builtins.attrNames projectNames)))
+    builtins.listToAttrs (findTests "" projects)
