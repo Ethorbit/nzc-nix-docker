@@ -29,6 +29,7 @@ with lib;
         ./storage
         ./limit
         ./secrets
+        ./features
     ];
 
     options.nzc.instance = mkOption {

@@ -23,31 +23,20 @@
 
 with lib;
 
-let
-    instance = config.nzc.instance;
-in
 {
-    imports = [
-        ./checks
-        ./storage
-        ./network
-        ./secrets
-        ./features
+    options.nzc.project.features = mkOption {
+        description = "Features this project exposes as selectable";
+        type = types.listOf types.str;
+        default = [];
+        example = [ "php" "redis" "gpu" ];
+    };
+
+    config.nzc.project.checks = [
+        {
+            name = "features";
+            mode = "subsetOf";
+            official = config.nzc.project.features;
+            user = config.nzc.instance.features;
+        }
     ];
-
-    options.nzc.project = mkOption {
-        description = "An nZC project's settings specified by its developer(s)";
-        type = types.submodule {
-            options = {
-                name = mkOption {
-                    type = types.str;
-                };
-            };
-        };
-        default = {};
-    };
-
-    config.nzc.project = {
-        name = "nzc-${instance.name}";
-    };
 }
