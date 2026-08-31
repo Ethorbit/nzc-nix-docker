@@ -34,7 +34,6 @@ with lib;
     config.nzc.project.checks = [
         {
             name = "features";
-            mode = "subsetOf";
             official = config.nzc.project.features;
             user = config.nzc.instance.features;
         }

@@ -25,8 +25,27 @@ with lib;
 
 {
     options.nzc.instance.features = mkOption {
-        type = types.listOf types.str;
+        description = ''
+            Every feature the project declares must be listed here with an
+            explicit 'enabled' value, features cannot be silently skipped.
+        '';
+        type = types.listOf (types.submodule {
+            options = {
+                id = mkOption {
+                    description = "Identifier of the feature";
+                    type = types.str;
+                };
+                enabled = mkOption {
+                    description = "Whether this feature is turned on for this instance";
+                    type = types.bool;
+                    # no default forces every entry to set true / false
+                };
+            };
+        });
         default = [];
-        example = [ "php" "redis" ];
+        example = [
+            { id = "php"; enabled = true; }
+            { id = "redis"; enabled = false; }
+        ];
     };
 }
