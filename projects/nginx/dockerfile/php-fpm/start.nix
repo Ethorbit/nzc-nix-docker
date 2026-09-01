@@ -19,7 +19,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ writeText, PUID, PGID }:
+{ PUID, PGID, writeText }:
 
 writeText "start.sh" ''
 #!/bin/sh

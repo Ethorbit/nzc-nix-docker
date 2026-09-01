@@ -115,7 +115,6 @@ in
             nginx.service = defaults.service // {
                 build.context = "${dockerfiles.nginx}";
                 volumes = [
-                    "php_fpm_run:/var/run/php-fpm"
                     "${volumes.websites.volume}:/var/www:ro"
                 ] ++ (lib.optional exists.nginxConfig
                     "${nginxConfig}:/etc/nginx/nginx.conf:ro"
@@ -123,6 +122,8 @@ in
                     "${secrets.ssl.certificate}:/etc/nginx/certs/certificate.pem:ro"
                 ) ++ (lib.optional exists."ssl.key"
                     "${secrets.ssl.key}:/etc/nginx/certs/key.pem:ro"
+                ) ++ (lib.optional features.php.enabled
+                    "php_fpm_run:/var/run/php-fpm"
                 );
                 ports = let
                     bind = config.nzc.project.network.bindPortTo;
@@ -131,9 +132,10 @@ in
                     (bind "https" "tcp" 443)
                 ];
                 restart = "unless-stopped";
+            } // lib.optionalAttrs features.php.enabled {
+                depends_on = [ "php" ];
             };
         } // (lib.optionalAttrs features.php.enabled {
-            nginx.service.depends_on = [ "php" ];
             php.service = defaults.service // {
                 build.context = "${dockerfiles.php-fpm}";              
                 volumes = [
