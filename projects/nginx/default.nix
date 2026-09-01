@@ -25,7 +25,10 @@ let
     instance = config.nzc.instance;
     volumes = instance.storage.volumes;
     secrets = instance.secrets;
+    features = instance.features;
     nginxConfig = instance.nginxConfig;
+    uid = instance.user.uid;
+    gid = instance.user.gid;
 
     exists = {
         nginxConfig = nginxConfig != null;
@@ -33,33 +36,31 @@ let
         "ssl.key"  = secrets ? "ssl.key";
     };
 
-    dockerfile = pkgs.callPackage ./dockerfile {
-        PUID = toString instance.user.uid;
-        PGID = toString instance.user.gid;
-    } // lib.optionalAttrs exists."ssl.certificate" {
-        SSL_CERT = secrets."ssl.certificate";
-        SSL_KEY = secrets."ssl.key";
-    };
+    dockerfiles = {
+        nginx = pkgs.callPackage ./dockerfile/nginx {
+            PUID = toString uid;
+            PGID = toString gid;
+        } // lib.optionalAttrs exists."ssl.certificate" {
+            SSL_CERT = secrets."ssl.certificate";
+            SSL_KEY = secrets."ssl.key";
+        };
+    } // (lib.optionalAttrs features.php.enabled {
+        php-fpm = pkgs.callPackage ./dockerfile/php-fpm {
+            phpSettings = instance.php;
+        };
+    });
 in
 {
     imports = [
         ../../config
+        ./options.nix
     ];
-
-    options = with lib; {
-        nzc.instance.nginxConfig = mkOption {
-            type = types.nullOr types.path;
-            default = null;
-        };
-    };
 
     config = {
         nzc.project = {
-            # TODO: make features require user to set enabled false / true in (../config/project)
-            # before using it to toggle PHP functionality.
-            #features = [
-            #    "php"
-            #];
+            features = [
+                "php"
+            ];
 
             network.ports = [
                 {
@@ -85,10 +86,6 @@ in
 
             storage.volumes = [
                 {
-                    id = "configuration";
-                    required = false;
-                }
-                {
                     id = "websites";
                     required = true;
                 }
@@ -107,11 +104,16 @@ in
         ];
 
         project = defaults.project;
-        docker-compose = defaults.docker-compose;
+        docker-compose = defaults.docker-compose //
+            lib.optionalAttrs features.php.enabled {
+                volumes.php_fpm_run = {};
+            };
+
         services = {
             nginx.service = defaults.service // {
-                build.context = "${dockerfile}";
+                build.context = "${dockerfiles.nginx}";
                 volumes = [
+                    "php_fpm_run:/var/run/php-fpm"
                     "${volumes.websites.volume}:/var/www:ro"
                 ] ++ (lib.optional exists.nginxConfig
                     "${nginxConfig}:/etc/nginx/nginx.conf:ro"
@@ -128,6 +130,28 @@ in
                 ];
                 restart = "unless-stopped";
             };
-        };
+        } // (lib.optionalAttrs features.php.enabled {
+            nginx.service.depends_on = [ "php" ];
+            php.service = defaults.service // {
+                build.context = "${dockerfiles.php-fpm}";              
+                volumes = [
+                    "php_fpm_run:/var/run/php-fpm"
+                    "${volumes.websites.volume}:/var/www:ro"
+                ];
+                command = [
+                    "/bin/sh" "-c"
+                    (lib.concatStringsSep " " [
+                        "rm /var/run/php-fpm/sock 2> /dev/null"
+                        "; touch /var/run/php-fpm/sock"
+                        "&& chown ${toString uid}:${toString gid} /var/run/php-fpm"
+                        "&& chmod 770 /var/run/php-fpm"
+                        "&& chown ${toString uid}:${toString gid} /var/run/php-fpm/sock"
+                        "&& chmod 770 /var/run/php-fpm/sock"
+                        "&& php-fpm"
+                    ])
+                ];
+                restart = "always";
+            };
+        });
     };
 }

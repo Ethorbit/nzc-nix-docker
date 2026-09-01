@@ -20,6 +20,7 @@
 #
 
 {
+    IMAGE_TAG ? "1.23-alpine-perl",
     PUID,
     PGID,
     SSL_CERT ? null,
@@ -38,7 +39,7 @@ let
     };
 
     Dockerfile = (writeText "Dockerfile" ''
-    FROM nginxinc/nginx-unprivileged:1.23-alpine-perl
+    FROM nginxinc/nginx-unprivileged:${IMAGE_TAG}
     USER root
     COPY ./*.sh /docker-entrypoint.d/
     RUN chmod +x /docker-entrypoint.d/*.sh &&\
@@ -52,7 +53,6 @@ let
     USER nginx
     '');
 in
-
 runCommand "docker-context" {} ''
     mkdir -p $out
     cp ${entrypoint.reloadOnFileChange} $out/

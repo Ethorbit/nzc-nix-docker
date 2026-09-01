@@ -34,6 +34,9 @@
             https.number = 443;
         };
 
+        features.php.enabled = true;
+        php.debug = true;
+
         storage.volumes = {
             websites = {
                 volume = "${pkgs.writeTextDir "index.html" ''
