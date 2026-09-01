@@ -21,19 +21,25 @@
 
 {
     IMAGE_TAG ? "fpm-alpine3.17",
+    PUID,
+    PGID,
     phpSettings,
     lib,
+    callPackage,
     writeText,
     runCommand
 }:
 let
+    startScript = callPackage ./start.nix { inherit PUID PGID; };
+
     packages = lib.concatStringsSep " " phpSettings.packages;
     extensions = lib.concatStringsSep " " phpSettings.extensions;
     Dockerfile = (writeText "Dockerfile" ''
     FROM php:${IMAGE_TAG}
+    WORKDIR /
     RUN apk add --no-cache ${packages}
     RUN docker-php-ext-install ${extensions}
-    RUN mkdir /mnt/admin 
+    RUN mkdir /mnt/admin
     ${if phpSettings.debug then ''
     RUN cp /usr/local/etc/php/php.ini-development $PHP_INI_DIR/conf.d/php.ini &&\
         echo "error_log = /proc/1/fd/2" >> $PHP_INI_DIR/conf.d/php.ini &&\
@@ -46,9 +52,13 @@ let
         echo "access_log = /proc/1/fd/2" >> $PHP_INI_DIR/conf.d/php.ini &&\
         echo "fastcgi.logging = On" >> $PHP_INI_DIR/conf.d/php.ini
     ''}
+    COPY start.sh /start.sh
+    RUN chmod +x /start.sh
+    CMD [ "/start.sh" ]
     '');
 in
 runCommand "docker-context" {} ''
     mkdir -p $out
+    cp ${startScript} $out/start.sh
     cp ${Dockerfile} $out/Dockerfile
 ''

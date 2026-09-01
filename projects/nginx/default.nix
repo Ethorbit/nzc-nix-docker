@@ -46,6 +46,8 @@ let
         };
     } // (lib.optionalAttrs features.php.enabled {
         php-fpm = pkgs.callPackage ./dockerfile/php-fpm {
+            PUID = toString uid;
+            PGID = toString gid;
             phpSettings = instance.php;
         };
     });
@@ -137,18 +139,6 @@ in
                 volumes = [
                     "php_fpm_run:/var/run/php-fpm"
                     "${volumes.websites.volume}:/var/www:ro"
-                ];
-                command = [
-                    "/bin/sh" "-c"
-                    (lib.concatStringsSep " " [
-                        "rm /var/run/php-fpm/sock 2> /dev/null"
-                        "; touch /var/run/php-fpm/sock"
-                        "&& chown ${toString uid}:${toString gid} /var/run/php-fpm"
-                        "&& chmod 770 /var/run/php-fpm"
-                        "&& chown ${toString uid}:${toString gid} /var/run/php-fpm/sock"
-                        "&& chmod 770 /var/run/php-fpm/sock"
-                        "&& php-fpm"
-                    ])
                 ];
                 restart = "always";
             };
