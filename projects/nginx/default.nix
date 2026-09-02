@@ -168,8 +168,8 @@ in
                 build.context = "${dockerfiles.php-fpm}";              
                 volumes = [
                     "php_fpm_run:/var/run/php-fpm"
-                    "${phpConfig.ini.user}:/usr/local/etc/php/conf.d/php.ini"
-                    "${phpConfig.www.user}:/usr/local/etc/php-fpm.d/www.conf"
+                    "${phpConfig.ini.user}:/usr/local/etc/php/conf.d/php.ini:ro"
+                    "${phpConfig.www.user}:/usr/local/etc/php-fpm.d/www.conf:ro"
                     "${volumes.websites.volume}:/var/www:ro"
 
                 ];
