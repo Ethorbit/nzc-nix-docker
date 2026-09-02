@@ -19,18 +19,32 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ config, pkgs, lib, ... }:
 
 {
     options = with lib; {
         nzc = {
             instance = {
-                nginxConfig = mkOption {
+                nginx.config = mkOption {
                     type = types.nullOr types.path;
-                    default = null;
+                    default = ./app-config/nginx.conf;
                 };
 
-                php = {
+                php-fpm = {
+                    config = {
+                        www = mkOption {
+                            type = types.nullOr types.path;
+                            default = ./app-config/php-fpm/www.conf;
+                        };
+
+                        ini = mkOption {
+                            type = types.nullOr types.path;
+                            default = (pkgs.callPackage ./app-config/php-fpm/php.ini.nix {
+                                phpSettings = config.nzc.instance.php-fpm;
+                            });
+                        };
+                    };
+
                     debug = mkOption {
                         description = "Toggle error verbosity to debug PHP script problems.";
                         type = types.bool;

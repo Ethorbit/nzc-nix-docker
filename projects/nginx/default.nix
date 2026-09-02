@@ -26,12 +26,30 @@ let
     volumes = instance.storage.volumes;
     secrets = instance.secrets;
     features = instance.features;
-    nginxConfig = instance.nginxConfig;
+
+    nginxConfig = {
+        default = ./app-config/nginx.conf; 
+        user = instance.nginx.config;
+    };
+
+    phpConfig = {
+        www = {
+            default = ./app-config/php-fpm/www.conf;
+            user = instance.php-fpm.config.www;
+        };
+
+        ini = {
+            default = (pkgs.callPackage ./app-config/php-fpm/php.ini.nix {
+                phpSettings = instance.php-fpm;
+            });
+            user = instance.php-fpm.config.ini;
+        };
+    };
+
     uid = instance.user.uid;
     gid = instance.user.gid;
 
     exists = {
-        nginxConfig = nginxConfig != null;
         "ssl.certificate" = secrets ? "ssl.certificate";
         "ssl.key"  = secrets ? "ssl.key";
     };
@@ -48,7 +66,7 @@ let
         php-fpm = pkgs.callPackage ./dockerfile/php-fpm {
             PUID = toString uid;
             PGID = toString gid;
-            phpSettings = instance.php;
+            phpSettings = instance.php-fpm;
         };
     });
 in
@@ -96,14 +114,25 @@ in
 
         assertions = [
             {
-                assertion = exists.nginxConfig;
-                message = "You must specify nginxConfig: a file path to your nginx configuration.";
-            }
-            {
                 assertion = exists."ssl.certificate" == exists."ssl.key";
                 message = "ssl.certificate and ssl.key must either both be defined or both be undefined.";
             }
         ];
+
+        warnings =
+            lib.optional
+                (nginxConfig.user == nginxConfig.default)
+                ''
+                nginx.config is at its default value.
+                ''
+            ++ lib.optional (features.php.enabled && phpConfig.www.user == phpConfig.www.default)
+                ''
+                php-fpm.config.www is at its default value.
+                ''
+            ++ lib.optional (features.php.enabled && phpConfig.ini.user == phpConfig.ini.default)
+                ''
+                php-fpm.config.ini is at its default value.
+                '';
 
         project = defaults.project;
         docker-compose = defaults.docker-compose //
@@ -115,10 +144,9 @@ in
             nginx.service = defaults.service // {
                 build.context = "${dockerfiles.nginx}";
                 volumes = [
+                    "${nginxConfig.user}:/etc/nginx/nginx.conf:ro"
                     "${volumes.websites.volume}:/var/www:ro"
-                ] ++ (lib.optional exists.nginxConfig
-                    "${nginxConfig}:/etc/nginx/nginx.conf:ro"
-                ) ++ (lib.optional exists."ssl.certificate"
+                ] ++ (lib.optional exists."ssl.certificate"
                     "${secrets.ssl.certificate}:/etc/nginx/certs/certificate.pem:ro"
                 ) ++ (lib.optional exists."ssl.key"
                     "${secrets.ssl.key}:/etc/nginx/certs/key.pem:ro"
@@ -140,7 +168,10 @@ in
                 build.context = "${dockerfiles.php-fpm}";              
                 volumes = [
                     "php_fpm_run:/var/run/php-fpm"
+                    "${phpConfig.ini.user}:/usr/local/etc/php/conf.d/php.ini"
+                    "${phpConfig.www.user}:/usr/local/etc/php-fpm.d/www.conf"
                     "${volumes.websites.volume}:/var/www:ro"
+
                 ];
                 restart = "always";
             };

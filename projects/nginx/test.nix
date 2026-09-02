@@ -35,61 +35,90 @@
         };
 
         features.php.enabled = true;
-        php.debug = true;
+        php-fpm.debug = true;
 
         storage.volumes = {
             websites = {
-                volume = "${pkgs.writeTextDir "index.html" ''
+                volume = "${pkgs.writeTextDir "index.php" ''
+                    <!DOCTYPE html>
                     <html>
-                        <body>
-                            <h1><q>Hello World</q> - nzc-nix-docker</h1>
-                        </body>
+                    <head>
+                        <title>PHP Test</title>
+                    </head>
+                    <body>
+                        <h1><q>Hello World</q> - nzc-nix-docker</h1>
+
+                        <p>Current server time: <?php echo date('Y-m-d H:i:s'); ?></p>
+
+                        <p>PHP version: <?php echo phpversion(); ?></p>
+
+                        <?php
+                        $items = ['nginx', 'php-fpm', 'socket'];
+                        ?>
+                        <ul>
+                            <?php foreach ($items as $item): ?>
+                                <li><?php echo htmlspecialchars($item); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+
+                        <?php if (extension_loaded('pdo_mysql')): ?>
+                            <p>pdo_mysql extension is loaded.</p>
+                        <?php else: ?>
+                            <p>pdo_mysql extension is NOT loaded.</p>
+                        <?php endif; ?>
+                    </body>
                     </html>
                 ''}";
             };
         };
 
-        nginxConfig = (pkgs.writeText "config" ''
-            pid /tmp/nginx.pid;
+        #nginx.config = (pkgs.writeText "config" ''
+        #    pid /tmp/nginx.pid;
 
-            worker_processes auto;
+        #    worker_processes auto;
 
-            events {
-                worker_connections 1024;
-            }
+        #    events {
+        #        worker_connections 1024;
+        #    }
 
-            http {
-                include       mime.types;
-                default_type  application/octet-stream;
-                sendfile      on;
+        #    http {
+        #        include       mime.types;
+        #        default_type  application/octet-stream;
+        #        sendfile      on;
 
-                server {
-                    listen 80;
-                    server_name _;
+        #        server {
+        #            listen 80;
+        #            server_name _;
 
-                    root /var/www;
-                    index index.html index.htm;
+        #            root /var/www;
+        #            index index.php index.html;
 
-                    location / {
-                        try_files $uri $uri/ =404;
-                    }
-                }
+        #            location / {
+        #                try_files $uri $uri/ /index.php?$query_string;
+        #            }
 
-                # server {
-                #     listen 443 ssl;
-                #     server_name _;
-                #
-                #     ssl_certificate     /etc/nginx/certs/certificate.pem;
-                #     ssl_certificate_key /etc/nginx/certs/key.pem;
-                #
-                #     root /var/www;
-                #     index index.html index.htm;
-                #
-                #     location / {
-                #         try_files $uri $uri/ =404;
-                #     }
-                # }
-            }
-        '');
+        #            location ~ \.php$ {
+        #                include fastcgi_params;
+        #                fastcgi_pass unix:/var/run/php-fpm/sock;
+        #                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        #            }
+        #        }
+
+        #        # server {
+        #        #     listen 443 ssl;
+        #        #     server_name _;
+        #        #
+        #        #     ssl_certificate     /etc/nginx/certs/certificate.pem;
+        #        #     ssl_certificate_key /etc/nginx/certs/key.pem;
+        #        #
+        #        #     root /var/www;
+        #        #     index index.html index.htm;
+        #        #
+        #        #     location / {
+        #        #         try_files $uri $uri/ =404;
+        #        #     }
+        #        # }
+        #    }
+        #'');
     };
 }

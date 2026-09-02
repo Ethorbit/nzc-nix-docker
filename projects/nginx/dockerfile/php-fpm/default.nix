@@ -39,19 +39,8 @@ let
     WORKDIR /
     RUN apk add --no-cache ${packages}
     RUN docker-php-ext-install ${extensions}
-    RUN mkdir /mnt/admin
-    ${if phpSettings.debug then ''
-    RUN cp /usr/local/etc/php/php.ini-development $PHP_INI_DIR/conf.d/php.ini &&\
-        echo "error_log = /proc/1/fd/2" >> $PHP_INI_DIR/conf.d/php.ini &&\
-        echo "access_log = /proc/1/fd/2" >> $PHP_INI_DIR/conf.d/php.ini &&\
-        echo "fastcgi.logging = On" >> $PHP_INI_DIR/conf.d/php.ini &&\
-        echo "display_errors = stderr" >> $PHP_INI_DIR/conf.d/php.ini
-    '' else ''
-    RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/conf.d/php.ini &&\
-        echo "error_log = /proc/1/fd/2" >> $PHP_INI_DIR/conf.d/php.ini &&\
-        echo "access_log = /proc/1/fd/2" >> $PHP_INI_DIR/conf.d/php.ini &&\
-        echo "fastcgi.logging = On" >> $PHP_INI_DIR/conf.d/php.ini
-    ''}
+    RUN mkdir /mnt/admin &&\
+        addgroup -g ${PGID} php && adduser -D -u ${PUID} -G php php
     COPY start.sh /start.sh
     RUN chmod +x /start.sh
     CMD [ "/start.sh" ]
