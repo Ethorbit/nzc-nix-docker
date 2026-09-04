@@ -28,12 +28,12 @@
                 nginx = {
                     config = {
                         file = mkOption {
-                            type = types.nullOr types.path;
+                            type = types.path;
                             default = pkgs.callPackage ./app-config/nginx/nginx.conf.nix {};
                         };
                         
                         serverDirectory = mkOption {
-                            type = types.nullOr types.path;
+                            type = types.path;
                             default = pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
                                 key = config.nzc.instance.secrets."ssl.key";
                                 certificate = config.nzc.instance.secrets."ssl.certificate";
@@ -50,12 +50,12 @@
                 php-fpm = {
                     config = {
                         www = mkOption {
-                            type = types.nullOr types.path;
+                            type = types.path;
                             default = ./app-config/php-fpm/www.conf;
                         };
 
                         ini = mkOption {
-                            type = types.nullOr types.path;
+                            type = types.path;
                             default = (pkgs.callPackage ./app-config/php-fpm/php.ini.nix {
                                 debug = config.nzc.instance.php-fpm.debug;
                             });

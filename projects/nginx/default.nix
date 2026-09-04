@@ -130,12 +130,6 @@ in
                 assertion = exists."ssl.certificate" == exists."ssl.key";
                 message = "ssl.certificate and ssl.key must either both be defined or both be undefined.";
             }
-            {
-                assertion =
-                    builtins.pathExists instance.nginx.config.serverDirectory &&
-                    (builtins.readFileType instance.nginx.config.serverDirectory) == "directory";
-                message = "nginx.config.serverDirectory must be a path to a directory, not a file.";
-            }
         ];
 
         warnings =
