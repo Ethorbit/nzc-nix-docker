@@ -19,17 +19,26 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ debug, writeText }:
+{ key, certificate, writeTextDir }:
+let
+    setupSSL = (key != null && certificate != null);
+in
+writeTextDir "default.conf" ''
+    server {
+        listen 80;
+        server_name _;
 
-writeText "php.ini" ''
-${if debug then ''
-error_log = /proc/1/fd/2
-access_log = /proc/1/fd/2
-fastcgi.logging = On
-display_errors = stderr
-'' else ''
-error_log = /proc/1/fd/2
-access_log = /proc/1/fd/2
-fastcgi.logging = On
-''}
+        root /var/www;
+        index index.php index.html;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+            include fastcgi_params;
+            fastcgi_pass unix:/var/run/php-fpm/sock;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+    }
 ''

@@ -71,54 +71,5 @@
                 ''}";
             };
         };
-
-        #nginx.config = (pkgs.writeText "config" ''
-        #    pid /tmp/nginx.pid;
-
-        #    worker_processes auto;
-
-        #    events {
-        #        worker_connections 1024;
-        #    }
-
-        #    http {
-        #        include       mime.types;
-        #        default_type  application/octet-stream;
-        #        sendfile      on;
-
-        #        server {
-        #            listen 80;
-        #            server_name _;
-
-        #            root /var/www;
-        #            index index.php index.html;
-
-        #            location / {
-        #                try_files $uri $uri/ /index.php?$query_string;
-        #            }
-
-        #            location ~ \.php$ {
-        #                include fastcgi_params;
-        #                fastcgi_pass unix:/var/run/php-fpm/sock;
-        #                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        #            }
-        #        }
-
-        #        # server {
-        #        #     listen 443 ssl;
-        #        #     server_name _;
-        #        #
-        #        #     ssl_certificate     /etc/nginx/certs/certificate.pem;
-        #        #     ssl_certificate_key /etc/nginx/certs/key.pem;
-        #        #
-        #        #     root /var/www;
-        #        #     index index.html index.htm;
-        #        #
-        #        #     location / {
-        #        #         try_files $uri $uri/ =404;
-        #        #     }
-        #        # }
-        #    }
-        #'');
     };
 }

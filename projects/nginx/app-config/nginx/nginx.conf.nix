@@ -19,17 +19,21 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ debug, writeText }:
+{ writeText }:
 
-writeText "php.ini" ''
-${if debug then ''
-error_log = /proc/1/fd/2
-access_log = /proc/1/fd/2
-fastcgi.logging = On
-display_errors = stderr
-'' else ''
-error_log = /proc/1/fd/2
-access_log = /proc/1/fd/2
-fastcgi.logging = On
-''}
+writeText "nginx.conf" ''
+    pid /tmp/nginx.pid;
+
+    worker_processes auto;
+
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        include       mime.types;
+        default_type  application/octet-stream;
+        sendfile      on;
+        include       /etc/nginx/conf.d/*.conf;
+    }
 ''

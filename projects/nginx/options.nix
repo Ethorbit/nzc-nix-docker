@@ -25,9 +25,26 @@
     options = with lib; {
         nzc = {
             instance = {
-                nginx.config = mkOption {
-                    type = types.nullOr types.path;
-                    default = ./app-config/nginx.conf;
+                nginx = {
+                    config = {
+                        file = mkOption {
+                            type = types.nullOr types.path;
+                            default = pkgs.callPackage ./app-config/nginx/nginx.conf.nix {};
+                        };
+                        
+                        serverDirectory = mkOption {
+                            type = types.nullOr types.path;
+                            default = pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
+                                key = config.nzc.instance.secrets."ssl.key";
+                                certificate = config.nzc.instance.secrets."ssl.certificate";
+                            };
+                        };
+
+                        snippets = mkOption {
+                            type = types.nullOr types.path;
+                            default = null;
+                        };
+                    };
                 };
 
                 php-fpm = {
@@ -40,7 +57,7 @@
                         ini = mkOption {
                             type = types.nullOr types.path;
                             default = (pkgs.callPackage ./app-config/php-fpm/php.ini.nix {
-                                phpSettings = config.nzc.instance.php-fpm;
+                                debug = config.nzc.instance.php-fpm.debug;
                             });
                         };
                     };

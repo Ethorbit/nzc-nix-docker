@@ -28,10 +28,22 @@ let
     features = instance.features;
 
     nginxConfig = {
-        default = ./app-config/nginx.conf; 
-        user = instance.nginx.config;
-    };
+        file = {
+            default = pkgs.callPackage ./app-config/nginx/nginx.conf.nix {};
+            user = instance.nginx.config.file;
+        };
 
+        serverDirectory = {
+            default = pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
+                key = secrets."ssl.key";
+                certificate = secrets."ssl.certificate";
+            };
+            user = instance.nginx.config.serverDirectory;
+        };
+
+        snippets = instance.nginx.config.snippets;
+    };
+    
     phpConfig = {
         www = {
             default = ./app-config/php-fpm/www.conf;
@@ -40,7 +52,7 @@ let
 
         ini = {
             default = (pkgs.callPackage ./app-config/php-fpm/php.ini.nix {
-                phpSettings = instance.php-fpm;
+                debug = instance.php-fpm.debug;
             });
             user = instance.php-fpm.config.ini;
         };
@@ -50,6 +62,7 @@ let
     gid = instance.user.gid;
 
     exists = {
+        "nginx.snippets" = instance.nginx.config.snippets != null;
         "ssl.certificate" = secrets ? "ssl.certificate";
         "ssl.key"  = secrets ? "ssl.key";
     };
@@ -117,13 +130,24 @@ in
                 assertion = exists."ssl.certificate" == exists."ssl.key";
                 message = "ssl.certificate and ssl.key must either both be defined or both be undefined.";
             }
+            {
+                assertion =
+                    builtins.pathExists instance.nginx.config.serverDirectory &&
+                    (builtins.readFileType instance.nginx.config.serverDirectory) == "directory";
+                message = "nginx.config.serverDirectory must be a path to a directory, not a file.";
+            }
         ];
 
         warnings =
             lib.optional
-                (nginxConfig.user == nginxConfig.default)
+                (nginxConfig.file.user == nginxConfig.file.default)
                 ''
-                nginx.config is at its default value.
+                nginx.config.file wasn't set, so a default nginx.conf will be used instead.
+                ''
+            ++ lib.optional
+                (nginxConfig.serverDirectory.user == nginxConfig.serverDirectory.default)
+                ''
+                nginx.config.serverDirectory wasn't set, so a default server will be used instead.
                 ''
             ++ lib.optional (features.php.enabled && phpConfig.www.user == phpConfig.www.default)
                 ''
@@ -144,9 +168,13 @@ in
             nginx.service = defaults.service // {
                 build.context = "${dockerfiles.nginx}";
                 volumes = [
-                    "${nginxConfig.user}:/etc/nginx/nginx.conf:ro"
                     "${volumes.websites.volume}:/var/www:ro"
-                ] ++ (lib.optional exists."ssl.certificate"
+                    "${instance.nginx.config.file}:/etc/nginx/nginx.conf:ro"
+                    "${instance.nginx.config.serverDirectory}:/etc/nginx/conf.d:ro"
+                ] ++ (lib.optional exists."nginx.snippets"
+                    "${nginxConfig.snippets}:/etc/nginx/snippets:ro"
+                )
+                ++ (lib.optional exists."ssl.certificate"
                     "${secrets.ssl.certificate}:/etc/nginx/certs/certificate.pem:ro"
                 ) ++ (lib.optional exists."ssl.key"
                     "${secrets.ssl.key}:/etc/nginx/certs/key.pem:ro"
