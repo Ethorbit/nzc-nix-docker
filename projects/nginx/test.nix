@@ -21,6 +21,17 @@
 
 { pkgs, ... }:
 
+let
+    testCert = pkgs.runCommand "test-cert" {
+        nativeBuildInputs = [ pkgs.mkcert pkgs.nssTools ];
+    } ''
+        mkdir -p $out
+        export CAROOT=$TMPDIR/mkcert-ca
+        mkdir -p $CAROOT
+        HOME=$TMPDIR mkcert -install
+        HOME=$TMPDIR mkcert -cert-file $out/certificate.pem -key-file $out/key.pem localhost 127.0.0.1
+    '';
+in
 {
     project = "nginx";
     instance = {
@@ -34,8 +45,17 @@
             https.number = 443;
         };
 
+        secrets = {
+            "ssl.certificate" = "${testCert}/certificate.pem";
+            "ssl.key" = "${testCert}/key.pem";
+        };
+
         features.php.enabled = true;
         php-fpm.debug = true;
+
+        # their defaults are fine.
+        # nginx.config.file
+        # nginx.config.serverDirectory
 
         storage.volumes = {
             websites = {

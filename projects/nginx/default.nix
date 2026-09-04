@@ -175,9 +175,9 @@ in
                     "${nginxConfig.snippets}:/etc/nginx/snippets:ro"
                 )
                 ++ (lib.optional exists."ssl.certificate"
-                    "${secrets.ssl.certificate}:/etc/nginx/certs/certificate.pem:ro"
+                    "${secrets."ssl.certificate"}:/etc/nginx/certs/certificate.pem:ro"
                 ) ++ (lib.optional exists."ssl.key"
-                    "${secrets.ssl.key}:/etc/nginx/certs/key.pem:ro"
+                    "${secrets."ssl.key"}:/etc/nginx/certs/key.pem:ro"
                 ) ++ (lib.optional features.php.enabled
                     "php_fpm_run:/var/run/php-fpm"
                 );
