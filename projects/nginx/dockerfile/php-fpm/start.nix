@@ -19,26 +19,18 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ PUID, PGID, writeText }:
 
-with lib;
+writeText "start.sh" ''
+#!/bin/sh
 
-{
-    options.nzc.instance.features = mkOption {
-        description = "Every feature the project declares must be listed here";
-        type = types.attrsOf (types.submodule {
-            options = {
-                enabled = mkOption {
-                    description = "Whether this feature is turned on for this instance";
-                    type = types.bool;
-                    # no default, this forces every entry to state it explicitly
-                };
-            };
-        });
-        default = {};
-        example = {
-            php.enabled = true;
-            redis.enabled = false;
-        };
-    };
-}
+# setup socket
+rm /var/run/php-fpm/sock 2> /dev/null
+touch /var/run/php-fpm/sock
+chown ${PUID}:${PGID} /var/run/php-fpm
+chmod 770 /var/run/php-fpm
+chown ${PUID}:${PGID} /var/run/php-fpm/sock
+chmod 770 /var/run/php-fpm/sock
+
+exec php-fpm
+''

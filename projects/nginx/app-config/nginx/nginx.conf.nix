@@ -19,26 +19,21 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ writeText }:
 
-with lib;
+writeText "nginx.conf" ''
+    pid /tmp/nginx.pid;
 
-{
-    options.nzc.instance.features = mkOption {
-        description = "Every feature the project declares must be listed here";
-        type = types.attrsOf (types.submodule {
-            options = {
-                enabled = mkOption {
-                    description = "Whether this feature is turned on for this instance";
-                    type = types.bool;
-                    # no default, this forces every entry to state it explicitly
-                };
-            };
-        });
-        default = {};
-        example = {
-            php.enabled = true;
-            redis.enabled = false;
-        };
-    };
-}
+    worker_processes auto;
+
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        include       mime.types;
+        default_type  application/octet-stream;
+        sendfile      on;
+        include       /etc/nginx/conf.d/*.conf;
+    }
+''

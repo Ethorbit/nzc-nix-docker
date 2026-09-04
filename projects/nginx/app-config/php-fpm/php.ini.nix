@@ -19,26 +19,17 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ debug, writeText }:
 
-with lib;
-
-{
-    options.nzc.instance.features = mkOption {
-        description = "Every feature the project declares must be listed here";
-        type = types.attrsOf (types.submodule {
-            options = {
-                enabled = mkOption {
-                    description = "Whether this feature is turned on for this instance";
-                    type = types.bool;
-                    # no default, this forces every entry to state it explicitly
-                };
-            };
-        });
-        default = {};
-        example = {
-            php.enabled = true;
-            redis.enabled = false;
-        };
-    };
-}
+writeText "php.ini" ''
+${if debug then ''
+error_log = /proc/1/fd/2
+access_log = /proc/1/fd/2
+fastcgi.logging = On
+display_errors = stderr
+'' else ''
+error_log = /proc/1/fd/2
+access_log = /proc/1/fd/2
+fastcgi.logging = On
+''}
+''
