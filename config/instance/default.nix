@@ -30,6 +30,7 @@ with lib;
         ./limit
         ./secrets
         ./features
+        ./docker
     ];
 
     options.nzc.instance = mkOption {

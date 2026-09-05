@@ -23,32 +23,20 @@
 
 with lib;
 
-let
-    instance = config.nzc.instance;
-in
 {
-    imports = [
-        ./checks
-        ./storage
-        ./network
-        ./secrets
-        ./features
-        ./docker
+    options.nzc.project.docker.tags = mkOption {
+        description = "Docker image tags that can be changed";
+        type = types.listOf types.str;
+        default = [];
+        example = [ "php" "redis" ];
+    };
+
+    config.nzc.project.checks = [
+        {
+            name = "docker.tags";
+            official = config.nzc.project.docker.tags;
+            user = config.nzc.instance.docker.tags;
+            mode = "subsetOf";
+        }
     ];
-
-    options.nzc.project = mkOption {
-        description = "An nZC project's settings specified by its developer(s)";
-        type = types.submodule {
-            options = {
-                name = mkOption {
-                    type = types.str;
-                };
-            };
-        };
-        default = {};
-    };
-
-    config.nzc.project = {
-        name = "nzc-${instance.name}";
-    };
 }

@@ -26,6 +26,7 @@ let
     volumes = instance.storage.volumes;
     secrets = instance.secrets;
     features = instance.features;
+    dockerTags = instance.docker.tags;
 
     nginxConfig = {
         file = {
@@ -62,25 +63,31 @@ let
     gid = instance.user.gid;
 
     exists = {
+        "dockerTags.nginx" = dockerTags ? "nginx";
+        "dockerTags.php-fpm" = dockerTags ? "php-fpm";
         "nginx.snippets" = instance.nginx.config.snippets != null;
         "ssl.certificate" = secrets ? "ssl.certificate";
         "ssl.key"  = secrets ? "ssl.key";
     };
 
     dockerfiles = {
-        nginx = pkgs.callPackage ./dockerfile/nginx {
+        nginx = (pkgs.callPackage ./dockerfile/nginx ({
             PUID = toString uid;
             PGID = toString gid;
-        } // lib.optionalAttrs exists."ssl.certificate" {
+        } // (lib.optionalAttrs exists."dockerTags.nginx" {
+            IMAGE_TAG = dockerTags."nginx";
+        }) // lib.optionalAttrs exists."ssl.certificate" {
             SSL_CERT = secrets."ssl.certificate";
             SSL_KEY = secrets."ssl.key";
-        };
+        }));
     } // (lib.optionalAttrs features.php.enabled {
-        php-fpm = pkgs.callPackage ./dockerfile/php-fpm {
+        php-fpm = (pkgs.callPackage ./dockerfile/php-fpm {
             PUID = toString uid;
             PGID = toString gid;
             phpSettings = instance.php-fpm;
-        };
+        } // lib.optionalAttrs exists."dockerTags.php-fpm" {
+            IMAGE_TAG = dockerTags."php-fpm";
+        });
     });
 in
 {
@@ -123,6 +130,8 @@ in
                     required = true;
                 }
             ];
+
+            docker.tags = [ "nginx" "php-fpm" ];
         };
 
         assertions = [

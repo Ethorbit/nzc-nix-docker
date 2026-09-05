@@ -25,18 +25,22 @@ let
     instance = config.nzc.instance;
     volumes = instance.storage.volumes;
     secrets = instance.secrets;
+    dockerTags = instance.docker.tags;
 
     exists = {
+        "dockerTags.alpine" = dockerTags ? "alpine";
         "volumes" = builtins.length (builtins.attrValues volumes) > 0;
         "sftp.public.key" = secrets ? "sftp.public.key";
         "ssh.public.key"  = secrets ? "ssh.public.key";
     };
 
-    dockerfile = pkgs.callPackage ./dockerfile {
+    dockerfile = pkgs.callPackage ./dockerfile ({
         PUID = toString instance.user.uid;
         PGID = toString instance.user.gid;
         ALLOW_PASSWORD_LOGIN = (!exists."sftp.public.key" && !exists."ssh.public.key");
-    };
+    } // (lib.optionalAttrs exists."dockerTags.alpine" {
+        IMAGE_TAG = dockerTags."alpine";
+    }));
 in
 {
     imports = [
@@ -64,6 +68,8 @@ in
                     id = "ssh.public.key";
                 }
             ];
+
+            docker.tags = [ "alpine" ];
         };
 
         assertions = [
