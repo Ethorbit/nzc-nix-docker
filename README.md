@@ -95,11 +95,13 @@ instances = {
     my-project-instance = {
         project = "example";
         module = { ... }: {
-            nzc.instance = {
-                user = { uid = 1000; gid = 1000; };
-                network.ports.http = 8080;
-                storage.volumes.data.volume = "my_data";
-                secrets.password = /run/secrets/my-password;
+            config = {
+                nzc.instance = {
+                    user = { uid = 1000; gid = 1000; };
+                    network.ports.http = 8080;
+                    storage.volumes.data.volume = "my_data";
+                    secrets.password = /run/secrets/my-password;
+                };
             };
         };
     };
