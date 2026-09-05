@@ -28,7 +28,8 @@
                 composed = arion.eval {
                     modules = [
                         (project + "/default.nix")
-                        { nzc.instance = inst.instance // { inherit name; }; }
+                        inst.module
+                        { nzc.instance.name = name; }
                     ];
                     inherit pkgs;
                 };

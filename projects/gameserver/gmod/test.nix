@@ -19,29 +19,31 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ pkgs, ... }:
+{ ... }:
 
 {
     project = "gameserver/gmod";
-    instance = {
-        user = {
-            uid = 4000;
-            gid = 4000;
-        };
-
-        network.ports = {
-            query.number = 27015;
-            client.number = 27015;
-        };
-
-        storage.volumes = {
-            gmod = {
-                volume = "gmod";
+    module = { ... }: {
+        nzc.instance = {
+            user = {
+                uid = 4000;
+                gid = 4000;
             };
 
-            shared = {
-                volume = "test_gmod_shared";
-                scope = "global";
+            network.ports = {
+                query.number = 27015;
+                client.number = 27015;
+            };
+
+            storage.volumes = {
+                gmod = {
+                    volume = "gmod";
+                };
+
+                shared = {
+                    volume = "test_gmod_shared";
+                    scope = "global";
+                };
             };
         };
     };

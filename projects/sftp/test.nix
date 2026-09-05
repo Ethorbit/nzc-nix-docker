@@ -19,28 +19,32 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ pkgs, ... }:
+{ lib, ... }:
 
 {
     project = "sftp";
-    instance = {
-        user = {
-            uid = 4000;
-            gid = 4000;
-        };
+    module = { pkgs, ... }: {
+        config = {
+            nzc.instance = {
+                user = {
+                    uid = 4000;
+                    gid = 4000;
+                };
 
-        network.ports = {
-            sftp = {
-                number = 2221;
+                network.ports = {
+                    sftp = {
+                        number = 2221;
+                    };
+                };
+
+                storage.volumes = {
+                    test = {
+                        volume = "test";
+                    };
+                };
+
+                secrets."password" = pkgs.writeText "password" "test";
             };
         };
-
-        storage.volumes = {
-            test = {
-                volume = "test";
-            };
-        };
-
-        secrets."password" = pkgs.writeText "password" "test";
     };
 }

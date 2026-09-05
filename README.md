@@ -94,11 +94,13 @@ The [official nZC NixOS system config](https://github.com/Ethorbit/nixos-configs
 instances = {
     my-project-instance = {
         project = "example";
-        instance = {
-            user = { uid = 1000; gid = 1000; };
-            network.ports.http = 8080;
-            storage.volumes.data.volume = "my_data";
-            secrets.password = /run/secrets/my-password;
+        module = { ... }: {
+            nzc.instance = {
+                user = { uid = 1000; gid = 1000; };
+                network.ports.http = 8080;
+                storage.volumes.data.volume = "my_data";
+                secrets.password = /run/secrets/my-password;
+            };
         };
     };
 };

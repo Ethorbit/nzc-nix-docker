@@ -34,61 +34,63 @@ let
 in
 {
     project = "nginx";
-    instance = {
-        user = {
-            uid = 1200;
-            gid = 1200;
-        };
+    module = { ... }: {
+        nzc.instance = {
+            user = {
+                uid = 1200;
+                gid = 1200;
+            };
 
-        network.ports = {
-            http.number = 80;
-            https.number = 443;
-        };
+            network.ports = {
+                http.number = 80;
+                https.number = 443;
+            };
 
-        secrets = {
-            "ssl.certificate" = "${testCert}/certificate.pem";
-            "ssl.key" = "${testCert}/key.pem";
-        };
+            secrets = {
+                "ssl.certificate" = "${testCert}/certificate.pem";
+                "ssl.key" = "${testCert}/key.pem";
+            };
 
-        # their defaults are fine.
-        # nginx.config.file
-        # nginx.config.serverDirectory
-        
-        features.php.enabled = true;
-        php-fpm.debug = true;
+            # their defaults are fine.
+            # nginx.config.file
+            # nginx.config.serverDirectory
+            
+            features.php.enabled = true;
+            php-fpm.debug = true;
 
-        storage.volumes = {
-            websites = {
-                volume = "${pkgs.writeTextDir "index.php" ''
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>PHP Test</title>
-                    </head>
-                    <body>
-                        <h1><q>Hello World</q> - nzc-nix-docker</h1>
+            storage.volumes = {
+                websites = {
+                    volume = "${pkgs.writeTextDir "index.php" ''
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>PHP Test</title>
+                        </head>
+                        <body>
+                            <h1><q>Hello World</q> - nzc-nix-docker</h1>
 
-                        <p>Current server time: <?php echo date('Y-m-d H:i:s'); ?></p>
+                            <p>Current server time: <?php echo date('Y-m-d H:i:s'); ?></p>
 
-                        <p>PHP version: <?php echo phpversion(); ?></p>
+                            <p>PHP version: <?php echo phpversion(); ?></p>
 
-                        <?php
-                        $items = ['nginx', 'php-fpm', 'socket'];
-                        ?>
-                        <ul>
-                            <?php foreach ($items as $item): ?>
-                                <li><?php echo htmlspecialchars($item); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
+                            <?php
+                            $items = ['nginx', 'php-fpm', 'socket'];
+                            ?>
+                            <ul>
+                                <?php foreach ($items as $item): ?>
+                                    <li><?php echo htmlspecialchars($item); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
 
-                        <?php if (extension_loaded('pdo_mysql')): ?>
-                            <p>pdo_mysql extension is loaded.</p>
-                        <?php else: ?>
-                            <p>pdo_mysql extension is NOT loaded.</p>
-                        <?php endif; ?>
-                    </body>
-                    </html>
-                ''}";
+                            <?php if (extension_loaded('pdo_mysql')): ?>
+                                <p>pdo_mysql extension is loaded.</p>
+                            <?php else: ?>
+                                <p>pdo_mysql extension is NOT loaded.</p>
+                            <?php endif; ?>
+                        </body>
+                        </html>
+                    ''}";
+                };
             };
         };
     };
