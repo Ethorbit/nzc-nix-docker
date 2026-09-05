@@ -20,12 +20,13 @@
 #
 
 {
-    writeText,
-    runCommand,
-    callPackage,
+    IMAGE_TAG ? "0733510",
     PUID ? "1000",
     PGID ? "1000",
-    UMASK ? "007"
+    UMASK ? "007",
+    writeText,
+    runCommand,
+    callPackage
 }:
 let
     start = {
@@ -34,7 +35,7 @@ let
     };
 
     Dockerfile = (writeText "Dockerfile" ''
-    FROM ethorbit/gmod-server:0733510
+    FROM ethorbit/gmod-server:${IMAGE_TAG}
     ENV UMASK=${UMASK}
     ENV QUERY_PORT=27015
     ENV CLIENT_PORT=27005

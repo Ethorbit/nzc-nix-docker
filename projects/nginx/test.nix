@@ -50,12 +50,12 @@ in
             "ssl.key" = "${testCert}/key.pem";
         };
 
-        features.php.enabled = true;
-        php-fpm.debug = true;
-
         # their defaults are fine.
         # nginx.config.file
         # nginx.config.serverDirectory
+        
+        features.php.enabled = true;
+        php-fpm.debug = true;
 
         storage.volumes = {
             websites = {

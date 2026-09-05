@@ -25,17 +25,21 @@ let
     nzc = config.nzc;
     defaults = nzc.arion.defaults;
     instance = nzc.instance;
+    dockerTags = instance.docker.tags;
 
     exists = {
+        "dockerTags.gmod" = dockerTags ? "gmod";
         "token.steam" = instance.secrets ? "token.steam";
         "password.rcon" = instance.secrets ? "password.rcon";
     };
 
     dockerfiles = with pkgs; {
-        gmod = callPackage ./dockerfile {
+        gmod = callPackage ./dockerfile ({
             PUID = toString instance.user.uid;
             PGID = toString instance.user.gid;
-        };
+        } // (lib.optionalAttrs exists."dockerTags.gmod" {
+            IMAGE_TAG = dockerTags."gmod";
+        }));
     };
 in
 {
@@ -76,6 +80,8 @@ in
                 required = false;
             }
         ];
+
+        docker.tags = [ "gmod" ];
     };
 
     project = defaults.project;

@@ -20,14 +20,15 @@
 #
 
 {
-    callPackage,
-    writeText,
-    runCommand,
+    IMAGE_TAG ? "3.23.3",
     UNAME ? "ssh",
     GNAME ? "ssh",
     PUID ? "1000",
     PGID ? "1000",
-    ALLOW_PASSWORD_LOGIN
+    ALLOW_PASSWORD_LOGIN,
+    callPackage,
+    writeText,
+    runCommand
 }:
 let
     sshd_config = callPackage ./sshd_config.nix {
@@ -39,7 +40,7 @@ let
     };
 
     Dockerfile = (writeText "Dockerfile" ''
-    FROM alpine:3.23.3
+    FROM alpine:${IMAGE_TAG}
     COPY entrypoint.sh /
     COPY sshd_config /etc/ssh/sshd_config
     RUN apk add --no-cache openssh rsync shadow &&\

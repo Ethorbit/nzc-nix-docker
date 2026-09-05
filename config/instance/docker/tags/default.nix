@@ -19,36 +19,17 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ config, lib, ... }:
+{ lib, ... }:
 
 with lib;
 
-let
-    instance = config.nzc.instance;
-in
 {
-    imports = [
-        ./checks
-        ./storage
-        ./network
-        ./secrets
-        ./features
-        ./docker
-    ];
-
-    options.nzc.project = mkOption {
-        description = "An nZC project's settings specified by its developer(s)";
-        type = types.submodule {
-            options = {
-                name = mkOption {
-                    type = types.str;
-                };
-            };
-        };
+    options.nzc.instance.docker.tags = mkOption {
+        description = "";
+        type = types.attrsOf types.str;
         default = {};
-    };
-
-    config.nzc.project = {
-        name = "nzc-${instance.name}";
+        example = {
+            php = "latest";
+        };
     };
 }
