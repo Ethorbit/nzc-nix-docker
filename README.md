@@ -94,21 +94,46 @@ The [official nZC NixOS system config](https://github.com/Ethorbit/nixos-configs
 instances = {
     my-project-instance = {
         project = "example";
-        instance = {
-            user = { uid = 1000; gid = 1000; };
-            network.ports.http = 8080;
-            storage.volumes.data.volume = "my_data";
-            secrets.password = /run/secrets/my-password;
+        module = { ... }: {
+            config = {
+                nzc.instance = {
+                    user = { uid = 1000; gid = 1000; };
+                    network.ports.http = 8080;
+                    storage.volumes.data.volume = "my_data";
+                    secrets.password = /run/secrets/my-password;
+                };
+            };
         };
     };
 };
 ```
 
-#### Generated Apps
+#### Generated Apps:
 
 - `nix run .#my-instance -- up -d` - manage a specific instance
 - `nix run .#example -- up -d` - manage all instances of the `example` project
 - `nix run .#all -- up -d` - manage all instances
+
+## Advanced: overriding projects
+
+Since instance configs are just Nix modules, you can override or extend values a [project](projects/) already defines.
+
+Changing the restart policy:
+```nix
+{ lib, ... }: {
+    config.services.<project-service>.service.restart = lib.mkForce "always";
+}
+```
+
+Sharing a network:
+```nix
+{ ... }: {
+    config.docker-compose.networks.shared.external = true;
+    config.services.<project-service>.service.networks.shared = {};
+}
+```
+
+**Not recommended:** a project is designed to work independently. Connecting two projects creates **Dependency Hell**, a nasty problem [the previous repo experienced](https://github.com/Ethorbit/nzc-docker). We learned the hard way; don't do this.
 
 <br>
 

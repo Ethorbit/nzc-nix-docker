@@ -31,9 +31,13 @@ let
             let
                 subdir = "${dir}/${name}";
                 fullName = if prefix == "" then name else "${prefix}-${name}";
-                selfEntry = lib.optional (builtins.pathExists "${subdir}/test.nix") {
+                testPath = "${subdir}/test.nix";
+                selfEntry = lib.optional (builtins.pathExists testPath) {
                     name = fullName;
-                    value = import "${subdir}/test.nix" { inherit pkgs lib; };
+                    value = {
+                        project = (import testPath { inherit pkgs lib; }).project;
+                        module = (import testPath { inherit pkgs lib; }).module;
+                    };
                 };
             in
             selfEntry ++ findTests fullName subdir
