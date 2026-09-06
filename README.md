@@ -108,11 +108,32 @@ instances = {
 };
 ```
 
-#### Generated Apps
+#### Generated Apps:
 
 - `nix run .#my-instance -- up -d` - manage a specific instance
 - `nix run .#example -- up -d` - manage all instances of the `example` project
 - `nix run .#all -- up -d` - manage all instances
+
+### Advanced: overriding projects
+
+Since instance configs are just Nix modules, you can override or extend values a [project](projects/) already defines.
+
+Changing the restart policy:
+```nix
+{ lib, ... }: {
+    config.services.<project-service>.service.restart = lib.mkForce "always";
+}
+```
+
+Sharing a network:
+```nix
+{ ... }: {
+    config.docker-compose.networks.shared.external = true;
+    config.services.<project-service>.service.networks.shared = {};
+}
+```
+
+**Not recommended:** a project is designed to work independently. Connecting two projects creates **Dependency Hell**, a nasty problem [the previous repo experienced](https://github.com/Ethorbit/nzc-docker). We learned the hard way; don't do this.
 
 <br>
 
