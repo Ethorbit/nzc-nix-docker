@@ -114,7 +114,7 @@ instances = {
 - `nix run .#example -- up -d` - manage all instances of the `example` project
 - `nix run .#all -- up -d` - manage all instances
 
-### Advanced: overriding projects
+## Advanced: overriding projects
 
 Since instance configs are just Nix modules, you can override or extend values a [project](projects/) already defines.
 
