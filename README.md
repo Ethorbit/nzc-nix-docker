@@ -162,3 +162,4 @@ Arion is [patched](patches/docker-compose-service.nix.patch) to expose additiona
   - `cpus`
   - `cpu_shares`
   - `mem_limit`
+  - `ulimits`
