@@ -66,6 +66,43 @@ in
                     };
                 };
 
+                timezone = mkOption {
+                    description = ''
+                        Mounts the host's timezone info into the container so its
+                        clock and locale-aware formatting match the host.
+
+                        Turn this off if you want containers running in UTC
+                        regardless of host timezone.
+                    '';
+                    type = types.submodule {
+                        options = {
+                            enable = mkOption {
+                                description = ''Will this container get the host's timezone mounted in?'';
+                                type = types.bool;
+                                default = false;
+                            };
+
+                            volumes = mkOption {
+                                description = ''The timezone-related paths that will be passed to containers'';
+                                type = types.listOf (imported.types.lxcfs-volume);
+                                default = [
+                                    {
+                                        host = "/etc/localtime";
+                                        container = "/etc/localtime";
+                                        readonly = true;
+                                    }
+                                    {
+                                        host = "/etc/timezone";
+                                        container = "/etc/timezone";
+                                        readonly = true;
+                                    }
+                                ];
+                            };
+                        };
+                    };
+                    default = {};
+                };
+
                 lxcfs = mkOption {
                     description = ''
                         We use lxcfs so that the containerized programs can see the container's resources rather 

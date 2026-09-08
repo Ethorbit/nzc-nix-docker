@@ -51,14 +51,19 @@ in
     Set storage.lxcfs.enable to True.
     Then make sure lxcfs is running on the host:
       sudo systemctl enable lxcfs --now
-    '' ] else []);
+    '' ] else [])
+    ++ (if storage.timezone.enable != true then [ ''
+    WARNING: Timezone syncing is disabled, containers will see UTC instead of host time.
+    Set storage.timezone.enable to True to sync time with the host.
+'' ] else []);
 
     nzc.arion.defaults.service = {
         volumes = let
             lxcfs = instance.storage.lxcfs;
+            timezone = instance.storage.timezone;
         in map (
             volume: "${volume.host}:${volume.container}${if volume.readonly then ":ro" else ":rw"}"
-        ) (if lxcfs.enable then lxcfs.volumes else []);
+        ) ((if lxcfs.enable then lxcfs.volumes else []) ++ (if timezone.enable then timezone.volumes else []));
 
         labels = instance.labels // (if limit.enable then {
             "com.docker-tc.enabled" = "1";
