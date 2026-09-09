@@ -19,20 +19,31 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
+{ pkgs, lib, config, ... }:
 
+let
+    defaults = config.nzc.arion.defaults;
+    instance = config.nzc.instance;
+    secrets = instance.secrets;
+    features = instance.features;
+    dockerTags = instance.docker.tags;
+
+    uid = instance.user.uid;
+    gid = instance.user.gid;
+
+    exists = {
+        "dockerTags.backups" = dockerTags ? "backups";
+    };
+
+    dockerfiles = (lib.optionalAttrs features.phpmyadmin.enabled {
+    });
+in
 {
-    options = with lib; {
-        nzc = {
-            instance = {
-                mysql = {
-                    config = mkOption {
-                        description = "Path to a custom mysql.cnf configuration file.";
-                        type = types.path;
-                        default = ./app-config/mysql.cnf;
-                    };
-                };
-            };
-        };
+    options = lib.mkIf features.backups.enabled {
+
+    };
+
+    config = lib.mkIf features.backups.enabled {
+
     };
 }

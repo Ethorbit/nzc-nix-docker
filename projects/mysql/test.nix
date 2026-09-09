@@ -39,10 +39,21 @@
                 backups.enabled = false;
             };
 
-            secrets."admin.password" = 
-                pkgs.writeText "password" ''
-                    testpassword
+            secrets = {
+                "phpmyadmin.blowfish" =
+                    pkgs.writeText "blowfish-secret" ''
+                        ${builtins.readFile 
+                            (pkgs.runCommand 
+                                "gen-blowfish"
+                                {}
+                                "${pkgs.openssl}/bin/openssl rand -base64 32 > $out")}
                 '';
+
+                "admin.password" = 
+                    pkgs.writeText "password" ''
+                        testpassword
+                    '';
+            };
         };
     };
 }
