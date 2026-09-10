@@ -34,8 +34,8 @@ writeText "reload_on_file_change.sh" ''
             -e close_write,modify,attrib,move,create,delete \
             --exclude '\.swp$|.*template.*' \
             /etc/nginx/conf.d/ \
-            ${if SSL_CERT != null then SSL_CERT else ""} \
-            ${if SSL_KEY != null then SSL_KEY else ""} | while read dir action file; do
+            ${if SSL_CERT != null then "/etc/nginx/certs/certificate.pem" else ""} \
+            ${if SSL_KEY != null then "/etc/nginx/certs/key.pem" else ""} | while read dir action file; do
                 echo "File in $dir changed ($action) - $file, reloading.."
                 nginx -t && nginx -s reload
             done

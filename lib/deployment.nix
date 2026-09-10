@@ -30,6 +30,7 @@
                         (project + "/default.nix")
                         inst.module
                         { nzc.instance.name = name; }
+                        { nzc.arion.eval = arion.eval; }
                     ];
                     inherit pkgs;
                 };

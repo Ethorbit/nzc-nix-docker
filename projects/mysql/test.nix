@@ -19,8 +19,20 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ ... }:
+{ pkgs, ... }:
 
+let
+    testCert = pkgs.runCommand "test-cert" {
+        nativeBuildInputs = [ pkgs.mkcert pkgs.nssTools ];
+    } ''
+        set -e
+        mkdir -p $out
+        export CAROOT=$TMPDIR/mkcert-ca
+        mkdir -p $CAROOT
+        HOME=$TMPDIR mkcert -install
+        HOME=$TMPDIR mkcert -cert-file $out/certificate.pem -key-file $out/key.pem localhost 127.0.0.1
+    '';
+in
 {
     project = "mysql";
     module = { pkgs, ... }: {
@@ -32,6 +44,8 @@
 
             network.ports = {
                 mysql.number = 3306;
+                http.number = 8080;
+                https.number = 8443;
             };
 
             features = {
@@ -40,6 +54,11 @@
             };
 
             secrets = {
+                "admin.password" = 
+                    pkgs.writeText "password" ''
+                        testpassword
+                    '';
+
                 "phpmyadmin.blowfish" =
                     pkgs.writeText "blowfish-secret" ''
                         ${builtins.readFile 
@@ -49,10 +68,8 @@
                                 "${pkgs.openssl}/bin/openssl rand -base64 32 > $out")}
                 '';
 
-                "admin.password" = 
-                    pkgs.writeText "password" ''
-                        testpassword
-                    '';
+                "ssl.certificate" = "${testCert}/certificate.pem";
+                "ssl.key" = "${testCert}/key.pem";
             };
         };
     };

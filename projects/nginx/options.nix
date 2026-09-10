@@ -35,8 +35,8 @@
                         serverDirectory = mkOption {
                             type = types.path;
                             default = pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
-                                key = config.nzc.instance.secrets."ssl.key";
-                                certificate = config.nzc.instance.secrets."ssl.certificate";
+                                key = config.nzc.instance.secrets."ssl.key" or null;
+                                certificate = config.nzc.instance.secrets."ssl.certificate" or null;
                             };
                         };
 

@@ -42,7 +42,6 @@ let
 
     exists = {
         "dockerTags.phpmyadmin" = dockerTags ? "phpmyadmin";
-        "dockerTags.nginx" = dockerTags ? "nginx";
         "ssl.certificate" = secrets ? "ssl.certificate";
         "ssl.key"  = secrets ? "ssl.key";
     };
@@ -54,19 +53,48 @@ let
         } // (lib.optionalAttrs exists."dockerTags.phpmyadmin" {
             IMAGE_TAG = dockerTags."phpmyadmin";
         })));
-
-        # nginx = (pkgs.callPackage ./dockerfile/nginx ({
-        #     PUID = toString uid;
-        #     PGID = toString gid;
-        # } // (lib.optionalAttrs exists."dockerTags.nginx") {
-        #     IMAGE_TAG = dockerTags."nginx";
-        # } // (lib.optionalAttrs exists."ssl.certificate" {
-        #     SSL_CERT = secrets."ssl.certificate";
-        #     SSL_KEY = secrets."ssl.key";
-        # })));
     });
+
+    stripUndefined = attrs: keys: builtins.removeAttrs attrs keys;
+
+    arionEval = config.nzc.arion.eval;
+    nginxProject = arionEval {
+        modules = [
+            ../../../nginx
+            ../../../../config
+            ({ config, ... }: {
+                nzc.instance = {
+                    user = { inherit uid gid; };
+                    network.ports = {
+                        http.number = instance.network.ports."http".number;
+                        https.number = instance.network.ports."https".number;
+                    };
+
+                    secrets = lib.optionalAttrs (exists."ssl.certificate") {
+                        "ssl.certificate" = secrets."ssl.certificate";
+                    } // lib.optionalAttrs (exists."ssl.key") {
+                        "ssl.key" = secrets."ssl.key";
+                    };
+
+                    features.php.enabled = true;
+                    storage.volumes.websites.volume = "phpmyadmin";
+                    nginx.config = {
+                        serverDirectory = lib.mkDefault (pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
+                            key = secrets."ssl.key" or null;
+                            certificate = secrets."ssl.certificate" or null;
+                        });
+                    };
+                };
+            })
+        ];
+        inherit pkgs;
+    };
 in
 {
+    imports = [
+        ../../../nginx/options.nix
+    ];
+
     options = with lib; {
         nzc.instance = {
             phpmyadmin = {
@@ -80,12 +108,12 @@ in
     };
 
     config = lib.mkIf features.phpmyadmin.enabled {
-        warnings = 
+        warnings = nginxProject.config.warnings ++
             lib.optional 
                 (phpmyadminConfig.user == phpmyadminConfig.default)
                 ''phpmyadmin.config wasn't set, using a default config.inc.php file.'';
 
-        assertions = [
+        assertions = nginxProject.config.assertions ++ [
             {
                 assertion = exists."ssl.certificate" == exists."ssl.key";
                 message = "ssl.certificate and ssl.key must either both be defined or both be undefined.";
@@ -93,6 +121,17 @@ in
         ];
 
         nzc.project = {
+            network.ports = [
+                {
+                    id = "http";
+                    required = true;
+                }
+                {
+                    id = "https";
+                    required = true;
+                }
+            ];
+        
             secrets = [
                 {
                     id = "phpmyadmin.blowfish";
@@ -103,7 +142,11 @@ in
             docker.tags = [ "phpmyadmin" ];
         };
 
-        docker-compose.volumes."phpmyadmin" = {};
+        docker-compose = {
+            volumes = nginxProject.config.docker-compose.volumes // {
+                "phpmyadmin" = {};
+            };
+        };
 
         services = with lib; {
             phpmyadmin-permissions.service = config.nzc.arion.presets.service.permissions // {
@@ -122,6 +165,19 @@ in
                 ];
                 depends_on.phpmyadmin-permissions.condition = "service_completed_successfully";
                 restart = mkDefault "on-failure";
+            };
+
+            nginx.service = (stripUndefined nginxProject.config.services.nginx.service ["healthcheck" "assertWarn"]) // {
+                volumes = nginxProject.config.services.nginx.service.volumes ++ [
+                    "phpmyadmin:/srv/phpmyadmin:ro"
+                ];
+                depends_on = [ "phpmyadmin" ];
+            };
+
+            php.service = (stripUndefined nginxProject.config.services.php.service ["healthcheck" "assertWarn"]) // {
+                volumes = nginxProject.config.services.php.service.volumes ++ [
+                    "phpmyadmin:/srv/phpmyadmin:ro"
+                ];
             };
         };
     };

@@ -23,7 +23,6 @@
     IMAGE_TAG ? "5.2.1-fpm-alpine",
     PUID ? "1000",
     PGID ? "1000",
-    callPackage,
     writeText,
     runCommand
 }:

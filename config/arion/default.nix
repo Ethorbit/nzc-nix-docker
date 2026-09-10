@@ -36,5 +36,10 @@ with lib;
         nzc.arion.presets = mkOption {
             description = ''nZC Arion configuration to simplify project development'';
         };
+
+        nzc.arion.eval = lib.mkOption {
+            type = lib.types.raw;   # or lib.types.unspecified if raw isn't available in your nixpkgs version
+            description = "Reference to arion's eval-composition function, for nested project evaluation.";
+        };
     };
 }
