@@ -52,7 +52,7 @@ $i = 0;
  * First server
  */
 $i++;
-$cfg['Servers'][$i]['socket'] = \'\';
+$cfg['Servers'][$i]['socket'] = ''';
 
 /* Authentication type */
 $cfg['Servers'][$i]['auth_type'] = 'cookie';
@@ -73,8 +73,8 @@ $cfg['Servers'][$i]['AllowDeny']['rules'] = array();
  */
 
 /* User used to manipulate with storage */
-// $cfg['Servers'][$i]['controlhost'] = \'\';
-// $cfg['Servers'][$i]['controlport'] = \'\';
+// $cfg['Servers'][$i]['controlhost'] = ''';
+// $cfg['Servers'][$i]['controlport'] = ''';
 // $cfg['Servers'][$i]['controluser'] = 'pma';
 // $cfg['Servers'][$i]['controlpass'] = 'pmapass';
 
@@ -107,8 +107,8 @@ $cfg['Servers'][$i]['AllowDeny']['rules'] = array();
 /**
  * Directories for saving/loading files from server
  */
-$cfg['UploadDir'] = \'\';
-$cfg['SaveDir'] = \'\';
+$cfg['UploadDir'] = ''';
+$cfg['SaveDir'] = ''';
 
 /**
  * Whether to display icons or text or both icons and text in table row
@@ -189,7 +189,7 @@ $cfg['SaveDir'] = \'\';
  * 'URLQueryEncryptionSecretKey' is a 32 bytes long secret key used to encrypt/decrypt the URL query string.
  */
 //$cfg['URLQueryEncryption'] = true;
-//$cfg['URLQueryEncryptionSecretKey'] = \'\';
+//$cfg['URLQueryEncryptionSecretKey'] = ''';
 
 /**
  * You can find more configuration options in the documentation

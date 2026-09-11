@@ -22,7 +22,7 @@
 #
 
 if [ -z "$(ls -A /panel/)" ]; then
-    cp -r --no-preserve=ownership /var/www/html/* /panel/
+    cp -r /var/www/html/* /panel/
 fi
 
 #exec "$@"

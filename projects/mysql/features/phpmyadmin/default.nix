@@ -77,7 +77,7 @@ let
                     };
 
                     features.php.enabled = true;
-                    storage.volumes.websites.volume = "phpmyadmin";
+                    storage.volumes.websites.volume = "phpmyadmin-web";
                     nginx.config = {
                         serverDirectory = lib.mkDefault (pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
                             key = secrets."ssl.key" or null;
@@ -145,6 +145,7 @@ in
         docker-compose = {
             volumes = nginxProject.config.docker-compose.volumes // {
                 "phpmyadmin" = {};
+                "phpmyadmin-web" = {};
             };
         };
 
@@ -159,8 +160,6 @@ in
                 build.context = "${dockerfiles.phpmyadmin}";
                 volumes = [
                     "${phpmyadminConfig.user}:/var/www/html/config.inc.php:ro"
-                    "${secrets."admin.password"}:/run/secrets/mysql-password:ro"
-                    "${secrets."phpmyadmin.blowfish"}:/run/secrets/phpmyadmin-blowfishsecret:ro"
                     "phpmyadmin:/panel"
                 ];
                 depends_on.phpmyadmin-permissions.condition = "service_completed_successfully";
@@ -177,6 +176,8 @@ in
             php.service = (stripUndefined nginxProject.config.services.php.service ["healthcheck" "assertWarn"]) // {
                 volumes = nginxProject.config.services.php.service.volumes ++ [
                     "phpmyadmin:/srv/phpmyadmin:ro"
+                    "${secrets."admin.password"}:/run/secrets/mysql-password:ro"
+                    "${secrets."phpmyadmin.blowfish"}:/run/secrets/phpmyadmin-blowfishsecret:ro"
                 ];
             };
         };
