@@ -110,7 +110,9 @@ in
                 ''mysql.config wasn't set, using a default mysql.cnf file.'';
 
         project = defaults.project;
-        docker-compose = defaults.docker-compose;
+        docker-compose = defaults.docker-compose // {
+            volumes.mysql = {};
+        };
 
         networks = {
             mysql = {};
@@ -120,9 +122,10 @@ in
             mysql.service = defaults.service // {
                 build.context = "${dockerfile}";
                 volumes = [
+                    "mysql:/var/lib/mysql"
+                    "${mysqlConfig.user}:/etc/mysql/conf.d/mysql.cnf:ro"
                     "${secrets."root.password"}:/run/secrets/root-password:ro"
                     "${secrets."admin.password"}:/run/secrets/admin-password:ro"
-                    "${mysqlConfig.user}:/etc/mysql/conf.d/mysql.cnf"
                 ];
                 environment = {
                     MYSQL_ADMIN_NAME = instance.mysql.adminName;
