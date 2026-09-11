@@ -46,14 +46,12 @@ let
         "ssl.key"  = secrets ? "ssl.key";
     };
 
-    dockerfiles = (lib.optionalAttrs features.phpmyadmin.enabled {
-        phpmyadmin = (pkgs.callPackage ./dockerfile/phpmyadmin ({
-            PUID = toString uid;
-            PGID = toString gid;
-        } // (lib.optionalAttrs exists."dockerTags.phpmyadmin" {
-            IMAGE_TAG = dockerTags."phpmyadmin";
-        })));
-    });
+    dockerfile = (pkgs.callPackage ./dockerfile ({
+        PUID = toString uid;
+        PGID = toString gid;
+    } // (lib.optionalAttrs exists."dockerTags.phpmyadmin" {
+        IMAGE_TAG = dockerTags."phpmyadmin";
+    })));
 
     stripUndefined = attrs: keys: builtins.removeAttrs attrs keys;
 
@@ -157,7 +155,7 @@ in
             };
 
             phpmyadmin.service = defaults.service // {
-                build.context = "${dockerfiles.phpmyadmin}";
+                build.context = "${dockerfile}";
                 volumes = [
                     "${phpmyadminConfig.user}:/var/www/html/config.inc.php:ro"
                     "phpmyadmin:/panel"
