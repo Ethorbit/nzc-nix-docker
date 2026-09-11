@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # LICENSE HEADER MANAGED BY add-license-header
 #
 # Copyright (C) 2026 Ethorbit
@@ -19,11 +21,15 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ writeText }:
+ROOT_PASSWORD="$(cat $MYSQL_ROOT_PASSWORD_FILE)"
+ADMIN_PASSWORD="$(cat $MYSQL_ADMIN_PASSWORD_FILE)"
+[ -n "$ROOT_PASSWORD" ] || { echo "root-password secret is empty" >&2; exit 1; }
+[ -n "$ADMIN_PASSWORD" ] || { echo "admin-password secret is empty" >&2; exit 1; }
+[ "${#ROOT_PASSWORD}" -le 5 ] && { echo "root-password secret is too short" >&2; exit 1; }
+[ "${#ADMIN_PASSWORD}" -le 5 ] && { echo "admin-password secret is too short" >&2; exit 1; }
+[ "${#ROOT_PASSWORD}" -ge 256 ] && { echo "root-password secret is too long" >&2; exit 1; }
+[ "${#ADMIN_PASSWORD}" -ge 256 ] && { echo "admin-password secret is too long" >&2; exit 1; }
 
-writeText "entrypoint.sh" ''
-#!/bin/sh
 chmod 750 /var/lib/mysql
 chown mysql:mysql /var/lib/mysql
 exec /usr/local/bin/docker-entrypoint.sh $@
-''

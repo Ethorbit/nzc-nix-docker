@@ -28,7 +28,7 @@
     runCommand
 }:
 let
-    entrypoint = callPackage ./entrypoint.nix {};
+    entrypoint = ./entrypoint.sh;
     initAdmin = ./init-admin.sh;
 
     Dockerfile = (writeText "Dockerfile" ''

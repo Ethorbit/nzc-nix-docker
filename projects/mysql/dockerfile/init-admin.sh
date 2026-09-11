@@ -28,13 +28,6 @@ echo "$MYSQL_ADMIN_NAME" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*$' || { echo "Invali
 ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD"
 ADMIN_PASSWORD="$(cat $MYSQL_ADMIN_PASSWORD_FILE)"
 
-[ -n "$ROOT_PASSWORD" ] || { echo "root-password secret is empty" >&2; exit 1; }
-[ -n "$ADMIN_PASSWORD" ] || { echo "admin-password secret is empty" >&2; exit 1; }
-[ "${#ROOT_PASSWORD}" -le 5 ] && { echo "root-password secret is too short" >&2; exit 1; }
-[ "${#ADMIN_PASSWORD}" -le 5 ] && { echo "admin-password secret is too short" >&2; exit 1; }
-[ "${#ROOT_PASSWORD}" -ge 256 ] && { echo "root-password secret is too long" >&2; exit 1; }
-[ "${#ADMIN_PASSWORD}" -ge 256 ] && { echo "admin-password secret is too long" >&2; exit 1; }
-
 CREDS_PIPE="$(mktemp -u)"
 mkfifo -m 600 "$CREDS_PIPE"
 trap 'rm -f "$CREDS_PIPE"' EXIT
