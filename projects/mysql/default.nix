@@ -55,6 +55,12 @@ in
         nzc = {
             instance = {
                 mysql = {
+                    adminName = mkOption {
+                        description = "The MySQL admin username.";
+                        type = types.string;
+                        default = "admin";
+                    };
+
                     config = mkOption {
                         description = "Path to a custom mysql.cnf configuration file.";
                         type = types.path;
@@ -77,6 +83,10 @@ in
             ];
 
             secrets = [
+                {
+                    id = "root.password";
+                    required = true;
+                }
                 {
                     id = "admin.password";
                     required = true;
@@ -102,15 +112,22 @@ in
         project = defaults.project;
         docker-compose = defaults.docker-compose;
 
+        networks = {
+            mysql = {};
+        };
+
         services = with lib; {
             mysql.service = defaults.service // {
                 build.context = "${dockerfile}";
                 volumes = [
+                    "${secrets."root.password"}:/run/secrets/root-password:ro"
                     "${secrets."admin.password"}:/run/secrets/admin-password:ro"
                     "${mysqlConfig.user}:/etc/mysql/conf.d/mysql.cnf"
                 ];
                 environment = {
-                    MYSQL_ROOT_PASSWORD_FILE = "/run/secrets/admin-password";
+                    MYSQL_ADMIN_NAME = instance.mysql.adminName;
+                    MYSQL_ADMIN_PASSWORD_FILE = "/run/secrets/admin-password";
+                    MYSQL_ROOT_PASSWORD_FILE = "/run/secrets/root-password";
                 };
                 ports = let
                     bind = config.nzc.project.network.bindPortTo;
@@ -135,6 +152,7 @@ in
                     retries = 3;
                 };
                 restart = mkDefault "always";
+                networks = [ "mysql" ];
             };
         };
     };

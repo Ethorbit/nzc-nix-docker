@@ -29,12 +29,12 @@
 }:
 let
     entrypoint = callPackage ./entrypoint.nix {};
+    initAdmin = ./init-admin.sh;
 
     Dockerfile = (writeText "Dockerfile" ''
     FROM mysql:${IMAGE_TAG}
-    ARG UID 
-    ARG GID
     COPY --chown=mysql:mysql ./entrypoint.sh /
+    COPY --chown=mysql:mysql ./init-admin.sh /docker-entrypoint-initdb.d/init-admin.sh
     RUN chmod +x /entrypoint.sh &&\
         groupmod -g ${PGID} mysql &&\
         usermod -u ${PUID} mysql &&\
@@ -45,7 +45,9 @@ let
 in
 runCommand "docker-context" {} ''
     mkdir -p $out
+    
     cp ${entrypoint} $out/entrypoint.sh
+    cp ${initAdmin} $out/init-admin.sh
     cp ${Dockerfile} $out/Dockerfile
     cat $out/Dockerfile
 ''

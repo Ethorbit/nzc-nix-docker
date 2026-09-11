@@ -33,7 +33,7 @@ let
 
     phpmyadminConfig = rec {
         defaultSettings = {
-            PMA_HOST = "127.0.0.1";
+            PMA_HOST = "mysql";
             MYSQL_USER = "root";
         };
         user = instance.phpmyadmin.config;
@@ -179,6 +179,8 @@ in
                     "${secrets."admin.password"}:/run/secrets/mysql-password:ro"
                     "${secrets."phpmyadmin.blowfish"}:/run/secrets/phpmyadmin-blowfishsecret:ro"
                 ];
+
+                networks = [ "mysql" ];
             };
         };
     };

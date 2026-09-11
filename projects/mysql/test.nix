@@ -54,6 +54,10 @@ in
             };
 
             secrets = {
+                "root.password" =
+                    pkgs.writeText "password" ''
+                        testpassword
+                    '';
                 "admin.password" = 
                     pkgs.writeText "password" ''
                         testpassword
