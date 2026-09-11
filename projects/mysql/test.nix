@@ -69,7 +69,7 @@ in
                             (pkgs.runCommand 
                                 "gen-blowfish"
                                 {}
-                                "${pkgs.openssl}/bin/openssl rand -base64 32 > $out")}
+                                "${pkgs.openssl}/bin/openssl rand -base64 24 | tr -d '\n' > $out")}
                 '';
 
                 "ssl.certificate" = "${testCert}/certificate.pem";
