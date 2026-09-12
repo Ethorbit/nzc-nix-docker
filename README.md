@@ -40,10 +40,10 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 | Project | Path | Example |
 |---------|------|----------------|
 | [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | [test.nix](projects/gameserver/gmod/test.nix)
-#### Discord
+#### Discord Bots
 | Project | Path | Example |
 |---------|------|----------------|
-| [Sticky Message Bot](projects/discord/stickymessages) | `projects/discord/stickymessages` | [test.nix](projects/discord/stickymessages/test.nix)
+| [Sticky Messages](projects/discord/stickymessages) | `projects/discord/stickymessages` | [test.nix](projects/discord/stickymessages/test.nix)
 
 ## Requirements
 
