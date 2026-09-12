@@ -33,10 +33,17 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 
 | Project | Path | Example |
 |---------|------|----------------|
-| [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | [test.nix](projects/gameserver/gmod/test.nix)
 | [MySQL](projects/mysql) | `projects/mysql` | [test.nix](projects/mysql/test.nix)
 | [Nginx](projects/nginx) | `projects/nginx` | [test.nix](projects/nginx/test.nix)
 | [SFTP](projects/sftp) | `projects/sftp` | [test.nix](projects/sftp/test.nix)
+#### Game Servers
+| Project | Path | Example |
+|---------|------|----------------|
+| [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | [test.nix](projects/gameserver/gmod/test.nix)
+#### Discord
+| Project | Path | Example |
+|---------|------|----------------|
+| [Sticky Message Bot](projects/discord/stickymessages) | `projects/discord/stickymessages` | [test.nix](projects/discord/stickymessages/test.nix)
 
 ## Requirements
 
