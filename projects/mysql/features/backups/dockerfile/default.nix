@@ -19,27 +19,27 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
-with lib;
 {
-    imports = [
-        ./project
-        ./service
-        ./docker-compose
-    ];
-
-    options = {
-        nzc.arion.defaults = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-
-        nzc.arion.presets = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-
-        nzc.arion.eval = lib.mkOption {
-            type = lib.types.raw;   # or lib.types.unspecified if raw isn't available in your nixpkgs version
-            description = "Reference to arion's eval-composition function, for nested project evaluation.";
-        };
-    };
-}
+    IMAGE_TAG ? "2083e44",
+    PUID ? "1000",
+    PGID ? "1000",
+    writeText,
+    runCommand
+}:
+let
+    Dockerfile = (writeText "Dockerfile" ''
+    FROM ethorbit/mysql-anacron-backup:${IMAGE_TAG}
+    USER root
+    RUN apk update &&\
+        apk add --no-cache shadow &&\
+        usermod -u "${PUID}" mysql-backup &&\
+        groupmod -g "${PGID}" mysql-backup &&\
+        chown -R "${PUID}":"${PGID}" /home/mysql-backup
+    USER mysql-backup
+    '');
+in
+runCommand "docker-context" {} ''
+    mkdir -p $out
+    cp ${Dockerfile} $out/Dockerfile
+    cat $out/Dockerfile
+''

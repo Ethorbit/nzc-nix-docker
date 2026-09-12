@@ -36,8 +36,8 @@ let
 
         serverDirectory = {
             default = pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
-                key = secrets."ssl.key";
-                certificate = secrets."ssl.certificate";
+                key = secrets."ssl.key" or null;
+                certificate = secrets."ssl.certificate" or null;
             };
             user = instance.nginx.config.serverDirectory;
         };
@@ -204,7 +204,7 @@ in
                     "${volumes.websites.volume}:/var/www:ro"
 
                 ];
-                restart = "always";
+                restart = "unless-stopped";
             };
         });
     };

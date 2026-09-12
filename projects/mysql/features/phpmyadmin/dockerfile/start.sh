@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # LICENSE HEADER MANAGED BY add-license-header
 #
 # Copyright (C) 2026 Ethorbit
@@ -19,27 +21,6 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
-with lib;
-{
-    imports = [
-        ./project
-        ./service
-        ./docker-compose
-    ];
-
-    options = {
-        nzc.arion.defaults = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-
-        nzc.arion.presets = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
-
-        nzc.arion.eval = lib.mkOption {
-            type = lib.types.raw;   # or lib.types.unspecified if raw isn't available in your nixpkgs version
-            description = "Reference to arion's eval-composition function, for nested project evaluation.";
-        };
-    };
-}
+while true; do
+    sleep 5
+done

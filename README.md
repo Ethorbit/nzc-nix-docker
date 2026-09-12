@@ -34,6 +34,7 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 | Project | Path | Example |
 |---------|------|----------------|
 | [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | [test.nix](projects/gameserver/gmod/test.nix)
+| [MySQL](projects/mysql) | `projects/mysql` | [test.nix](projects/mysql/test.nix)
 | [Nginx](projects/nginx) | `projects/nginx` | [test.nix](projects/nginx/test.nix)
 | [SFTP](projects/sftp) | `projects/sftp` | [test.nix](projects/sftp/test.nix)
 
@@ -162,3 +163,4 @@ Arion is [patched](patches/docker-compose-service.nix.patch) to expose additiona
   - `cpus`
   - `cpu_shares`
   - `mem_limit`
+  - `ulimits`

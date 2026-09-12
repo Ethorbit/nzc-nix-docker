@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # LICENSE HEADER MANAGED BY add-license-header
 #
 # Copyright (C) 2026 Ethorbit
@@ -19,27 +21,22 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ lib, ... }:
-with lib;
-{
-    imports = [
-        ./project
-        ./service
-        ./docker-compose
-    ];
+set -e
 
-    options = {
-        nzc.arion.defaults = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
+echo "$MYSQL_ADMIN_NAME" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*$' || { echo "Invalid MYSQL_ADMIN_NAME" >&2; exit 1; }
 
-        nzc.arion.presets = mkOption {
-            description = ''nZC Arion configuration to simplify project development'';
-        };
+ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD"
+ADMIN_PASSWORD="$(cat $MYSQL_ADMIN_PASSWORD_FILE)"
 
-        nzc.arion.eval = lib.mkOption {
-            type = lib.types.raw;   # or lib.types.unspecified if raw isn't available in your nixpkgs version
-            description = "Reference to arion's eval-composition function, for nested project evaluation.";
-        };
-    };
-}
+CREDS_PIPE="$(mktemp -u)"
+mkfifo -m 600 "$CREDS_PIPE"
+trap 'rm -f "$CREDS_PIPE"' EXIT
+
+printf '[client]\nuser=root\npassword=%s\n' "$ROOT_PASSWORD" > "$CREDS_PIPE" &
+
+mysql --defaults-extra-file="$CREDS_PIPE" <<-EOSQL
+    DROP USER 'root'@'%';
+    CREATE USER IF NOT EXISTS '$MYSQL_ADMIN_NAME'@'%' IDENTIFIED BY '$ADMIN_PASSWORD';
+    GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_ADMIN_NAME'@'%';
+    FLUSH PRIVILEGES;
+EOSQL

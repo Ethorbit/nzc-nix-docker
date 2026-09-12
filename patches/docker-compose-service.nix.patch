@@ -1,5 +1,5 @@
 diff --git a/src/nix/modules/service/docker-compose-service.nix b/src/nix/modules/service/docker-compose-service.nix
-index eb48ae1..53e0961 100644
+index eb48ae1..1965159 100644
 --- a/src/nix/modules/service/docker-compose-service.nix
 +++ b/src/nix/modules/service/docker-compose-service.nix
 @@ -89,6 +89,13 @@ in
@@ -43,7 +43,36 @@ index eb48ae1..53e0961 100644
      service.ports = mkOption {
        type = listOf types.unspecified;
        default = [];
-@@ -502,12 +529,22 @@ in
+@@ -323,6 +350,17 @@ in
+       default = {};
+       description = serviceRef "sysctls";
+     };
++    service.ulimits = mkOption {
++      type = attrsOf (either int (submodule {
++        options = {
++          soft = mkOption { type = int; description = "Soft limit"; };
++          hard = mkOption { type = int; description = "Hard limit"; };
++        };
++      }));
++      default = {};
++      example = { nproc = 65535; nofile = { soft = 20000; hard = 40000; }; };
++      description = serviceRef "ulimits";
++    };
+     service.capabilities = mkOption {
+       type = attrsOf (nullOr bool);
+       default = {};
+@@ -448,6 +486,10 @@ in
+       environment
+       sysctls
+       ;
++  } // lib.optionalAttrs (config.service.ulimits != {}) {
++    ulimits = lib.mapAttrs
++      (_: v: if builtins.isAttrs v then { inherit (v) soft hard; } else v)
++      config.service.ulimits;
+   } // lib.optionalAttrs (config.service.image != null) {
+     inherit (config.service) image;
+   } // lib.optionalAttrs (config.service.build.context != null ) {
+@@ -502,12 +544,22 @@ in
      inherit (config.service) stop_grace_period;
    } // lib.optionalAttrs (config.service.tmpfs != []) {
      inherit (config.service) tmpfs;
