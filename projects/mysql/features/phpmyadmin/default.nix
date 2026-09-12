@@ -106,8 +106,7 @@ in
     };
 
     config = lib.mkIf features.phpmyadmin.enabled {
-        warnings = nginxProject.config.warnings ++
-            lib.optional 
+        warnings = lib.optional 
                 (phpmyadminConfig.user == phpmyadminConfig.default)
                 ''phpmyadmin.config wasn't set, using a default config.inc.php file.'';
 
