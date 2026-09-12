@@ -22,7 +22,7 @@
 { ... }:
 
 {
-    project = "discord/stickymessages";
+    project = "discord/sticky-messages";
     module = { ... }: {
         config = {
             nzc.instance = {

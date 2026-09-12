@@ -43,7 +43,7 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 #### Discord Bots
 | Project | Path | Example |
 |---------|------|----------------|
-| [Sticky Messages](projects/discord/stickymessages) | `projects/discord/stickymessages` | [test.nix](projects/discord/stickymessages/test.nix)
+| [Sticky Messages](projects/discord/sticky-messages) | `projects/discord/sticky-messages` | [test.nix](projects/discord/sticky-messages/test.nix)
 
 ## Requirements
 
