@@ -26,6 +26,7 @@ let
     instance = config.nzc.instance;
     secrets = instance.secrets;
     dockerTags = instance.docker.tags;
+    features = instance.features;
 
     uid = instance.user.uid;
     gid = instance.user.gid;
@@ -57,7 +58,7 @@ in
                 mysql = {
                     adminName = mkOption {
                         description = "The MySQL admin username.";
-                        type = types.string;
+                        type = types.str;
                         default = "admin";
                     };
 
@@ -126,7 +127,8 @@ in
                     "${mysqlConfig.user}:/etc/mysql/conf.d/mysql.cnf:ro"
                     "${secrets."root.password"}:/run/secrets/root-password:ro"
                     "${secrets."admin.password"}:/run/secrets/admin-password:ro"
-                ];
+                ] ++ lib.optional (features.backups.enabled)
+                    "mysql_backups:/mnt/backups";
                 environment = {
                     MYSQL_ADMIN_NAME = instance.mysql.adminName;
                     MYSQL_ADMIN_PASSWORD_FILE = "/run/secrets/admin-password";
@@ -146,7 +148,7 @@ in
                 };
                 healthcheck = {
                     test = [
-                        "CMD"
+                        "CMD-SHELL"
                         "mysqladmin ping -h 127.0.0.1 --silent || exit 1"
                     ];
                     start_period = "5s";

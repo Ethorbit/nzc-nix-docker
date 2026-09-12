@@ -161,6 +161,7 @@ in
                     "phpmyadmin:/panel"
                 ];
                 depends_on.phpmyadmin-permissions.condition = "service_completed_successfully";
+                network_mode = "none";
                 restart = mkDefault "on-failure";
             };
 
@@ -168,7 +169,11 @@ in
                 volumes = nginxProject.config.services.nginx.service.volumes ++ [
                     "phpmyadmin:/srv/phpmyadmin:ro"
                 ];
-                depends_on = [ "phpmyadmin" ];
+                depends_on = {
+                    phpmyadmin = {};
+                    
+                    mysql.condition = "service_healthy";
+                };
             };
 
             php.service = (stripUndefined nginxProject.config.services.php.service ["healthcheck" "assertWarn"]) // {
@@ -177,7 +182,6 @@ in
                     "${secrets."admin.password"}:/run/secrets/mysql-password:ro"
                     "${secrets."phpmyadmin.blowfish"}:/run/secrets/phpmyadmin-blowfishsecret:ro"
                 ];
-
                 networks = [ "mysql" ];
             };
         };

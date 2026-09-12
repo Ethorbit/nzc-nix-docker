@@ -204,7 +204,7 @@ in
                     "${volumes.websites.volume}:/var/www:ro"
 
                 ];
-                restart = "always";
+                restart = "unless-stopped";
             };
         });
     };

@@ -50,7 +50,16 @@ in
 
             features = {
                 phpmyadmin.enabled = true;
-                backups.enabled = false;
+                backups.enabled = true;
+            };
+
+            # The default is fine.
+            # phpmyadmin.config
+
+            backup = {
+                intervalDays = 7;
+                maxBackups = 26;
+                compressionLevel = 9;
             };
 
             secrets = {
