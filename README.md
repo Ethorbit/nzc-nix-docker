@@ -44,6 +44,7 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 | Project | Path | Example |
 |---------|------|----------------|
 | [Sticky Messages](projects/discord/sticky-messages) | `projects/discord/sticky-messages` | [test.nix](projects/discord/sticky-messages/test.nix)
+| [Server Status](projects/discord/server-status) | `projects/discord/server-status` | [test.nix](projects/discord/server-status/test.nix)
 
 ## Requirements
 
