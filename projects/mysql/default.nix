@@ -27,21 +27,20 @@ let
     secrets = instance.secrets;
     dockerTags = instance.docker.tags;
     features = instance.features;
+    volumes = instance.storage.volumes;
 
     uid = instance.user.uid;
     gid = instance.user.gid;
 
-    mysqlConfig = {
-        user = instance.mysql.config;
-        default = ./mysql.cnf;
+    exists = {
+        "mysql.config" = volumes ? "mysql.config"; 
+        "tag" = dockerTags ? "mysql";
     };
-
-    tagExists = dockerTags ? "mysql";
 
     dockerfile = (pkgs.callPackage ./dockerfile ({
         PUID = toString uid;
         PGID = toString gid;
-    } // (lib.optionalAttrs tagExists {
+    } // (lib.optionalAttrs exists."tag" {
         IMAGE_TAG = dockerTags."mysql";
     })));
 in
@@ -61,12 +60,6 @@ in
                         type = types.str;
                         default = "admin";
                     };
-
-                    config = mkOption {
-                        description = "Path to a custom mysql.cnf configuration file.";
-                        type = types.path;
-                        default = ./mysql.cnf;
-                    };
                 };
             };
         };
@@ -80,6 +73,13 @@ in
                 {
                     id = "mysql";
                     required = true;
+                }
+            ];
+
+            storage.volumes = [
+                {
+                    id = "mysql.config";
+                    required = false;
                 }
             ];
 
@@ -107,8 +107,8 @@ in
 
         warnings = 
             lib.optional 
-                (mysqlConfig.user == mysqlConfig.default)
-                ''mysql.config wasn't set, using a default mysql.cnf file.'';
+                (!exists."mysql.config")
+                ''storage.volumes."mysql.config".volume wasn't set, using a default mysql.cnf file.'';
 
         project = defaults.project;
         docker-compose = defaults.docker-compose // {
@@ -124,10 +124,13 @@ in
                 build.context = "${dockerfile}";
                 volumes = [
                     "mysql:/var/lib/mysql"
-                    "${mysqlConfig.user}:/etc/mysql/conf.d/mysql.cnf:ro"
                     "${secrets."root.password"}:/run/secrets/root-password:ro"
                     "${secrets."admin.password"}:/run/secrets/admin-password:ro"
-                ] ++ lib.optional (features.backups.enabled)
+                ] ++ lib.optional (!exists."mysql.config")
+                    "${./mysql.cnf}:/etc/mysql/conf.d/mysql.cnf:ro"
+                ++ lib.optional (exists."mysql.config")
+                    "${volumes."mysql.config".volume}:/etc/mysql/conf.d/mysql.cnf:ro"
+                ++ lib.optional (features.backups.enabled)
                     "mysql_backups:/mnt/backups";
                 environment = {
                     MYSQL_ADMIN_NAME = instance.mysql.adminName;

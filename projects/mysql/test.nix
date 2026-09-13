@@ -53,9 +53,6 @@ in
                 backups.enabled = true;
             };
 
-            # The default is fine.
-            # phpmyadmin.config
-
             backup = {
                 intervalDays = 7;
                 maxBackups = 26;

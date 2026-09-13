@@ -27,24 +27,22 @@ let
     secrets = instance.secrets;
     features = instance.features;
     dockerTags = instance.docker.tags;
+    volumes = instance.storage.volumes;
 
     uid = instance.user.uid;
     gid = instance.user.gid;
 
-    phpmyadminConfig = rec {
-        defaultSettings = {
-            PMA_HOST = "mysql";
-            MYSQL_USER = "root";
-        };
-        user = instance.phpmyadmin.config;
-        default = pkgs.callPackage ./config.inc.php.nix defaultSettings;
-    };
-
     exists = {
+        "phpmyadmin.config" = volumes ? "phpmyadmin.config";
         "dockerTags.phpmyadmin" = dockerTags ? "phpmyadmin";
         "ssl.certificate" = secrets ? "ssl.certificate";
         "ssl.key"  = secrets ? "ssl.key";
     };
+
+    defaultConfig = (pkgs.callPackage ./config.inc.php.nix {
+        PMA_HOST = "mysql";
+        MYSQL_USER = "root";
+    });
 
     dockerfile = (pkgs.callPackage ./dockerfile ({
         PUID = toString uid;
@@ -93,22 +91,10 @@ in
         ../../../nginx/options.nix
     ];
 
-    options = with lib; {
-        nzc.instance = {
-            phpmyadmin = {
-                config = mkOption {
-                    type = types.path;
-                    default = pkgs.callPackage 
-                        ./config.inc.php.nix phpmyadminConfig.defaultSettings;
-                };
-            };
-        };
-    };
-
     config = lib.mkIf features.phpmyadmin.enabled {
         warnings = lib.optional 
-                (phpmyadminConfig.user == phpmyadminConfig.default)
-                ''phpmyadmin.config wasn't set, using a default config.inc.php file.'';
+                (!exists."phpmyadmin.config")
+                ''storage.volumes."phpmyadmin.config".volume wasn't set, using a default config.inc.php file.'';
 
         assertions = nginxProject.config.assertions ++ [
             {
@@ -128,7 +114,14 @@ in
                     required = true;
                 }
             ];
-        
+
+            storage.volumes = [
+                {
+                    id = "phpmyadmin.config";
+                    required = false;
+                }
+            ];
+
             secrets = [
                 {
                     id = "phpmyadmin.blowfish";
@@ -156,9 +149,11 @@ in
             phpmyadmin.service = defaults.service // {
                 build.context = "${dockerfile}";
                 volumes = [
-                    "${phpmyadminConfig.user}:/var/www/html/config.inc.php:ro"
                     "phpmyadmin:/panel"
-                ];
+                ] ++ lib.optional (exists."phpmyadmin.config")
+                    "${volumes."phpmyadmin.config".volume}:/var/www/html/config.inc.php:ro"
+                ++ lib.optional (!exists."phpmyadmin.config")
+                    "${defaultConfig}:/var/www/html/config.inc.php:ro";
                 depends_on.phpmyadmin-permissions.condition = "service_completed_successfully";
                 network_mode = "none";
                 restart = mkDefault "on-failure";
