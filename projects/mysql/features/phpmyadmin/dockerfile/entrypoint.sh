@@ -21,8 +21,10 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-if [ -z "$(ls -A /panel/)" ]; then
+if [ ! -f /panel/.initialized ]; then
     cp -r /var/www/html/* /panel/
+    touch /panel/.initialized
 fi
 
-#exec "$@"
+mkdir -p /panel/tmp
+chown "$PUID:$PGID" /panel/ /panel/tmp

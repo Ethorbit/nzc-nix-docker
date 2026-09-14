@@ -135,6 +135,7 @@ in
         docker-compose = {
             volumes = nginxProject.config.docker-compose.volumes // {
                 "phpmyadmin" = {};
+                "phpmyadmin-temp" = {};
                 "phpmyadmin-web" = {};
             };
         };
@@ -143,6 +144,7 @@ in
             phpmyadmin-permissions.service = config.nzc.arion.presets.service.permissions // {
                 volumes = [
                     "phpmyadmin:/mnt/panel"
+                    "phpmyadmin-temp:/mnt/panel-tmp"
                 ];
             };
 
@@ -150,6 +152,7 @@ in
                 build.context = "${dockerfile}";
                 volumes = [
                     "phpmyadmin:/panel"
+                    "phpmyadmin-temp:/panel/tmp"
                 ] ++ lib.optional (exists."phpmyadmin.config")
                     "${volumes."phpmyadmin.config".volume}:/var/www/html/config.inc.php:ro"
                 ++ lib.optional (!exists."phpmyadmin.config")
@@ -165,7 +168,6 @@ in
                 ];
                 depends_on = {
                     phpmyadmin = {};
-                    
                     mysql.condition = "service_healthy";
                 };
             };
@@ -173,9 +175,13 @@ in
             php.service = (stripUndefined nginxProject.config.services.php.service ["healthcheck" "assertWarn"]) // {
                 volumes = nginxProject.config.services.php.service.volumes ++ [
                     "phpmyadmin:/srv/phpmyadmin:ro"
+                    "phpmyadmin-temp:/srv/phpmyadmin/tmp"
                     "${secrets."admin.password"}:/run/secrets/mysql-password:ro"
                     "${secrets."phpmyadmin.blowfish"}:/run/secrets/phpmyadmin-blowfishsecret:ro"
                 ];
+                depends_on = {
+                    phpmyadmin.condition = "service_started";
+                };
                 networks = [ "mysql" ];
             };
         };

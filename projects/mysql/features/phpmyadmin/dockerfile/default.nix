@@ -32,6 +32,8 @@ let
     Dockerfile = (writeText "Dockerfile" ''
     FROM phpmyadmin:${IMAGE_TAG}
     VOLUME /panel
+    ENV PUID=${PUID}
+    ENV PGID=${PGID}
     COPY --chown=www-data:www-data ./*.sh /
     USER root
     WORKDIR /var/www/html
