@@ -20,7 +20,7 @@
 #
 
 {
-    IMAGE_TAG ? "0ac2cf1",
+    IMAGE_TAG ? "latest",
     PUID ? "1000",
     PGID ? "1000",
     writeText,
