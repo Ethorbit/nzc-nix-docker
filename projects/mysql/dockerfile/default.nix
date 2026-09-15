@@ -20,10 +20,9 @@
 #
 
 {
-    IMAGE_TAG ? "8.0.32-debian",
+    IMAGE_TAG ? "9.7.2-oraclelinux9",
     PUID ? "1000",
     PGID ? "1000",
-    callPackage,
     writeText,
     runCommand
 }:
