@@ -20,7 +20,7 @@
 #
 
 {
-    IMAGE_TAG ? "fpm-alpine3.17",
+    IMAGE_TAG ? "fpm-alpine3.24",
     PUID,
     PGID,
     phpSettings,
@@ -33,12 +33,12 @@ let
     startScript = callPackage ./start.nix { inherit PUID PGID; };
 
     packages = lib.concatStringsSep " " phpSettings.packages;
-    extensions = lib.concatStringsSep " " phpSettings.extensions;
+    extensionRuns = lib.concatMapStringsSep "\n" (ext: "RUN docker-php-ext-install ${ext}") phpSettings.extensions;
     Dockerfile = (writeText "Dockerfile" ''
     FROM php:${IMAGE_TAG}
     WORKDIR /
     RUN apk add --no-cache ${packages}
-    RUN docker-php-ext-install ${extensions}
+    ${extensionRuns}
     RUN mkdir /mnt/admin &&\
         addgroup -g ${PGID} php && adduser -D -u ${PUID} -G php php
     COPY start.sh /start.sh
