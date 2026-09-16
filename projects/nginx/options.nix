@@ -73,7 +73,6 @@
                         description = "PHP extensions to enable for this instance";
                         type = types.listOf types.str;
                         default = [
-                            "opcache"
                             "mysqli"
                             "mbstring"
                             "zip"

@@ -20,7 +20,7 @@
 #
 
 {
-    IMAGE_TAG ? "1.23-alpine-perl",
+    IMAGE_TAG ? "1.31-alpine3.24-perl",
     PUID,
     PGID,
     SSL_CERT ? null,
