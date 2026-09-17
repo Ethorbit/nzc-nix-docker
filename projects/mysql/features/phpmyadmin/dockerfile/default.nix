@@ -20,7 +20,7 @@
 #
 
 {
-    IMAGE_TAG ? "5.2.1-fpm-alpine",
+    IMAGE_TAG ? "5.2.3-fpm-alpine",
     PUID ? "1000",
     PGID ? "1000",
     writeText,
