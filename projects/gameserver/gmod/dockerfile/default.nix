@@ -20,7 +20,7 @@
 #
 
 {
-    IMAGE_TAG ? "0733510",
+    IMAGE_TAG ? "latest",
     PUID ? "1000",
     PGID ? "1000",
     UMASK ? "007",
