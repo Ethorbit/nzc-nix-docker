@@ -20,12 +20,19 @@
 #
 
 {
-    PMA_HOST,
-    MYSQL_USER,
+    host,
+    user,
+    mysqlPassword,
+    blowfishSecret,
+    sslCertificate,
+    sslKey,
+    lib, 
     writeText
 }:
-
-writeText "config.inc.php" ''
+let
+    setupSSL = (sslKey != null && sslCertificate != null);
+in
+writeText "config.inc.php" (''
 <?php
 /**
  * phpMyAdmin sample configuration, you can use it as base for
@@ -41,7 +48,7 @@ declare(strict_types=1);
  * This is needed for cookie based authentication to encrypt the cookie.
  * Needs to be a 32-bytes long string of random bytes. See FAQ 2.10.
  */
-$cfg['blowfish_secret'] = trim(file_get_contents('/run/secrets/phpmyadmin-blowfishsecret')); /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
+$cfg['blowfish_secret'] = trim(file_get_contents('${blowfishSecret}')); /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
 
 /**
  * Servers configuration
@@ -57,9 +64,9 @@ $cfg['Servers'][$i]['socket'] = ''';
 /* Authentication type */
 $cfg['Servers'][$i]['auth_type'] = 'cookie';
 /* Server parameters */
-$cfg['Servers'][$i]['host'] = '${PMA_HOST}';
-$cfg['Servers'][$i]['user'] = '${MYSQL_USER}';
-$cfg['Servers'][$i]['password'] = trim(file_get_contents('/run/secrets/mysql-password'));
+$cfg['Servers'][$i]['host'] = '${host}';
+$cfg['Servers'][$i]['user'] = '${user}';
+$cfg['Servers'][$i]['password'] = trim(file_get_contents('${mysqlPassword}'));
 $cfg['Servers'][$i]['compress'] = false;
 $cfg['Servers'][$i]['AllowNoPassword'] = false;
 
@@ -195,4 +202,8 @@ $cfg['SaveDir'] = ''';
  * You can find more configuration options in the documentation
  * in the doc/ folder or at <https://docs.phpmyadmin.net/>.
  */
-''
+'' + lib.optionalString setupSSL ''
+$cfg['Servers'][$i]['ssl'] = true;
+// Verification not needed: both services run on the same machine.
+$cfg['Servers'][$i]['ssl_verify'] = false;
+'')

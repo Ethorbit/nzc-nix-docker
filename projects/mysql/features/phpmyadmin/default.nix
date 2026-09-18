@@ -39,10 +39,21 @@ let
         "ssl.key"  = secrets ? "ssl.key";
     };
 
-    defaultConfig = (pkgs.callPackage ./config.inc.php.nix {
-        PMA_HOST = "mysql";
-        MYSQL_USER = "root";
-    });
+    containerSecretPaths = {
+        mysqlPassword = "/run/secrets/mysql-password";
+        blowfishSecret = "/run/secrets/phpmyadmin-blowfishsecret";
+        sslCertificate = "/run/secrets/ssl-certificate";
+        sslKey = "/run/secrets/ssl-key";
+    };
+
+    defaultConfig = with containerSecretPaths; 
+        (pkgs.callPackage ./app-config/phpmyadmin/config.inc.php.nix ({
+            inherit mysqlPassword blowfishSecret;
+            host = "mysql";
+            user = "root";
+        } // lib.optionalAttrs (exists."ssl.certificate" && exists."ssl.key") {
+            inherit sslCertificate sslKey;
+        }));
 
     dockerfile = (pkgs.callPackage ./dockerfile ({
         PUID = toString uid;
@@ -173,12 +184,15 @@ in
             };
 
             php.service = (stripUndefined nginxProject.config.services.php.service ["healthcheck" "assertWarn"]) // {
-                volumes = nginxProject.config.services.php.service.volumes ++ [
-                    "phpmyadmin:/srv/phpmyadmin:ro"
-                    "phpmyadmin-temp:/srv/phpmyadmin/tmp"
-                    "${secrets."admin.password"}:/run/secrets/mysql-password:ro"
-                    "${secrets."phpmyadmin.blowfish"}:/run/secrets/phpmyadmin-blowfishsecret:ro"
-                ];
+                volumes = with containerSecretPaths; 
+                    nginxProject.config.services.php.service.volumes ++ [
+                        "phpmyadmin:/srv/phpmyadmin:ro"
+                        "phpmyadmin-temp:/srv/phpmyadmin/tmp"
+                        "${secrets."admin.password"}:${mysqlPassword}:ro"
+                        "${secrets."phpmyadmin.blowfish"}:${blowfishSecret}:ro"
+                        "${secrets."ssl.certificate"}:${sslCertificate}:ro"
+                        "${secrets."ssl.key"}:${sslKey}:ro"
+                    ];
                 depends_on = {
                     phpmyadmin.condition = "service_started";
                 };
