@@ -20,7 +20,7 @@
 #
 
 {
-    IMAGE_TAG ? "3.23.3",
+    IMAGE_TAG ? "3.24.2",
     UNAME ? "ssh",
     GNAME ? "ssh",
     PUID ? "1000",
