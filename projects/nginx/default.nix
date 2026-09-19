@@ -27,6 +27,7 @@ let
     secrets = instance.secrets;
     features = instance.features;
     dockerTags = instance.docker.tags;
+    ports = instance.network.ports;
 
     nginxConfig = {
         file = {
@@ -63,6 +64,8 @@ let
     gid = instance.user.gid;
 
     exists = {
+        "http" = ports ? "http";
+        "https" = ports ? "https";
         "dockerTags.nginx" = dockerTags ? "nginx";
         "dockerTags.php-fpm" = dockerTags ? "php-fpm";
         "nginx.snippets" = instance.nginx.config.snippets != null;
@@ -105,12 +108,12 @@ in
             network.ports = [
                 {
                     id = "http";
-                    required = true;
+                    required = false;
                 }
             ] ++ lib.optionals (exists."ssl.certificate" && exists."ssl.key") [
                 {
                     id = "https";
-                    required = true;
+                    required = false;
                 }
             ];
 
@@ -187,9 +190,9 @@ in
                 );
                 ports = let
                     bind = config.nzc.project.network.bindPortTo;
-                in [
+                in lib.optional exists."http"
                     (bind "http" "tcp" 80)
-                ] ++ lib.optional (exists."ssl.certificate" && exists."ssl.key")
+                ++ lib.optional (exists."https" && exists."ssl.certificate" && exists."ssl.key")
                     (bind "https" "tcp" 443);
                 restart = "unless-stopped";
             } // lib.optionalAttrs features.php.enabled {
