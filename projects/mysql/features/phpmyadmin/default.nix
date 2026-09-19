@@ -74,6 +74,7 @@ let
                     user = { inherit uid gid; };
                     network.ports = {
                         http.number = instance.network.ports."http".number;
+                    } // lib.optionalAttrs (exists."ssl.key" && exists."ssl.certificate") {
                         https.number = instance.network.ports."https".number;
                     };
 
@@ -120,6 +121,7 @@ in
                     id = "http";
                     required = true;
                 }
+            ] ++ lib.optionals (exists."ssl.certificate" && exists."ssl.key") [
                 {
                     id = "https";
                     required = true;
@@ -190,6 +192,7 @@ in
                         "phpmyadmin-temp:/srv/phpmyadmin/tmp"
                         "${secrets."admin.password"}:${mysqlPassword}:ro"
                         "${secrets."phpmyadmin.blowfish"}:${blowfishSecret}:ro"
+                    ] ++ lib.optionals (exists."ssl.key" && exists."ssl.certificate") [
                         "${secrets."ssl.certificate"}:${sslCertificate}:ro"
                         "${secrets."ssl.key"}:${sslKey}:ro"
                     ];

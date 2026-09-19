@@ -24,8 +24,8 @@
     user,
     mysqlPassword,
     blowfishSecret,
-    sslCertificate,
-    sslKey,
+    sslCertificate ? null,
+    sslKey ? null,
     lib, 
     writeText
 }:
