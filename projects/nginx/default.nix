@@ -107,6 +107,7 @@ in
                     id = "http";
                     required = true;
                 }
+            ] ++ lib.optionals (exists."ssl.certificate" && exists."ssl.key") [
                 {
                     id = "https";
                     required = true;
@@ -188,8 +189,8 @@ in
                     bind = config.nzc.project.network.bindPortTo;
                 in [
                     (bind "http" "tcp" 80)
-                    (bind "https" "tcp" 443)
-                ];
+                ] ++ lib.optional (exists."ssl.certificate" && exists."ssl.key")
+                    (bind "https" "tcp" 443);
                 restart = "unless-stopped";
             } // lib.optionalAttrs features.php.enabled {
                 depends_on = [ "php" ];
