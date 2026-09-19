@@ -28,11 +28,14 @@ let
     features = instance.features;
     dockerTags = instance.docker.tags;
     volumes = instance.storage.volumes;
+    ports = instance.network.ports;
 
     uid = instance.user.uid;
     gid = instance.user.gid;
 
     exists = {
+        "http" = ports ? "http";
+        "https" = ports ? "https";
         "phpmyadmin.config" = volumes ? "phpmyadmin.config";
         "dockerTags.phpmyadmin" = dockerTags ? "phpmyadmin";
         "ssl.certificate" = secrets ? "ssl.certificate";
@@ -72,9 +75,9 @@ let
             ({ config, ... }: {
                 nzc.instance = {
                     user = { inherit uid gid; };
-                    network.ports = {
+                    network.ports = lib.optionalAttrs exists."http" {
                         http.number = instance.network.ports."http".number;
-                    } // lib.optionalAttrs (exists."ssl.key" && exists."ssl.certificate") {
+                    } // lib.optionalAttrs (exists."https" && exists."ssl.key" && exists."ssl.certificate") {
                         https.number = instance.network.ports."https".number;
                     };
 
@@ -119,12 +122,12 @@ in
             network.ports = [
                 {
                     id = "http";
-                    required = true;
+                    required = false;
                 }
             ] ++ lib.optionals (exists."ssl.certificate" && exists."ssl.key") [
                 {
                     id = "https";
-                    required = true;
+                    required = false;
                 }
             ];
 

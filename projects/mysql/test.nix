@@ -44,7 +44,6 @@ in
 
             network.ports = {
                 mysql.number = 3306;
-                http.number = 8080;
                 https.number = 8443;
             };
 
