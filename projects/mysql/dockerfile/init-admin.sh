@@ -36,6 +36,7 @@ printf '[client]\nuser=root\npassword=%s\n' "$ROOT_PASSWORD" > "$CREDS_PIPE" &
 
 mysql --defaults-extra-file="$CREDS_PIPE" <<-EOSQL
     DROP USER 'root'@'%';
+    CREATE USER IF NOT EXISTS 'healthcheck'@'127.0.0.1';
     CREATE USER IF NOT EXISTS '$MYSQL_ADMIN_NAME'@'%' IDENTIFIED BY '$ADMIN_PASSWORD';
     GRANT ALL PRIVILEGES ON *.* TO '$MYSQL_ADMIN_NAME'@'%';
     FLUSH PRIVILEGES;

@@ -152,7 +152,7 @@ in
                 healthcheck = {
                     test = [
                         "CMD-SHELL"
-                        "mysqladmin ping -h 127.0.0.1 --silent || exit 1"
+                        "mysqladmin ping -h 127.0.0.1 -u healthcheck --silent || exit 1"
                     ];
                     start_period = "5s";
                     interval = "5s";
