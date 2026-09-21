@@ -24,6 +24,7 @@
     PUID ? "1000",
     PGID ? "1000",
     UMASK ? "007",
+    PORT ? "27015",
     writeText,
     runCommand,
     callPackage
@@ -35,7 +36,7 @@ let
     };
 
     Dockerfile = (writeText "Dockerfile" ''
-    FROM ethorbit/gmod-server:${IMAGE_TAG}
+    FROM ethorbit/gmod-server:${IMAGE_TAG} AS gmod
     ENV UMASK=${UMASK}
     ENV QUERY_PORT=27015
     ENV CLIENT_PORT=27005
@@ -56,10 +57,13 @@ let
     CMD ["/start_two.sh"]
     '');
 in
-runCommand "docker-context" {} ''
-    mkdir -p $out
-    cp ${start.container} $out/container-start.sh
-    cp ${start.server} $out/server-start.sh
-    cp ${Dockerfile} $out/Dockerfile
-    cat $out/Dockerfile
-''
+callPackage ../../../../dockerfile/add-a2s-healthcheck {
+    inherit PORT;
+    context = (runCommand "docker-context" {} ''
+        mkdir -p $out
+        cp ${start.container} $out/container-start.sh
+        cp ${start.server} $out/server-start.sh
+        cp ${Dockerfile} $out/Dockerfile
+        cat $out/Dockerfile
+    '');
+}
