@@ -37,6 +37,7 @@ let
         gmod = callPackage ./dockerfile ({
             PUID = toString instance.user.uid;
             PGID = toString instance.user.gid;
+            QUERY_PORT = toString instance.network.ports.query.number;
         } // (lib.optionalAttrs exists."dockerTags.gmod" {
             IMAGE_TAG = dockerTags."gmod";
         }));

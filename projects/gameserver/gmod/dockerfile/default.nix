@@ -24,7 +24,7 @@
     PUID ? "1000",
     PGID ? "1000",
     UMASK ? "007",
-    PORT ? "27015",
+    QUERY_PORT ? "27015",
     writeText,
     runCommand,
     callPackage
@@ -58,7 +58,7 @@ let
     '');
 in
 callPackage ../../../../dockerfile/add-a2s-healthcheck {
-    inherit PORT;
+    PORT = QUERY_PORT;
     context = (runCommand "docker-context" {} ''
         mkdir -p $out
         cp ${start.container} $out/container-start.sh
