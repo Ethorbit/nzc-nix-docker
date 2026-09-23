@@ -29,22 +29,8 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 
 ![demonstration](images/usage.gif)
 
-## Available Projects
-
-| Project | Path | Example |
-|---------|------|----------------|
-| [MySQL](projects/mysql) | `projects/mysql` | [test.nix](projects/mysql/test.nix)
-| [Nginx](projects/nginx) | `projects/nginx` | [test.nix](projects/nginx/test.nix)
-| [SFTP](projects/sftp) | `projects/sftp` | [test.nix](projects/sftp/test.nix)
-#### Game Servers
-| Project | Path | Example |
-|---------|------|----------------|
-| [Garry's Mod](projects/gameserver/gmod) | `projects/gameserver/gmod` | [test.nix](projects/gameserver/gmod/test.nix)
-#### Discord Bots
-| Project | Path | Example |
-|---------|------|----------------|
-| [Sticky Messages](projects/discord/sticky-messages) | `projects/discord/sticky-messages` | [test.nix](projects/discord/sticky-messages/test.nix)
-| [Server Status](projects/discord/server-status) | `projects/discord/server-status` | [test.nix](projects/discord/server-status/test.nix)
+## [Available Projects](projects.md)
+You can view the available projects [here](projects.md)
 
 ## Requirements
 
