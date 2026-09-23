@@ -21,8 +21,7 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-[ -f "$PUBLIC_KEY" ] && [ -s "$PUBLIC_KEY" ] &&\
-    [ -f "$PRIVATE_KEY" ] && [ -s "$PRIVATE_KEY" ] &&\
-    openssl x509 -noout -pubkey -in "$PUBLIC_KEY" &&\
-    openssl pkey -pubout -noout -in "$PRIVATE_KEY" ||\
-    exit 1
+[ -s "$PUBLIC_KEY" ] && [ -s "$PRIVATE_KEY" ] || exit 1
+openssl x509 -noout -checkend 604800 -in "$PUBLIC_KEY" >/dev/null 2>&1 || exit 1
+[ "$(openssl x509 -noout -pubkey -in "$PUBLIC_KEY" 2>/dev/null)" = \
+  "$(openssl pkey -pubout -in "$PRIVATE_KEY" 2>/dev/null)" ] || exit 1

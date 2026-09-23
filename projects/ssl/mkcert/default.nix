@@ -23,10 +23,14 @@
 let
     defaults = config.nzc.arion.defaults;
     instance = config.nzc.instance;
+    volumes = instance.storage.volumes;
     dockerfile = pkgs.callPackage ./dockerfile ({
         PUID = toString instance.user.uid;
         PGID = toString instance.user.gid;
     });
+    exists = {
+        "script" = volumes ? "script";
+    };
 in
 {
     imports = [
@@ -34,15 +38,27 @@ in
     ];
 
     options.nzc.instance = with lib; {
-        mkcert.domainName = mkOption {
-            type = types.str;
-            example = "mysite.com";
+        mkcert = {
+            domainName = mkOption {
+                type = types.str;
+                example = "mysite.com";
+            };
+
+            checkInterval = mkOption {
+                description = "Seconds between certificate re-checks and hook runs.";
+                type = types.int;
+                default = 3600;
+            };
         };
     };
 
     config = {
         nzc.project = {
             storage.volumes = [
+                {
+                    id = "script";
+                    required = false;
+                }
                 {
                     id = "certificates";
                     required = false;
@@ -55,9 +71,12 @@ in
         services.mkcert.service = defaults.service // {
             build.context = "${dockerfile}";
             volumes = [
-                "${instance.storage.volumes.certificates.volume}:/mnt"
-            ];
+                "${volumes.certificates.volume}:/mnt"
+            ] ++ lib.optional (exists."script")
+                "${volumes.script.volume}:/script";
             environment = {
+                HOOK = "/script";
+                CHECK_INTERVAL = instance.mkcert.checkInterval;
                 DOMAIN_NAME="${instance.mkcert.domainName}";
                 PUBLIC_KEY = "/mnt/mkcert.pem";
                 PRIVATE_KEY = "/mnt/mkcert.key";

@@ -21,14 +21,34 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-[ ! -f "$PRIVATE_KEY" ] && [ ! -f "$PUBLIC_KEY" ] &&\
-    mkcert -install &&\
-    mkcert -cert-file /mnt/mkcert.pem -key-file /mnt/mkcert.key \
-    ${DOMAIN_NAME} *.${DOMAIN_NAME}
+run_hook() {
+    [ -n "$HOOK" ] && [ -x "$HOOK" ] || return 0
+    CERT_FILE="$PUBLIC_KEY" \
+    KEY_FILE="$PRIVATE_KEY" \
+    DOMAIN="$DOMAIN_NAME" \
+    CAROOT_DIR="$(mkcert -CAROOT)" \
+        "$HOOK" || echo "hook failed, retrying next cycle" >&2
+}
+
+if [ ! -f "$PRIVATE_KEY" ] || [ ! -f "$PUBLIC_KEY" ]; then
+    mkcert -cert-file "$PUBLIC_KEY" -key-file "$PRIVATE_KEY" \
+        "$DOMAIN_NAME" "*.$DOMAIN_NAME" || exit 1
+fi
 
 chown mkcert:mkcert "$PUBLIC_KEY"
 chown mkcert:mkcert "$PRIVATE_KEY"
 chmod 650 "$PUBLIC_KEY"
 chmod 650 "$PRIVATE_KEY"
 
-/healthcheck.sh 2> /dev/null > /dev/null && sleep inf || rm -f "$PUBLIC_KEY" && rm -f "$PRIVATE_KEY" && exit 1
+trap 'exit 0' TERM INT
+
+while :; do
+    if ! /healthcheck.sh >/dev/null 2>&1; then
+        rm -f "$PUBLIC_KEY" "$PRIVATE_KEY"
+        exit 1
+    fi
+
+    run_hook
+    sleep "${CHECK_INTERVAL:-86400}" &
+    wait $!
+done
