@@ -30,7 +30,14 @@ writeText "entrypoint.sh" ''
     set -e
 
     # Setup password
-    echo "${UNAME}:$(cat /run/secrets/password)" | chpasswd
+    PASSWORD=""
+    if [ -f /run/secrets/password ]; then
+        PASSWORD=$(cat /run/secrets/password)
+    else
+        PASSWORD=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)
+    fi
+
+    echo "${UNAME}:$PASSWORD" | chpasswd
     passwd -u ${UNAME}
 
     # Setup auth key
@@ -38,7 +45,9 @@ writeText "entrypoint.sh" ''
     touch "$AUTH_KEYS"
 
     if [ -f /run/secrets/sftp-public-key ]; then
-        echo "command=\"internal-sftp\",no-pty,no-port-forwarding $(cat /run/secrets/sftp-public-key)" >> "$AUTH_KEYS"
+        while IFS= read -r key || [ -n "$key" ]; do
+            [ -n "$key" ] && echo "command=\"internal-sftp\",no-pty,no-port-forwarding $key" >> "$AUTH_KEYS"
+        done < /run/secrets/sftp-public-key
     fi
 
     if [ -f /run/secrets/ssh-public-key ]; then

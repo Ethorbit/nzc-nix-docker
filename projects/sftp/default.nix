@@ -58,16 +58,16 @@ in
 
             secrets = [
                 {
-                    id = "password";
-                    required = true;
-                }
-                {
                     id = "sftp.public.key";
                 }
                 {
                     id = "ssh.public.key";
                 }
-            ];
+            ] ++ lib.optional (!exists."sftp.public.key" && !exists."ssh.public.key")
+                {
+                    id = "password";
+                    required = true;
+                };
 
             docker.tags = [ "alpine" ];
         };
@@ -94,9 +94,8 @@ in
         docker-compose = defaults.docker-compose;
         services.sftp.service = defaults.service // {
             build.context = "${dockerfile}";
-            volumes = [
+            volumes = lib.optional (!exists."sftp.public.key" && !exists."ssh.public.key")
                 "${instance.secrets.password}:/run/secrets/password"
-            ] 
             ++ lib.optional exists."sftp.public.key"
                 "${instance.secrets."sftp.public.key"}:/run/secrets/sftp-public-key"
             ++ lib.optional exists."ssh.public.key"
