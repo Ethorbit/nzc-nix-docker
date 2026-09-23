@@ -170,10 +170,11 @@ in
                 '';
 
         project = defaults.project;
-        docker-compose = defaults.docker-compose //
+        docker-compose = lib.recursiveUpdate defaults.docker-compose (
             lib.optionalAttrs features.php.enabled {
                 volumes.php_fpm_run = {};
-            };
+            }
+        );
 
         services = {
             nginx.service = defaults.service // {
