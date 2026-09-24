@@ -57,6 +57,11 @@ writeText "entrypoint.sh" ''
     chmod 600 "$AUTH_KEYS"
     chown "${UNAME}:${GNAME}" "$AUTH_KEYS"
 
+    # Fix ownership on mounted volume roots
+    for dir in /home/${UNAME}/*/; do
+        [ "$dir" != "/home/${UNAME}/.ssh/" ] && chown "${UNAME}:${GNAME}" "$dir"
+    done
+
     # Run
     exec "$@"
 ''
