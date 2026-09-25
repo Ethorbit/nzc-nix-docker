@@ -20,11 +20,13 @@
 #
 
 {
+    development,
     IMAGE_TAG ? "1.31-alpine3.24-perl",
     PUID,
     PGID,
     SSL_CERT ? null,
     SSL_KEY ? null,
+    lib,
     callPackage,
     writeText,
     runCommand
@@ -50,6 +52,10 @@ let
         groupmod -g "${PGID}" nginx &&\
         mkdir -p /mnt/cache &&\
         chown nginx:nginx /mnt/cache
+    ${lib.optionalString (development) ''
+    RUN apk add --no-cache python3 py3-pip &&\
+        python3 -m pip install --no-cache-dir --break-system-packages gixy-ng
+    ''}
     USER nginx
     '');
 in

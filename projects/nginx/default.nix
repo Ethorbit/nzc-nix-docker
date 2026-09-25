@@ -75,6 +75,7 @@ let
 
     dockerfiles = {
         nginx = (pkgs.callPackage ./dockerfile/nginx ({
+            development = instance.nginx.development;
             PUID = toString uid;
             PGID = toString gid;
         } // (lib.optionalAttrs exists."dockerTags.nginx" {

@@ -54,7 +54,8 @@ in
             # their defaults are fine.
             # nginx.config.file
             # nginx.config.serverDirectory
-            
+  
+            nginx.development = true;
             features.php.enabled = true;
             php-fpm.debug = true;
 

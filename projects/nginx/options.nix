@@ -26,6 +26,14 @@
         nzc = {
             instance = {
                 nginx = {
+                    development = mkOption {
+                        type = types.bool;
+                        description = ''
+                            Whether or not to run in development mode. Development mode ships Gixy, a useful auditing tool.
+                        '';
+                        default = false;
+                    };
+
                     config = {
                         file = mkOption {
                             type = types.path;
