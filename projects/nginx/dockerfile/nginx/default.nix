@@ -48,8 +48,8 @@ let
         rm /usr/share/nginx/html/*.html &&\
         usermod -u "${PUID}" nginx &&\
         groupmod -g "${PGID}" nginx &&\
-        mkdir /mnt/admin &&\
-        mkdir /mnt/admin/portainer
+        mkdir -p /mnt/cache &&\
+        chown nginx:nginx /mnt/cache
     USER nginx
     '');
 in

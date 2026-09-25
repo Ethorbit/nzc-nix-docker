@@ -31,6 +31,13 @@ writeText "nginx.conf" ''
     }
 
     http {
+        proxy_cache_path /mnt/cache/nginx-proxy
+                         levels=1:2 
+                         keys_zone=my_cache:10m 
+                         max_size=1g 
+                         inactive=60m 
+                         use_temp_path=off;
+
         include       mime.types;
         default_type  application/octet-stream;
         sendfile      on;
