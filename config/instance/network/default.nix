@@ -45,16 +45,16 @@ with lib;
                                 type = types.submodule {
                                     options = {
                                         tcp = mkOption {
-                                            type = types.nullOr types.str;
+                                            type = types.listOf types.str;
                                             description = "IP this TCP port is exposed to.";
-                                            example = "127.0.0.1";
-                                            default = null;
+                                            example = [ "127.0.0.1" ];
+                                            default = [];
                                         };
                                         udp = mkOption {
-                                            type = types.nullOr types.str;
+                                            type = types.listOf types.str;
                                             description = "IP this UDP port is exposed to.";
-                                            example = "192.168.254.18";
-                                            default = null;
+                                            example = [ "192.168.254.18" ];
+                                            default = [];
                                         };
                                     };
                                 };
@@ -64,7 +64,7 @@ with lib;
                     });
                     default = {};
                     example = {
-                        gmod = { ip.udp = "0.0.0.0"; port = 27016; };
+                        gmod = { ip.udp = [ "0.0.0.0" ]; port = 27016; };
                     };
                 };
             };
