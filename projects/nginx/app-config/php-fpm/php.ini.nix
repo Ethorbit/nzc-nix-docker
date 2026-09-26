@@ -19,17 +19,15 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-{ debug, writeText }:
+{ development, writeText }:
 
 writeText "php.ini" ''
-${if debug then ''
 error_log = /proc/1/fd/2
 access_log = /proc/1/fd/2
 fastcgi.logging = On
+${if development then ''
 display_errors = stderr
 '' else ''
-error_log = /proc/1/fd/2
-access_log = /proc/1/fd/2
-fastcgi.logging = On
+display_errors = Off
 ''}
 ''

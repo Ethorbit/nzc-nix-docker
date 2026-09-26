@@ -65,13 +65,15 @@
                         ini = mkOption {
                             type = types.path;
                             default = (pkgs.callPackage ./app-config/php-fpm/php.ini.nix {
-                                debug = config.nzc.instance.php-fpm.debug;
+                                development = config.nzc.instance.php-fpm.development;
                             });
                         };
                     };
 
-                    debug = mkOption {
-                        description = "Toggle error verbosity to debug PHP script problems.";
+                    development = mkOption {
+                        description = ''
+                        For development purposes, this will toggle errors to help you debug PHP script problems.
+                        '';
                         type = types.bool;
                         default = false;
                         example = true;

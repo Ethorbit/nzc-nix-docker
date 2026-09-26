@@ -57,7 +57,7 @@ in
   
             nginx.development = true;
             features.php.enabled = true;
-            php-fpm.debug = true;
+            php-fpm.development = true;
 
             storage.volumes = {
                 websites = {

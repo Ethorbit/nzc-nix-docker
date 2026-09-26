@@ -54,7 +54,7 @@ let
 
         ini = {
             default = (pkgs.callPackage ./app-config/php-fpm/php.ini.nix {
-                debug = instance.php-fpm.debug;
+                development = instance.php-fpm.development;
             });
             user = instance.php-fpm.config.ini;
         };
