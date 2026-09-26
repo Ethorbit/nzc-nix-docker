@@ -104,9 +104,8 @@ in
                 (id: value: "${toString value.volume}:/home/ssh/${id}") volumes;
             ports = let
                 bindTo = config.nzc.project.network.bindPortTo;
-            in [
-                (bindTo "sftp" "tcp" 22)
-            ];
+            in
+                (bindTo "sftp" "tcp" 22);
             restart = "unless-stopped";
         };
     };

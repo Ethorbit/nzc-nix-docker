@@ -26,12 +26,12 @@ with lib;
 {
     options.nzc.project.network = {
         bindPort = mkOption {
-            type = types.functionTo (types.functionTo types.str);
+            type = types.functionTo (types.functionTo (types.listOf types.str));
             readOnly = true;
         };
 
         bindPortTo = mkOption {
-            type = types.functionTo (types.functionTo (types.functionTo types.str));
+            type = types.functionTo (types.functionTo (types.functionTo (types.listOf types.str)));
             readOnly = true;
         };
 
@@ -68,10 +68,11 @@ with lib;
         network.bindPortTo = id: proto: containerPort:
         let
             cfg = config.nzc.instance.network.ports.${id};
-            ip = cfg.ip.${proto};
-            p = "${toString cfg.number}:${toString containerPort}/${proto}";
+            port = "${toString cfg.number}:${toString containerPort}/${proto}";
         in
-            if ip != null then "${ip}:${p}" else p;
+            if cfg.ip.${proto} == []
+            then [ port ]
+            else map (ip: "${ip}:${port}") cfg.ip.${proto};
         network.bindPort = id: proto:
             config.nzc.project.network.bindPortTo id proto config.nzc.instance.network.ports.${id}.number;
 

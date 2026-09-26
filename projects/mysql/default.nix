@@ -139,9 +139,8 @@ in
                 };
                 ports = let
                     bind = config.nzc.project.network.bindPortTo;
-                in [
-                    (bind "mysql" "tcp" 3306)
-                ];
+                in 
+                    (bind "mysql" "tcp" 3306);
                 ulimits = {
                     nproc = mkDefault 65535;
                     nofile = {

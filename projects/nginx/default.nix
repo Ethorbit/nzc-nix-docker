@@ -196,9 +196,9 @@ in
                 );
                 ports = let
                     bind = config.nzc.project.network.bindPortTo;
-                in lib.optional exists."http"
+                in lib.optionals exists."http"
                     (bind "http" "tcp" 80)
-                ++ lib.optional (exists."https" && exists."ssl.certificate" && exists."ssl.key")
+                ++ lib.optionals (exists."https" && exists."ssl.certificate" && exists."ssl.key")
                     (bind "https" "tcp" 443);
                 restart = "unless-stopped";
             } // lib.optionalAttrs features.php.enabled {

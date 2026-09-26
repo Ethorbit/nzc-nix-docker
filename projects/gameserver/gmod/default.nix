@@ -109,11 +109,10 @@ in
                 "${instance.secrets."token.steam"}:/run/secrets/steam-login-token";
             ports = let
                 bind = config.nzc.project.network.bindPort;
-            in [
+            in
                 (bind "query" "udp")
-                (bind "query" "tcp")
-                (bind "client" "udp")
-            ];
+                ++ (bind "query" "tcp")
+                ++ (bind "client" "udp");
             environment = {
                 QUERY_PORT = toString instance.network.ports.query.number;
                 CLIENT_PORT = toString instance.network.ports.client.number;
