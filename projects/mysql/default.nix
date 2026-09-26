@@ -55,6 +55,12 @@ in
         nzc = {
             instance = {
                 mysql = {
+                    debug = mkOption {
+                        description = "Enable for extra error verbosity.";
+                        type = types.bool;
+                        default = false;
+                    };
+
                     adminName = mkOption {
                         description = "The MySQL admin username.";
                         type = types.str;

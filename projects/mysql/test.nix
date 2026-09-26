@@ -58,6 +58,8 @@ in
                 compressionLevel = 9;
             };
 
+            mysql.debug = true;
+
             secrets = {
                 "root.password" =
                     pkgs.writeText "password" ''

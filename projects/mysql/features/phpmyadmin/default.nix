@@ -88,12 +88,17 @@ let
                     };
 
                     features.php.enabled = true;
+                    php-fpm.development = instance.mysql.debug;
+
                     storage.volumes.websites.volume = "phpmyadmin-web";
-                    nginx.config = {
-                        serverDirectory = lib.mkDefault (pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
-                            key = secrets."ssl.key" or null;
-                            certificate = secrets."ssl.certificate" or null;
-                        });
+                    nginx = {
+                        development = instance.mysql.debug;
+                        config = {
+                            serverDirectory = lib.mkDefault (pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
+                                key = secrets."ssl.key" or null;
+                                certificate = secrets."ssl.certificate" or null;
+                            });
+                        };
                     };
                 };
             })
