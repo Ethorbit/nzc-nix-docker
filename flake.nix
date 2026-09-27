@@ -57,13 +57,15 @@
         }));
 
         testInstances = import ./lib/testInstances.nix { inherit (pkgs) lib; inherit pkgs; inherit projects; };
-    in with pkgs; {
-        apps = let 
-            testDeployment = self.lib.mkDeployment {
-                inherit pkgs system;
-                instances = testInstances;
-            };
-        in testDeployment.apps;
+    in with pkgs; let
+        testDeployment = self.lib.mkDeployment {
+            inherit pkgs system;
+            instances = testInstances;
+        };
+    in {
+        apps = testDeployment.apps;
+
+        debug = testDeployment.configs;
 
         arion = {
             package = patchedArion;

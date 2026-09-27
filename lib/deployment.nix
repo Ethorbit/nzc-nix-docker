@@ -44,8 +44,10 @@
             in {
                 type = "app";
                 program = "${script}/bin/${name}";
+                config = composed.config;
             }
         ) instances;
+        configs = builtins.mapAttrs (name: v: v.config) instanceApps;
         projectGroups = builtins.foldl' (acc: name:
             let project = instances.${name}.project;
             in acc // {
@@ -83,4 +85,5 @@
         };
     in {
         apps = instanceApps // projectApps // { all = allApps; };
+        inherit configs;
     }
