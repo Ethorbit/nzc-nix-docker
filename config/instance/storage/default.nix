@@ -38,7 +38,7 @@ in
                         options = {
                             volume = mkOption {
                                 description = ''Name or host directory path of this volume'';
-                                type = types.str;
+                                type = types.either types.str types.path;
                             };
 
                             external = mkOption {
