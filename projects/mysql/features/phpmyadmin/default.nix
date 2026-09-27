@@ -111,7 +111,7 @@ in
         ../../../nginx/options.nix
     ];
 
-    config = lib.mkIf features.phpmyadmin.enabled {
+    config = lib.mkIf (features.phpmyadmin.enabled or false) {
         warnings = lib.optional 
                 (!exists."phpmyadmin.config")
                 ''storage.volumes."phpmyadmin.config".volume wasn't set, using a default config.inc.php file.'';

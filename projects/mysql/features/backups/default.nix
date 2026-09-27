@@ -65,7 +65,7 @@ in
         };
     };
 
-    config = with lib; mkIf features.backups.enabled {
+    config = with lib; mkIf (features.backups.enabled or false) {
         docker-compose = defaults.docker-compose // {
             volumes = {
                 "mysql_backups" = {};
