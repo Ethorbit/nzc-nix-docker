@@ -76,9 +76,9 @@ let
                 nzc.instance = {
                     user = { inherit uid gid; };
                     network.ports = lib.optionalAttrs exists."http" {
-                        http.number = instance.network.ports."http".number;
+                        http = instance.network.ports."http";
                     } // lib.optionalAttrs (exists."https" && exists."ssl.key" && exists."ssl.certificate") {
-                        https.number = instance.network.ports."https".number;
+                        https = instance.network.ports."https";
                     };
 
                     secrets = lib.optionalAttrs (exists."ssl.certificate") {
