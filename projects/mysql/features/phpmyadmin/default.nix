@@ -100,6 +100,8 @@ let
                             });
                         };
                     };
+
+                    limit = instance.limit or {};
                 };
             })
         ];
