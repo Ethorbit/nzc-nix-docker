@@ -185,7 +185,7 @@ in
                 restart = mkDefault "on-failure";
             };
 
-            nginx.service = (stripUndefined nginxProject.config.services.nginx.service ["healthcheck" "assertWarn"]) // {
+            nginx.service = (stripUndefined nginxProject.config.services.nginx.service ["healthcheck" "blkio_config" "assertWarn"]) // {
                 volumes = nginxProject.config.services.nginx.service.volumes ++ [
                     "phpmyadmin:/srv/phpmyadmin:ro"
                 ];
@@ -195,7 +195,7 @@ in
                 };
             };
 
-            php.service = (stripUndefined nginxProject.config.services.php.service ["healthcheck" "assertWarn"]) // {
+            php.service = (stripUndefined nginxProject.config.services.php.service ["healthcheck" "blkio_config" "assertWarn"]) // {
                 volumes = with containerSecretPaths; 
                     nginxProject.config.services.php.service.volumes ++ [
                         "phpmyadmin:/srv/phpmyadmin:ro"
