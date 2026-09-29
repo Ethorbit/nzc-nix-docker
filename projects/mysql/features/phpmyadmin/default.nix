@@ -93,7 +93,10 @@ let
                     storage.volumes.websites.volume = "phpmyadmin-web";
                     nginx = {
                         development = instance.mysql.debug;
-                        config = {
+                        config = if instance.useCustomNginxConfig 
+                        then 
+                            instance.nginx.config 
+                        else {
                             serverDirectory = lib.mkDefault (pkgs.callPackage ./app-config/nginx/conf.d.default.nix {
                                 key = secrets."ssl.key" or null;
                                 certificate = secrets."ssl.certificate" or null;
@@ -112,6 +115,13 @@ in
     imports = [
         ../../../nginx/options.nix
     ];
+
+    options.nzc.instance = with lib; {
+        useCustomNginxConfig = mkOption {
+            type = types.bool;
+            default = false;
+        };
+    };
 
     config = lib.mkIf (features.phpmyadmin.enabled or false) {
         warnings = lib.optional 
