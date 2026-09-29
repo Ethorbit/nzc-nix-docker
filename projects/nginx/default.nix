@@ -64,6 +64,7 @@ let
     gid = instance.user.gid;
 
     exists = {
+        "volumes.websites" = volumes ? "websites";
         "http" = ports ? "http";
         "https" = ports ? "https";
         "dockerTags.nginx" = dockerTags ? "nginx";
@@ -132,7 +133,7 @@ in
             storage.volumes = [
                 {
                     id = "websites";
-                    required = true;
+                    required = false;
                 }
             ];
 
@@ -181,10 +182,11 @@ in
             nginx.service = defaults.service // {
                 build.context = "${dockerfiles.nginx}";
                 volumes = [
-                    "${volumes.websites.volume}:/var/www:ro"
                     "${instance.nginx.config.file}:/etc/nginx/nginx.conf:ro"
                     "${instance.nginx.config.serverDirectory}:/etc/nginx/conf.d:ro"
-                ] ++ (lib.optional exists."nginx.snippets"
+                ] ++ (lib.optional exists."volumes.websites")
+                    "${volumes.websites.volume}:/var/www:ro"
+                ++ (lib.optional exists."nginx.snippets"
                     "${nginxConfig.snippets}:/etc/nginx/snippets:ro"
                 )
                 ++ (lib.optional exists."ssl.certificate"
@@ -211,9 +213,9 @@ in
                     "php_fpm_run:/var/run/php-fpm"
                     "${phpConfig.ini.user}:/usr/local/etc/php/conf.d/php.ini:ro"
                     "${phpConfig.www.user}:/usr/local/etc/php-fpm.d/www.conf:ro"
+                ] ++ (lib.optional exists."volumes.websites"
                     "${volumes.websites.volume}:/var/www"
-
-                ];
+                );
                 restart = "unless-stopped";
             };
         });
