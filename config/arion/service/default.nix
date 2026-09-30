@@ -58,6 +58,9 @@ in
 '' ] else []);
 
     nzc.arion.defaults.service = {
+        extra_hosts = (if instance.network.exposeHostGateway then [
+            "host.docker.internal:host-gateway"
+        ] else []);
         volumes = let
             lxcfs = instance.storage.lxcfs;
             timezone = instance.storage.timezone;

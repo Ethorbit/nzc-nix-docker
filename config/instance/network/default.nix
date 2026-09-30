@@ -30,6 +30,15 @@ with lib;
         description = ''Network settings for instance'';
         type = types.submodule {
             options = {
+                exposeHostGateway = mkOption {
+                    description = ''
+                    Add host.docker.internal DNS route to container.
+                    This is useful if a container has to connect to something on the host.
+                    '';
+                    type = types.bool;
+                    default = false;
+                };
+
                 ports = mkOption {
                     description = ''Network ports for container'';
                     type = types.attrsOf (types.submodule {
