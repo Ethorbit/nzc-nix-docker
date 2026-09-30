@@ -117,7 +117,7 @@ in
                 ''storage.volumes."mysql.config".volume wasn't set, using a default mysql.cnf file.'';
 
         project = defaults.project;
-        docker-compose = defaults.docker-compose // {
+        docker-compose = lib.recursiveUpdate defaults.docker-compose {
             volumes.mysql = {};
         };
 
@@ -137,7 +137,7 @@ in
                 ++ lib.optional (exists."mysql.config")
                     "${volumes."mysql.config".volume}:/etc/mysql/conf.d/mysql.cnf:ro"
                 ++ lib.optional (features.backups.enabled)
-                    "mysql_backups:/mnt/backups";
+                    "${volumes."backups".volume}:/mnt/backups";
                 environment = {
                     MYSQL_ADMIN_NAME = instance.mysql.adminName;
                     MYSQL_ADMIN_PASSWORD_FILE = "/run/secrets/admin-password";

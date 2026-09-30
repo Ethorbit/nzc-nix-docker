@@ -60,6 +60,13 @@ in
 
             mysql.debug = true;
 
+            storage.volumes = {
+                "backups" = {
+                    volume = "mysql-test-backups";
+                    scope = "global";
+                };
+            };
+
             secrets = {
                 "root.password" =
                     pkgs.writeText "password" ''

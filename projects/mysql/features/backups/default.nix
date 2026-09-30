@@ -27,6 +27,7 @@ let
     secrets = instance.secrets;
     features = instance.features;
     dockerTags = instance.docker.tags;
+    volumes = instance.storage.volumes;
 
     uid = instance.user.uid;
     gid = instance.user.gid;
@@ -66,9 +67,17 @@ in
     };
 
     config = with lib; mkIf (features.backups.enabled or false) {
+        nzc.project = {
+            storage.volumes = [
+                {
+                    id = "backups";
+                    required = true;
+                }
+            ];
+        };
+
         docker-compose = defaults.docker-compose // {
             volumes = {
-                "mysql_backups" = {};
                 "mysql_backups_spool" = {};
             };
         };
@@ -76,7 +85,7 @@ in
         services = {
             backups-permissions.service = config.nzc.arion.presets.service.permissions // {
                 volumes = [
-                    "mysql_backups:/mnt/backups"
+                    "${volumes."backups".volume}:/mnt/backups"
                     "mysql_backups_spool:/mnt/anacron-spool"
                 ];
             };
@@ -84,7 +93,7 @@ in
             backups.service = defaults.service // {
                 build.context = "${dockerfile}";
                 volumes = [
-                    "mysql_backups:/backup"
+                    "${volumes."backups".volume}:/backup"
                     "mysql_backups_spool:/home/mysql-backup/.anacron/spool"
                     "${secrets."admin.password"}:/run/secrets/admin-password:ro"
                 ];
