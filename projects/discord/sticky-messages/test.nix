@@ -34,6 +34,7 @@
                 storage.volumes = {
                     bot = {
                         volume = "discord_sticky_bot";
+                        scope = "global";
                     };
                 };
 

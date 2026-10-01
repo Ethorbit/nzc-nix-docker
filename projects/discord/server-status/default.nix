@@ -58,10 +58,7 @@ in
         };
 
         project = defaults.project;
-        docker-compose = defaults.docker-compose // {
-            volumes.discord_sticky_bot = {};
-        };
-
+        docker-compose = defaults.docker-compose;
         services = {
             server-status.service = defaults.service // {
                 build.context = "${dockerfile}";

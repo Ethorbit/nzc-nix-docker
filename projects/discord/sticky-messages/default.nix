@@ -25,7 +25,6 @@ let
     instance = config.nzc.instance;
     volumes = instance.storage.volumes;
     secrets = instance.secrets;
-    features = instance.features;
     dockerTags = instance.docker.tags;
 
     uid = instance.user.uid;
@@ -84,10 +83,7 @@ in
         };
 
         project = defaults.project;
-        docker-compose = defaults.docker-compose // {
-            volumes.discord_sticky_bot = {};
-        };
-
+        docker-compose = defaults.docker-compose;
         services = {
             stickymessages-permissions.service = config.nzc.arion.presets.service.permissions // {
                 volumes = [
