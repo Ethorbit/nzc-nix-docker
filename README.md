@@ -29,8 +29,8 @@ Designed to overcome all issues encountered from 5 years of operating the [nZC g
 
 ![demonstration](images/usage.gif)
 
-## [Available Projects](projects.md)
-You can view the available projects [here](projects.md)
+## [Available Projects and Examples](projects.md)
+You can view the available projects and their examples [here](projects.md)
 
 ## Requirements
 
