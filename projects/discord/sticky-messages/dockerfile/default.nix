@@ -41,7 +41,7 @@ let
         chmod +x /entrypoint.sh
     USER stickybot
     ENTRYPOINT ["/entrypoint.sh"]
-    CMD ["node", "./project/bot/src/bot.js"]
+    CMD ["node", "./src/bot.js"]
     '');
 in
 runCommand "docker-context" {} ''
