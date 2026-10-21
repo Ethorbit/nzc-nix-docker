@@ -20,7 +20,7 @@
 #
 
 {
-    IMAGE_TAG ? "fpm-alpine3.24",
+    IMAGE_TAG ? "8.5.12-fpm-alpine3.24",
     PUID,
     PGID,
     phpSettings,
