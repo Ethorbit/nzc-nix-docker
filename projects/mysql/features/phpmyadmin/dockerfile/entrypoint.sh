@@ -28,3 +28,5 @@ fi
 
 mkdir -p /panel/tmp
 chown "$PUID:$PGID" /panel/ /panel/tmp
+
+exec "$@"
