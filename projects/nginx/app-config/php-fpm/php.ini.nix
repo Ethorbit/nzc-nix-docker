@@ -22,6 +22,7 @@
 { development, writeText }:
 
 writeText "php.ini" ''
+session.upload_progress.enabled = Off
 error_log = /proc/1/fd/2
 access_log = /proc/1/fd/2
 fastcgi.logging = On
