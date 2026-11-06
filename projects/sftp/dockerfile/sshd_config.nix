@@ -83,16 +83,16 @@ AuthorizedKeysFile	.ssh/authorized_keys
 # Don't read the user's ~/.rhosts and ~/.shosts files
 #IgnoreRhosts yes
 
-# To disable tunneled clear text passwords, change to no here!
 ${if ALLOW_PASSWORD_LOGIN then
-"PasswordAuthentication yes"
+''
+PasswordAuthentication yes
+KbdInteractiveAuthentication yes
+''
 else
-"PasswordAuthentication no"}
-
-#PermitEmptyPasswords no
-
-# Change to no to disable s/key passwords
-#KbdInteractiveAuthentication yes
+''
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+''}
 
 # Kerberos options
 #KerberosAuthentication no
