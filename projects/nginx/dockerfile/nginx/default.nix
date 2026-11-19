@@ -21,7 +21,7 @@
 
 {
     development,
-    IMAGE_TAG ? "1.31-alpine3.24-perl",
+    IMAGE_TAG ? "1.31.9-alpine3.24-perl",
     PUID,
     PGID,
     SSL_CERT ? null,
@@ -41,7 +41,7 @@ let
     };
 
     Dockerfile = (writeText "Dockerfile" ''
-    FROM nginxinc/nginx-unprivileged:${IMAGE_TAG}
+    FROM nginx/nginx-unprivileged:${IMAGE_TAG}
     USER root
     COPY ./*.sh /docker-entrypoint.d/
     RUN chmod +x /docker-entrypoint.d/*.sh &&\
